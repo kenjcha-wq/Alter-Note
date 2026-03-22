@@ -5,105 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alter - 自省的空间</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
+    <style id="custom-styles">
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;400;700&display=swap');
-        :root { --bg: #fdfdfd; --sidebar-bg: #f8f8f8; --text-main: #1a1a1a; --text-dim: #a0a0a0; --border: #eeeeee; --accent: #000; --card-bg: #fff; --font-title: 'Ma Shan Zheng'; --font-main: 'Noto Serif SC'; }
-        .dark-mode { --bg: #050505; --sidebar-bg: #0a0a0a; --text-main: #d1d1d1; --text-dim: #444; --border: #1a1a1a; --card-bg: #0d0d0d; --accent: #fff; }
+
+        :root {
+            --bg: #fdfdfd;
+            --sidebar-bg: #f8f8f8;
+            --text-main: #1a1a1a;
+            --text-dim: #a0a0a0;
+            --border: #eeeeee;
+            --accent: #000;
+            --card-bg: #fff;
+            --font-title: 'Ma Shan Zheng', cursive;
+            --font-main: 'Noto Serif SC', serif;
+            --font-sans: 'Inter', sans-serif;
+            --panel-blur: blur(30px) saturate(150%);
+            --card-radius: 4px;
+            --text-weight: 300;
+            --line-height: 1.8;
+        }
+
+        .dark-mode {
+            --bg: #050505;
+            --sidebar-bg: #0a0a0a;
+            --text-main: #d1d1d1;
+            --text-dim: #444;
+            --border: #1a1a1a;
+            --card-bg: #0d0d0d;
+            --accent: #fff;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { background-color: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* 侧边栏 */
+        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- 认证界面 --- */
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; }
+        .auth-box { width: 320px; padding: 40px; text-align: center; }
+        .auth-logo { font-family: var(--font-title); font-size: 56px; margin-bottom: 20px; letter-spacing: 6px; }
+
+        /* --- 导航侧边栏 --- */
         nav { width: 56px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 40px 0; z-index: 2000; flex-shrink: 0; }
-        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .logo { width: 22px; height: 22px; margin-bottom: 50px; cursor: pointer; color: var(--accent); }
+        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
         .nav-link.active { color: var(--accent); }
-        
-        /* 主内容 */
+        .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+
+        /* --- 主内容 --- */
         main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 10%; position: relative; }
         @media (max-width: 768px) { main { padding: 40px 20px; } }
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; }
         header h1 { font-family: var(--font-title); font-size: 40px; color: var(--accent); }
 
-        /* 布局 */
         .grid { column-count: 3; column-gap: 40px; }
         @media (max-width: 1400px) { .grid { column-count: 2; } }
         @media (max-width: 768px) { .grid { column-count: 1; } }
-        .card { break-inside: avoid; margin-bottom: 40px; background: var(--card-bg); border: 1px solid var(--border); padding: 24px; border-radius: 4px; cursor: pointer; position: relative; }
+
+        /* --- 卡片 --- */
+        .card { break-inside: avoid; margin-bottom: 40px; background: var(--card-bg); border: 1px solid var(--border); padding: 24px; border-radius: var(--card-radius); cursor: pointer; position: relative; }
         .card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 20px; filter: grayscale(100%); }
         .card.tmpl-quote { border-left: 5px solid var(--accent); background: rgba(0,0,0,0.01); }
-        .card-content { font-family: var(--font-main); font-size: 15px; line-height: 1.8; white-space: pre-wrap; max-height: 150px; overflow: hidden; mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
-        .card-footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: var(--text-dim); }
+        .card-meta { font-size: 8px; color: var(--text-dim); margin-bottom: 15px; display: flex; justify-content: space-between; font-weight: 700; text-transform: uppercase; }
+        .card-content { font-family: var(--font-main); font-size: 15px; line-height: var(--line-height); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+        .card-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 9px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
 
-        /* 相机 (全屏物理层) */
-        #cam-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: #000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .cam-controls { position: absolute; bottom: 50px; width: 100%; display: flex; justify-content: center; }
+        /* --- 覆盖层 (相机修复核心) --- */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; overflow-y: auto; }
+        #cam-overlay { z-index: 9999; background: #000; padding: 0; display: none; align-items: center; justify-content: center; }
+        .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; }
+        .panel-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        
+        .cam-controls { position: absolute; bottom: 40px; width: 100%; display: flex; justify-content: center; }
         .shutter-ring { width: 70px; height: 70px; border: 4px solid #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .shutter-ring::after { content: ''; width: 55px; height: 55px; background: #fff; border-radius: 50%; }
 
-        /* 弹窗层 */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; overflow-y: auto; padding: 60px 0; }
-        .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; }
-        .panel-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .btn-black { background: var(--accent); color: var(--bg); border: none; padding: 14px 32px; font-size: 10px; font-weight: 700; letter-spacing: 2px; cursor: pointer; border-radius: 2px; }
+        .input-line { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 12px 0; font-size: 14px; color: var(--text-main); margin-bottom: 20px; }
+        
+        /* 评论回响 */
+        .reply-box { margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 4px; font-size: 13px; line-height: 1.6; }
+        .p-picker { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .p-chip { font-size: 10px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; opacity: 0.5; white-space: nowrap; }
+        .p-chip.active { opacity: 1; border-color: var(--accent); color: var(--accent); font-weight: 700; }
 
-        /* 登录 */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; }
-        .input-line { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 10px 0; color: var(--text-main); margin-bottom: 20px; }
-        .btn-black { background: var(--accent); color: var(--bg); border: none; padding: 12px 24px; font-size: 10px; font-weight: 700; letter-spacing: 2px; cursor: pointer; }
-
-        .reply-box { margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.02); font-size: 13px; }
-        .p-chip { font-size: 10px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; opacity: 0.5; margin-right: 5px; }
-        .p-chip.active { opacity: 1; border-color: var(--accent); }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
-    <div id="auth-screen"><div style="width:280px; text-align:center;"><h1 style="font-family:'Ma Shan Zheng'; font-size:48px; margin-bottom:30px;">Alter.</h1><input type="text" id="user-name-in" class="input-line" style="color:#fff; text-align:center;" placeholder="输入花名..."><button class="btn-black" style="background:#fff; color:#000; width:100%; border-radius:20px;" onclick="enterApp()">连接灵魂</button></div></div>
-    
+
+    <div id="auth-screen">
+        <div class="auth-box">
+            <div class="auth-logo">Alter.</div>
+            <input type="text" id="user-name-in" class="input-line" style="color:#fff; text-align:center;" placeholder="输入花名...">
+            <button class="btn-black" style="background:#fff; color:#000; width:100%; border-radius:20px;" onclick="enterApp()">连接灵魂</button>
+        </div>
+    </div>
+
     <nav>
-        <div class="nav-link active" onclick="switchView('home', this)" id="btn-home"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="switchView('timeline', this)" id="btn-timeline"><i data-lucide="layout"></i></div>
+        <div class="nav-link active" onclick="switchView('home', this)"><i data-lucide="home"></i></div>
+        <div class="nav-link" onclick="switchView('timeline', this)"><i data-lucide="layout"></i></div>
         <div class="nav-link" onclick="handleVaultAccess(this)"><i data-lucide="sparkles"></i></div>
         <div style="flex:1"></div>
         <div class="nav-link" onclick="togglePanel('editor-overlay')"><i data-lucide="feather"></i></div>
         <div class="nav-link" onclick="togglePanel('settings-overlay')"><i data-lucide="settings"></i></div>
     </nav>
 
-    <main>
-        <header><h1 id="view-title">他我笔记</h1><div id="user-tag" style="font-size:10px; opacity:0.5;"></div></header>
+    <main id="main">
+        <header>
+            <h1 id="view-title">他我笔记</h1>
+            <div id="current-user-tag" style="font-size:10px; opacity:0.5; letter-spacing:2px;"></div>
+        </header>
+
         <div id="dash-view-container">
-            <div style="padding:20px; border:1px solid var(--border); margin-bottom:40px; width:fit-content;"><h4>今日独白</h4><p id="count-today" style="font-size:32px;">0</p></div>
+            <div style="padding:20px; border:1px solid var(--border); margin-bottom:40px; display:inline-block;">
+                <h4 style="font-size:8px; opacity:0.5; margin-bottom:10px;">今日独白</h4>
+                <p id="count-today" style="font-size:32px; font-family:'Ma Shan Zheng';">0</p>
+            </div>
             <div id="review-box"></div>
         </div>
-        <div id="timeline-container" style="display:none;"><div class="grid" id="note-grid"></div></div>
+
+        <div id="timeline-container" style="display:none;">
+            <div class="grid" id="note-grid"></div>
+        </div>
     </main>
 
-    <div id="editor-overlay" class="overlay"><div class="overlay-content"><div class="panel-header"><div id="p-sel-box" style="display:flex; gap:15px;"></div><span onclick="closeOverlay('editor-overlay')">CLOSE</span></div><textarea id="note-in" class="input-line" style="height:250px; font-size:18px; line-height:2; border:none; resize:none;" placeholder="在此刻寻找回声..."></textarea><div id="prevBox" style="display:none; margin-bottom:20px; position:relative;"><img src="" id="pImg" style="width:100%;"><div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; border-radius:50%; width:24px; height:24px; text-align:center; line-height:24px; cursor:pointer;" onclick="killImg()">×</div></div><div style="display:flex; justify-content: space-between; align-items:center;"><div style="display:flex; gap:25px;"><i data-lucide="camera" onclick="camOn()" style="cursor:pointer;"></i><i data-lucide="shield" id="vaultToggle" onclick="toggleVault()" style="cursor:pointer;"></i></div><button class="btn-black" onclick="save()">封存</button></div></div></div>
+    <div id="editor-overlay" class="overlay">
+        <div class="overlay-content">
+            <div class="panel-header"><div id="p-sel-box" style="display:flex; gap:12px;"></div><span onclick="closeOverlay('editor-overlay')" style="cursor:pointer; font-size:10px;">CLOSE</span></div>
+            <textarea id="note-in" class="input-line" style="height:250px; font-family:var(--font-main); font-size:20px; line-height:2.2; border:none; resize:none;" placeholder="在此刻寻找回声..."></textarea>
+            <div id="prevBox" style="display:none; position:relative; margin-bottom:20px;"><img src="" id="pImg" style="width:100%; border-radius:4px;"><div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); color:#fff; border-radius:50%; width:24px; height:24px; text-align:center; line-height:24px; cursor:pointer;" onclick="killImg()">×</div></div>
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <div style="display:flex; gap:30px;">
+                    <i data-lucide="camera" onclick="camOn()" style="cursor:pointer; color:var(--text-dim)"></i>
+                    <i data-lucide="shield" id="vaultToggle" onclick="toggleVault()" style="cursor:pointer; color:var(--text-dim)"></i>
+                </div>
+                <button class="btn-black" onclick="save()">封存回响</button>
+            </div>
+        </div>
+    </div>
 
-    <div id="reader-overlay" class="overlay"><div class="overlay-content"><div class="panel-header"><h2>内容回想</h2><span onclick="closeOverlay('reader-overlay')">BACK</span></div><div id="reader-target"></div><div style="margin-top:40px; padding-top:30px; border-top:1px solid var(--border);"><div id="replies-box"></div><div style="margin-top:30px;"><div id="r-p-picker" style="display:flex; margin-bottom:15px;"></div><input type="text" id="comIn" class="input-line" placeholder="写下回响..."><button class="btn-black" id="sendBtn" style="width:100%;">同步回响</button></div></div></div></div>
+    <div id="reader-overlay" class="overlay">
+        <div class="overlay-content">
+            <div class="panel-header"><h2>内容回想</h2><span onclick="closeOverlay('reader-overlay')" style="cursor:pointer; font-size:10px;">BACK</span></div>
+            <div id="reader-target" style="font-family:var(--font-main); font-size:20px; line-height:2.2;"></div>
+            <div style="margin-top:40px; padding-top:30px; border-top:1px solid var(--border);">
+                <div id="replies-box"></div>
+                <div style="margin-top:40px; background:rgba(0,0,0,0.01); padding:20px;">
+                    <div id="r-p-picker" class="p-picker"></div>
+                    <input type="text" id="comIn" class="input-line" placeholder="写下回响...">
+                    <button class="btn-black" id="sendBtn" style="width:100%;">同步回响</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div id="settings-overlay" class="overlay"><div class="overlay-content"><div class="panel-header"><h2>设置</h2><span onclick="closeOverlay('settings-overlay')">CLOSE</span></div><div style="margin-bottom:30px;"><label>碎片库密码</label><input type="password" id="pass-vault" class="input-line" onchange="saveSec()"></div><button class="btn-black" style="width:100%; background:transparent; border:1px solid var(--border); color:#000;" onclick="dlData()">导出备份 (.JSON)</button></div></div>
+    <div id="settings-overlay" class="overlay">
+        <div class="overlay-content">
+            <div class="panel-header"><h2>设置</h2><span onclick="closeOverlay('settings-overlay')" style="cursor:pointer; font-size:10px;">CLOSE</span></div>
+            <div style="margin-bottom:40px;">
+                <label style="font-size:12px; margin-bottom:10px; display:block;">碎片库密码</label>
+                <input type="password" id="pass-vault" class="input-line" onchange="saveSec()">
+            </div>
+            <button class="btn-black" style="width:100%; background:transparent; border:1px solid var(--border); color:#000;" onclick="dlData()">导出备份 (.JSON)</button>
+        </div>
+    </div>
 
     <div id="cam-overlay">
-        <div onclick="camOff()" style="position:fixed; top:30px; right:30px; z-index:10000; cursor:pointer;"><i data-lucide="x" color="#fff" size="32"></i></div>
-        <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+        <div onclick="camOff()" style="position:fixed; top:30px; right:30px; z-index:10001; cursor:pointer;"><i data-lucide="x" color="#fff" size="32"></i></div>
+        <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover; background:#000;"></video>
         <div class="cam-controls"><div class="shutter-ring" onclick="snap()"></div></div>
         <canvas id="v-canvas" style="display:none;"></canvas>
     </div>
 
     <script>
-        const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
+        const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"影子"}];
         let notes = JSON.parse(localStorage.getItem('alter_v51_data')) || [], sec = JSON.parse(localStorage.getItem('alter_v51_sec')) || { v: "" };
         let user = localStorage.getItem('alter_v51_user') || "", viewMode = 'home', activeP = FIXED_P[0], commP = FIXED_P[0], inV = false, b64 = "", stream = null;
 
         function init() { lucide.createIcons(); if(!user) document.getElementById('auth-screen').style.display='flex'; else enterApp(user); }
-        function enterApp(name) { user = name || document.getElementById('user-name-in').value.trim(); if(!user) return; localStorage.setItem('alter_v51_user', user); document.getElementById('auth-screen').style.display='none'; document.getElementById('user-tag').innerText = `@${user.toUpperCase()}`; renderAll(); }
+        function enterApp(name) { user = name || document.getElementById('user-name-in').value.trim(); if(!user) return; localStorage.setItem('alter_v51_user', user); document.getElementById('auth-screen').style.display='none'; document.getElementById('current-user-tag').innerText = `@${user.toUpperCase()}`; renderAll(); }
         function renderAll() { renderGrid(); renderSwitcher(); updateStats(); renderDailyReview(); lucide.createIcons(); }
 
         function renderSwitcher() {
             document.getElementById('p-sel-box').innerHTML = FIXED_P.map(p => `<span style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP=FIXED_P.find(x=>x.n==='${p.n}');renderSwitcher()">${p.i} ${p.n}</span>`).join('');
             const rBox = document.getElementById('r-p-picker'); if(rBox) rBox.innerHTML = FIXED_P.map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="commP=FIXED_P.find(x=>x.n==='${p.n}');renderSwitcher()">${p.i} ${p.n}</div>`).join('');
         }
-        function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString()).length; }
-        
+
         function save() {
             const t = document.getElementById('note-in').value.trim(); if(!t && !b64) return closeOverlay('editor-overlay');
             notes.unshift({ id:Date.now(), content:t, image:b64, isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), zs:0, replies:[] });
@@ -111,7 +198,7 @@
         }
 
         function renderGrid() {
-            const grid = document.getElementById('note-grid'); if(!grid) return; grid.innerHTML = '';
+            const grid = document.getElementById('note-grid'); grid.innerHTML = '';
             notes.filter(n => (viewMode === 'vault' ? n.isVault : !n.isVault)).forEach(n => {
                 const div = document.createElement('div'); div.className = `card ${n.isVault?'tmpl-quote':''}`; div.onclick = () => showNote(n);
                 div.innerHTML = `${n.image?`<img src="${n.image}" class="card-img">`:''}<div class="card-meta"><span>${n.i} ${n.persona}</span><span>${n.time}</span></div><div class="card-content">${n.content}</div><div class="card-footer"><span onclick="event.stopPropagation(); doZap(${n.id})"><i data-lucide="zap" size="10"></i> ${n.zs||0}</span><span>${n.replies?.length||0} ECHOES</span></div>`;
@@ -127,19 +214,15 @@
             togglePanel('reader-overlay'); renderSwitcher();
         }
 
-        function renderDailyReview() {
-            const box = document.getElementById('review-box'); if(!box || notes.length===0) return; const r = notes[Math.floor(Math.random()*notes.length)];
-            box.innerHTML = `<h3 style="font-size:10px;opacity:0.3;margin-bottom:20px;">DAILY RECALL</h3><div class="card tmpl-quote" style="width:100%" onclick="showNoteById(${r.id})"><div class="card-content">${r.content}</div></div>`;
-        }
-
+        function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString()).length; }
+        function renderDailyReview() { const box = document.getElementById('review-box'); if(!box || notes.length===0) return; const r = notes[Math.floor(Math.random()*notes.length)]; box.innerHTML = `<h3 style="font-size:10px;opacity:0.3;margin-bottom:20px;">DAILY RECALL</h3><div class="card tmpl-quote" style="width:100%" onclick="showNoteById(${r.id})"><div class="card-content">${r.content}</div></div>`; }
         function switchView(m, el) { viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); el.classList.add('active'); document.getElementById('dash-view-container').style.display = m==='home'?'block':'none'; document.getElementById('timeline-container').style.display = (m==='timeline'||m==='vault')?'block':'none'; renderGrid(); }
         function togglePanel(id) { document.querySelectorAll('.overlay').forEach(p=>p.style.display='none'); document.getElementById(id).style.display='flex'; lucide.createIcons(); }
         function closeOverlay(id) { document.getElementById(id).style.display='none'; }
         function toggleVault() { inV=!inV; document.getElementById('vaultToggle').style.color=inV?'#000':'#a0a0a0'; }
         function handleVaultAccess(el) { if(sec.v && prompt("密码:")!==sec.v) return; switchView('vault', el); }
         function saveSec() { sec.v = document.getElementById('pass-vault').value; localStorage.setItem('alter_v51_sec', JSON.stringify(sec)); }
-        
-        async function camOn() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'flex'; } catch (e) { alert("无权限"); } }
+        async function camOn() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'flex'; } catch (e) { alert("无相机权限"); } }
         function camOff() { if(stream) stream.getTracks().forEach(t=>t.stop()); document.getElementById('cam-overlay').style.display='none'; }
         function snap() { const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0); b64 = c.toDataURL('image/jpeg'); document.getElementById('pImg').src = b64; document.getElementById('prevBox').style.display = 'block'; camOff(); }
         function doZap(id) { const n = notes.find(x=>x.id===id); if(n){ n.zs=(n.zs||0)+1; localStorage.setItem('alter_v51_data', JSON.stringify(notes)); renderGrid(); } }
