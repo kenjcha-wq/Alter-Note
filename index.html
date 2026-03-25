@@ -504,7 +504,8 @@
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
 
         window.addEventListener('load', init);
-    </script>// 1. 模型配置中心 (内置豆包，预留其他)
+    </script>// 
+    1. 模型配置中心 (内置豆包，预留其他)
 const MODEL_CONFIGS = {
     "doubao": { name: "豆包 (内置)", endpoint: "https://ark.cn-beijing.volces.com/api/v3/chat/completions" },
     "gpt": { name: "GPT-4o", endpoint: "https://api.openai.com/v1/chat/completions" },
@@ -531,13 +532,14 @@ async function callAI(prompt, modelKey = "doubao") {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
+        JSON.stringify({
             model: settings[`model_id_${modelKey}`] || "doubao-pro-32k", // 默认豆包型号
             messages: [
                 {"role": "system", "content": "你是一个中肯、深刻的AI协作伙伴，协助Nik推演‘拟演存在论’。"},
-                {"role": "user", "content": prompt}
-            ]
-        })
+                {"role": "user", "content": prompt} 
+</script>            ]
+    
+ body:})
     });
     const data = await response.json();
     return data.choices[0].message.content;
