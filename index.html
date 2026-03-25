@@ -504,6 +504,42 @@
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
 
         window.addEventListener('load', init);
-    </script>
-</body>
+    </script>// 1. 模型配置中心 (内置豆包，预留其他)
+const MODEL_CONFIGS = {
+    "doubao": { name: "豆包 (内置)", endpoint: "https://ark.cn-beijing.volces.com/api/v3/chat/completions" },
+    "gpt": { name: "GPT-4o", endpoint: "https://api.openai.com/v1/chat/completions" },
+    "gemini": { name: "Gemini 1.5", endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions" },
+    "deepseek": { name: "DeepSeek-V3", endpoint: "https://api.deepseek.com/chat/completions" },
+    "qwen": { name: "通义千问 (Qwen)", endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions" },
+    "kimi": { name: "Kimi (Moonshot)", endpoint: "https://api.moonshot.cn/v1/chat/completions" },
+    "qingyan": { name: "智谱清言 (GLM)", endpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions" }
+};
+
+// 2. 统一调用接口
+async function callAI(prompt, modelKey = "doubao") {
+    const settings = JSON.parse(localStorage.getItem('alt_settings') || '{}');
+    const config = MODEL_CONFIGS[modelKey];
+    
+    // 关键：优先从本地设置读取该模型的专属 API Key
+    const apiKey = settings[`key_${modelKey}`] || settings.defaultApiKey;
+    
+    if (!apiKey) throw new Error(`${config.name} 未设置 API Key`);
+
+    const response = await fetch(config.endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: settings[`model_id_${modelKey}`] || "doubao-pro-32k", // 默认豆包型号
+            messages: [
+                {"role": "system", "content": "你是一个中肯、深刻的AI协作伙伴，协助Nik推演‘拟演存在论’。"},
+                {"role": "user", "content": prompt}
+            ]
+        })
+    });
+    const data = await response.json();
+    return data.choices[0].message.content;
+}</body>
 </html>
