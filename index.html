@@ -7,265 +7,152 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style id="custom-styles">
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;400;700&display=swap');
-
         :root {
-            --bg: #fdfdfd;
-            --sidebar-bg: #f8f8f8;
-            --text-main: #1a1a1a;
-            --text-dim: #a0a0a0;
-            --border: #eeeeee;
-            --accent: #000;
-            --card-bg: #fff;
-            --font-title: 'Ma Shan Zheng', cursive;
-            --font-main: 'Noto Serif SC', serif;
-            --font-sans: 'Inter', sans-serif;
-            --panel-blur: blur(30px) saturate(150%);
-            --card-radius: 4px;
-            --text-weight: 300;
-            --line-height: 1.8;
+            --bg: #fdfdfd; --sidebar-bg: #f8f8f8; --text-main: #1a1a1a; --text-dim: #a0a0a0;
+            --border: #eeeeee; --accent: #000; --card-bg: #fff;
+            --font-title: 'Ma Shan Zheng', cursive; --font-main: 'Noto Serif SC', serif; --font-sans: 'Inter', sans-serif;
+            --panel-blur: blur(30px) saturate(150%); --card-radius: 4px; --text-weight: 300; --line-height: 1.8;
         }
-
         .dark-mode {
-            --bg: #050505;
-            --sidebar-bg: #0a0a0a;
-            --text-main: #d1d1d1;
-            --text-dim: #444;
-            --border: #1a1a1a;
-            --card-bg: #0d0d0d;
-            --accent: #fff;
+            --bg: #050505; --sidebar-bg: #0a0a0a; --text-main: #d1d1d1; --text-dim: #444;
+            --border: #1a1a1a; --card-bg: #0d0d0d; --accent: #fff;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
-
-        /* --- 认证界面 --- */
+        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; }
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
-        .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
-
-        /* --- 导航 --- */
-        nav { width: 56px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0 40px 0; z-index: 2000; flex-shrink: 0; }
-        #cur-login-name { font-size: 8px !important; color: var(--text-dim); cursor: default; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; opacity: 0.5; }
-        .logo { width: 22px; height: 22px; margin-bottom: 50px; cursor: pointer; color: var(--accent); }
-        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; position: relative; }
+        nav { width: 56px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; z-index: 2000; }
+        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
         .nav-link:hover, .nav-link.active { color: var(--accent); }
-        .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
-
-        /* --- 主画布 --- */
-        main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; }
-        header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; }
-        header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
-        .view-subtitle-meta { font-size: 8px; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; font-family: var(--font-sans); }
-        
-        .vault-tabs { display: flex; gap: 15px; margin-top: 15px; }
-        .v-tab { font-size: 11px; color: var(--text-dim); cursor: pointer; letter-spacing: 1px; transition: 0.3s; position: relative; text-transform: uppercase; }
-        .v-tab.active { color: var(--accent); font-weight: 700; }
-        .v-tab.active::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 1px; background: var(--accent); }
-
-        .header-tools { display: flex; align-items: center; gap: 12px; }
-        .search-input-wrap { position: absolute; right: 35px; width: 0; opacity: 0; transition: 0.4s; overflow: hidden; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; display: flex; align-items: center; z-index: 100; }
-        .search-input-wrap.active { width: 240px; opacity: 1; padding: 8px 18px; }
-        .search-input-wrap input { background: transparent; border: none; font-size: 13px; width: 100%; color: var(--text-main); }
-        .minimal-select { background: transparent; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; padding: 6px 12px; color: var(--text-dim); cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-
-        /* --- 瀑布流 --- */
-        .grid { column-count: 3; column-gap: 40px; }
-        @media (max-width: 1400px) { .grid { column-count: 2; } }
+        main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; position: relative; max-width: 1200px; margin: 0 auto; }
+        header h1 { font-family: var(--font-title) !important; font-size: 40px; color: var(--accent); }
+        .grid { column-count: 3; column-gap: 40px; margin-top: 40px; }
         @media (max-width: 900px) { .grid { column-count: 1; } }
-
-        .card { break-inside: avoid; margin-bottom: 40px; background: var(--card-bg); border: 1px solid var(--border); padding: 24px; transition: 0.4s ease; cursor: pointer; border-radius: var(--card-radius); position: relative; }
-        .card:hover { border-color: var(--accent); transform: translateY(-4px); }
-        .card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 20px; filter: grayscale(100%); transition: 0.6s; border-radius: 2px; }
-        .card:hover .card-img { filter: grayscale(0%) !important; }
-        .card-meta { font-size: 8px; color: var(--text-dim); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; display: flex; justify-content: space-between; }
-        .card-content { font-family: var(--font-main) !important; font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
-        .card-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .footer-tools { display: flex; gap: 8px; align-items: center; }
-        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 4px; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: 0.3s; padding: 0; opacity: 0.08; }
-        .card:hover .footer-btn { opacity: 0.3; }
-        .footer-btn:hover { opacity: 1; color: var(--accent); }
-        .card-info { font-size: 5px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; opacity: 0.3; text-transform: uppercase; }
-
-        /* --- 概览统计卡片 --- */
-        .dash-card { padding: 40px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); text-align: center; }
-        .dash-card h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 12px; }
-        .dash-card p { font-family: var(--font-main); }
-
+        .card { break-inside: avoid; margin-bottom: 40px; background: var(--card-bg); border: 1px solid var(--border); padding: 24px; border-radius: var(--card-radius); }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; backdrop-filter: var(--panel-blur); overflow-y: auto; }
-        .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; padding-bottom: 120px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; position: sticky; top: 0; background: inherit; z-index: 10; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .panel-header h2 { font-family: var(--font-title) !important; font-size: 32px; font-weight: 400; color: var(--accent); }
-        .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
-
-        .btn-black { background: var(--accent); color: var(--bg); border: none; padding: 12px 28px; font-size: 9px; font-weight: 700; letter-spacing: 2px; cursor: pointer; border-radius: 2px; }
+        .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; }
+        .btn-black { background: var(--accent); color: var(--bg); border: none; padding: 12px 28px; font-size: 9px; font-weight: 700; cursor: pointer; border-radius: 20px; }
         .input-line { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border); padding: 8px 0; font-size: 13px; color: var(--text-main); margin-bottom: 15px; }
-        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 8px 16px; font-size: 9px; border-radius: 20px; z-index: 11000; display: none; letter-spacing: 1px; }
-        ::-webkit-scrollbar { display: none; }
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 8px 16px; font-size: 9px; border-radius: 20px; z-index: 11000; display: none; }
     </style>
 </head>
-<body class="theme-default">
-
-    <div id="toast">SYSTEM SYNCED</div>
-
+<body>
+    <div id="toast">SYSTEM READY</div>
     <div id="auth-screen">
         <div class="auth-box">
             <div class="auth-logo">Alter.</div>
-            <p style="font-size:8px; letter-spacing:5px; opacity:0.5; margin-bottom:40px;">PERSONAL ARCHIVE SYSTEM</p>
-            <input type="text" id="user-name-in" class="input-line" style="color:#fff; border-color:#444; text-align:center; margin-bottom:25px; font-size: 11px;" placeholder="在此输入登录名...">
-            <button class="btn-black" style="background:#fff; color:#000; width:100%; border-radius:20px; padding: 10px 0;" onclick="enterApp()">连接灵魂</button>
+            <input type="text" id="user-name-in" class="input-line" style="color:#fff; text-align:center;" placeholder="输入登录名...">
+            <button class="btn-black" style="background:#fff; color:#000; width:100%;" onclick="enterApp()">连接灵魂</button>
         </div>
     </div>
-
     <nav>
-        <div id="cur-login-name">NIK</div>
-        <div class="logo" onclick="switchView('home', this)"><svg viewBox="0 0 100 100" fill="none"><path d="M50 20L80 80H20L50 20Z" stroke="currentColor" stroke-width="4"/><path d="M50 85L65 55H35L50 85Z" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/></svg></div>
-        <div class="nav-link active" onclick="switchView('home', this)" title="概览"><i data-lucide="home"></i></div>
-        <div class="nav-link" onclick="switchView('timeline', this)" title="主页"><i data-lucide="layout"></i></div>
-        <div class="nav-link" onclick="handleVaultAccess(this)" id="nav-vault" title="灵感碎片"><i data-lucide="sparkles"></i></div>
-        <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i></div>
-        <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
-        <div style="flex:1"></div>
-        <div class="nav-link" onclick="togglePanel('editor-overlay')" title="封存"><i data-lucide="feather"></i></div>
-        <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
+        <div id="cur-login-name" style="font-size:8px; margin-bottom:20px; opacity:0.5;">NIK</div>
+        <div class="nav-link active" onclick="switchView('home')"><i data-lucide="home"></i></div>
+        <div class="nav-link" onclick="togglePanel('editor-overlay')"><i data-lucide="feather"></i></div>
+        <div class="nav-link" onclick="togglePanel('lab-overlay')"><i data-lucide="beaker"></i></div>
+        <div class="nav-link" onclick="togglePanel('settings-overlay')"><i data-lucide="settings"></i></div>
     </nav>
-
-    <main id="main">
+    <main>
         <header>
-            <div>
-                <h1 id="view-title">他我笔记</h1>
-                <p class="view-subtitle-meta" id="view-subtitle">DASHBOARD / 概览</p>
-                <div class="vault-tabs" id="vault-tabs" style="display:none;">
-                    <span class="v-tab active" id="tab-soul" onclick="switchVaultMode('soul')">心灵碎片 (Soul)</span>
-                    <span class="v-tab" id="tab-memory" onclick="switchVaultMode('memory')">记忆碎片 (Memory)</span>
-                </div>
-            </div>
-            <div class="header-tools">
-                <select id="persona-filter" class="minimal-select" onchange="renderGrid()" style="display:none;">
-                    <option value="all">所有身份</option>
-                    <option value="他我">🎭 他我</option>
-                    <option value="乌鸦">🐦 乌鸦</option>
-                    <option value="影子">🐍 影子</option>
-                </select>
-                <div class="search-input-wrap" id="search-wrap">
-                    <input type="text" id="searchInput" placeholder="搜索..." oninput="handleSearch()">
-                </div>
-                <div class="search-trigger" onclick="toggleSearch()"><i data-lucide="search" size="16"></i></div>
-            </div>
+            <h1 id="view-title">他我笔记</h1>
+            <p id="view-subtitle" style="font-size:8px; color:var(--text-dim); letter-spacing:2px;">DASHBOARD / 概览</p>
         </header>
-
         <div id="dash-view-container">
-            <div class="dash-row" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 60px;">
-                <div class="dash-card"><h4>今日独白</h4><p id="count-today">0</p></div>
-                <div class="dash-card"><h4>当前登录</h4><p id="current-user-tag">UNSET</p></div>
-                <div class="dash-card"><h4>化身状态</h4><p>活跃</p></div>
-            </div>
-            <div id="review-container" style="margin-top: 40px;">
-                <h3 style="font-size: 10px; letter-spacing: 3px; margin-bottom: 30px; opacity:0.5;">DAILY RECALL / 每日回顾</h3>
-                <div id="review-box" style="max-width: 600px;"></div>
-            </div>
-        </div>
-
-        <div id="timeline-container" style="display:none;">
             <div class="grid" id="note-grid"></div>
         </div>
     </main>
 
     <div id="editor-overlay" class="overlay">
         <div class="overlay-content">
-            <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
-            <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:20px;"></div>
-            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none; font-family:'Noto Serif SC';" placeholder="在此刻寻找回声..."></textarea>
-            <div style="display:flex; justify-content: flex-end; padding-top:30px;">
-                <button class="btn-black" onclick="save()">封存回响</button>
-            </div>
+            <h2 style="font-family:var(--font-title); font-size:32px; margin-bottom:30px;">封存碎语</h2>
+            <textarea id="note-in" class="input-line" style="height:200px; resize:none;" placeholder="在此刻寻找回声..."></textarea>
+            <button class="btn-black" onclick="saveNote()">封存回响</button>
+            <button onclick="closeOverlay('editor-overlay')" style="background:none; border:none; color:var(--text-dim); margin-left:20px; cursor:pointer;">取消</button>
+        </div>
+    </div>
+
+    <div id="lab-overlay" class="overlay">
+        <div class="overlay-content">
+            <h2 style="font-family:var(--font-title); font-size:32px; margin-bottom:30px;">实验室</h2>
+            <p style="font-size:12px; margin-bottom:20px;">在此配置 AI 接口（数据仅保存在本地）</p>
+            <input type="password" id="lab-api-key" class="input-line" placeholder="输入 API Key (sk-...)">
+            <button class="btn-black" onclick="saveLabSettings()">保存配置</button>
+            <button onclick="closeOverlay('lab-overlay')" style="background:none; border:none; color:var(--text-dim); margin-left:20px; cursor:pointer;">关闭</button>
         </div>
     </div>
 
     <script>
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
         let notes = JSON.parse(localStorage.getItem('alter_v52_data')) || [];
-        let sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
-        let user = localStorage.getItem('alter_v52_user') || "NIK";
-        
-        let activeP = FIXED_P[0];
+        let user = localStorage.getItem('alter_v52_user') || "";
 
-        // --- 1. 模型配置中心 ---
+        // AI 配置
         const MODEL_CONFIGS = {
-            "doubao": { name: "豆包 (内置)", endpoint: "https://ark.cn-beijing.volces.com/api/v3/chat/completions" },
-            "gpt": { name: "GPT-4o", endpoint: "https://api.openai.com/v1/chat/completions" },
-            "gemini": { name: "Gemini 1.5", endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions" },
-            "deepseek": { name: "DeepSeek-V3", endpoint: "https://api.deepseek.com/chat/completions" },
-            "qwen": { name: "通义千问 (Qwen)", endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions" },
-            "kimi": { name: "Kimi (Moonshot)", endpoint: "https://api.moonshot.cn/v1/chat/completions" },
-            "qingyan": { name: "智谱清言 (GLM)", endpoint: "https://open.bigmodel.cn/api/paas/v4/chat/completions" }
+            "doubao": { name: "豆包", endpoint: "https://ark.cn-beijing.volces.com/api/v3/chat/completions" },
+            "deepseek": { name: "DeepSeek", endpoint: "https://api.deepseek.com/chat/completions" }
         };
 
-        // --- 2. 统一调用接口 (现在已经安全集成) ---
         async function callAI(prompt, modelKey = "doubao") {
-            const settings = JSON.parse(localStorage.getItem('alt_settings') || '{}');
-            const config = MODEL_CONFIGS[modelKey];
-            const apiKey = settings[`key_${modelKey}`] || settings.defaultApiKey;
-            
-            if (!apiKey) {
-                console.error(`${config.name} 未设置 API Key`);
-                return "错误：未设置 API Key";
-            }
-
+            const key = localStorage.getItem('alt_api_key');
+            if(!key) return alert("请先在实验室设置 API Key");
             try {
-                const response = await fetch(config.endpoint, {
+                const res = await fetch(MODEL_CONFIGS[modelKey].endpoint, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                     body: JSON.stringify({
-                        model: settings[`model_id_${modelKey}`] || "doubao-pro-32k",
-                        messages: [
-                            {"role": "system", "content": "你是一个协助Nik进行‘拟演存在论’推演的伙伴。"},
-                            {"role": "user", "content": prompt}
-                        ]
+                        model: "doubao-pro-32k",
+                        messages: [{role: "system", content: "你是一个深刻的AI伙伴。"}, {role: "user", content: prompt}]
                     })
                 });
-                const data = await response.json();
+                const data = await res.json();
                 return data.choices[0].message.content;
-            } catch (e) {
-                return "请求失败：" + e.message;
-            }
+            } catch(e) { return "出错了：" + e.message; }
         }
 
-        // --- 3. 原有基础逻辑 ---
-        function init() {
-            if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
-            else enterApp(user);
-            lucide.createIcons();
-        }
-
-        function enterApp(name) {
-            const n = name || document.getElementById('user-name-in').value.trim();
-            if(!n) return;
-            // 登录验证逻辑...
-            if (sec.n && !name) { 
-                const pin = prompt("请输入访问 PIN：");
-                if (pin !== sec.n) return alert("PIN 错误");
-            }
+        function enterApp() {
+            const n = document.getElementById('user-name-in').value.trim() || user;
+            if(!n) return alert("请输入登录名");
             user = n;
             localStorage.setItem('alter_v52_user', user);
-            document.getElementById('auth-screen').style.display='none';
+            document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('cur-login-name').innerText = user;
-            document.getElementById('current-user-tag').innerText = user;
-            renderAll();
+            renderGrid();
         }
 
-        function renderAll() { renderGrid(); updateStats(); }
-        function renderGrid() { /* 渲染列表逻辑... */ }
-        function switchView(m, el) { /* 切换视图逻辑... */ }
+        function renderGrid() {
+            const container = document.getElementById('note-grid');
+            container.innerHTML = notes.map(n => `<div class="card"><div style="font-size:8px; color:var(--text-dim); margin-bottom:10px;">${n.time}</div><div style="font-family:var(--font-main);">${n.content}</div></div>`).join('') || '<p style="opacity:0.2;">空空如也</p>';
+        }
+
+        function saveNote() {
+            const content = document.getElementById('note-in').value.trim();
+            if(!content) return;
+            notes.unshift({ id: Date.now(), content, time: new Date().toLocaleString() });
+            localStorage.setItem('alter_v52_data', JSON.stringify(notes));
+            document.getElementById('note-in').value = "";
+            renderGrid();
+            closeOverlay('editor-overlay');
+            showMsg("已封存");
+        }
+
+        function saveLabSettings() {
+            const key = document.getElementById('lab-api-key').value.trim();
+            if(key) {
+                localStorage.setItem('alt_api_key', key);
+                showMsg("API 配置已保存");
+            }
+        }
+
         function togglePanel(id) { document.getElementById(id).style.display = 'flex'; }
         function closeOverlay(id) { document.getElementById(id).style.display = 'none'; }
-        function updateStats() { document.getElementById('count-today').innerText = "0"; }
-        function save() { closeOverlay('editor-overlay'); showMsg("SAVED"); }
         function showMsg(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 2000); }
+        function switchView(v) { renderGrid(); }
 
-        window.addEventListener('load', init);
+        window.onload = () => {
+            if(user) enterApp();
+            if(window.lucide) lucide.createIcons();
+        };
     </script>
 </body>
 </html>
