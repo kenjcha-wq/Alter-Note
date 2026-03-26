@@ -44,7 +44,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
 
-        /* --- 插件专属样式 --- */
+        /* --- AI 插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
         #ai-trigger:hover { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
@@ -68,7 +68,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 原有核心样式 --- */
+        /* --- 核心布局样式 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
@@ -80,7 +80,7 @@
         .nav-link:hover, .nav-link.active { color: var(--accent); }
         .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
 
-        main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; }
+        main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; }
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; }
         header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
         .view-subtitle-meta { font-size: 8px; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; font-family: var(--font-sans); }
@@ -131,6 +131,11 @@
         .panel-header h2 { font-family: var(--font-title) !important; font-size: 32px; font-weight: 400; color: var(--accent); }
         .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
 
+        @media (max-width: 600px) {
+            .ctrl-row.mobile-stack { flex-direction: column; gap: 15px; }
+            .ctrl-row.mobile-stack button { margin-left: 0 !important; width: 100%; }
+        }
+
         .tabs-nav { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
         .tab-btn { font-size: 10px; font-weight: 700; color: var(--text-dim); cursor: pointer; padding-bottom: 12px; position: relative; text-transform: uppercase; letter-spacing: 1px; }
         .tab-btn.active { color: var(--accent); }
@@ -158,10 +163,9 @@
 </head>
 <body class="theme-default">
 
-    <!-- AI 推演插件组件 -->
+    <!-- AI 插件 -->
     <div id="alter-ai-plugin">
         <div id="ai-trigger" title="他我推演">🧪</div>
-        
         <div id="ai-panel">
             <div class="ai-header">
                 <h3>他我推演 (Doubao)</h3>
@@ -170,7 +174,6 @@
                     <span class="ai-close" title="关闭">&times;</span>
                 </div>
             </div>
-            
             <div id="ai-lab-panel">
                 <h4 style="font-size:10px; margin-bottom:20px; letter-spacing:1px; color: var(--text-dim);">实验室配置</h4>
                 <input type="password" id="lab-key-in" class="lab-input" placeholder="API Key (sk-...)">
@@ -180,11 +183,9 @@
                     <button id="lab-close-btn" style="background:none; border:none; color:var(--text-dim); font-size:10px; cursor:pointer;">取消</button>
                 </div>
             </div>
-            
             <div id="ai-chat-box">
                 <div class="ai-msg bot">Nik，在此刻寻找推演的回声...</div>
             </div>
-            
             <div class="ai-input-area">
                 <input type="text" id="ai-input" placeholder="写下你的拟演想法...">
                 <button id="ai-send-btn" class="btn-black" style="padding: 8px 15px; font-size:10px;">同步</button>
@@ -192,89 +193,9 @@
         </div>
     </div>
 
-    <!-- AI 推演逻辑 -->
-    <script>
-    (function() {
-        const plugin = document.getElementById('alter-ai-plugin');
-        const trigger = document.getElementById('ai-trigger');
-        const panel = document.getElementById('ai-panel');
-        const chatBox = document.getElementById('ai-chat-box');
-        const input = document.getElementById('ai-input');
-        const labBtn = document.getElementById('ai-lab-btn');
-        const labPanel = document.getElementById('ai-lab-panel');
-        
-        let apiKey = localStorage.getItem('alt_api_key') || "";
-        let apiModel = localStorage.getItem('alt_api_model') || "doubao-pro-32k";
-        document.getElementById('lab-key-in').value = apiKey;
-        document.getElementById('lab-model-in').value = apiModel;
-
-        async function callDoubao(prompt) {
-            if (!apiKey) { appendMsg('bot', '⚠️ 请先点击右上角 ⚙️ 设置 API Key'); return; }
-            const loadingMsg = appendMsg('bot', '推演中...');
-            try {
-                const res = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: apiModel,
-                        messages: [
-                            {role: "system", content: "你是一个深刻的中肯协作伙伴，协助Nik推演‘拟演存在论’。不要讨好，直接指出逻辑漏洞。"},
-                            {role: "user", content: prompt}
-                        ]
-                    })
-                });
-                const data = await res.json();
-                chatBox.removeChild(loadingMsg);
-                if (data.choices && data.choices[0]) {
-                    appendMsg('bot', data.choices[0].message.content);
-                } else {
-                    appendMsg('bot', '❌ 接口返回错误: ' + JSON.stringify(data));
-                }
-            } catch (e) {
-                chatBox.removeChild(loadingMsg);
-                appendMsg('bot', '❌ 同步失败：' + e.message);
-            }
-        }
-
-        function appendMsg(role, text) {
-            const msg = document.createElement('div');
-            msg.className = `ai-msg ${role}`;
-            msg.innerText = text;
-            chatBox.appendChild(msg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return msg;
-        }
-
-        function sendMessage() {
-            const text = input.value.trim();
-            if (!text) return;
-            appendMsg('user', text);
-            input.value = '';
-            callDoubao(text);
-        }
-
-        trigger.onclick = () => panel.classList.toggle('show');
-        plugin.querySelector('.ai-close').onclick = () => panel.classList.remove('show');
-        document.getElementById('ai-send-btn').onclick = sendMessage;
-        input.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
-        
-        labBtn.onclick = () => labPanel.style.display = 'flex';
-        document.getElementById('lab-close-btn').onclick = () => labPanel.style.display = 'none';
-        document.getElementById('lab-save-btn').onclick = () => {
-            apiKey = document.getElementById('lab-key-in').value.trim();
-            apiModel = document.getElementById('lab-model-in').value.trim();
-            if (apiKey) localStorage.setItem('alt_api_key', apiKey);
-            if (apiModel) localStorage.setItem('alt_api_model', apiModel);
-            labPanel.style.display = 'none';
-            appendMsg('bot', '✅ 实验室配置已存入本地。');
-        };
-        console.log("✅ Alter AI 影子插件已挂载。");
-    })();
-    </script>
-
-    <!-- 原有系统组件 -->
     <div id="toast">SYSTEM SYNCED</div>
 
+    <!-- 登录界面 -->
     <div id="auth-screen">
         <div class="auth-box">
             <div class="auth-logo">Alter.</div>
@@ -345,7 +266,7 @@
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">SOUL REFLECTION / 心灵回想</p></div><span class="close-btn" onclick="closeOverlay('reflect-overlay')">CLOSE</span></div>
             <div class="section-block">
                 <h3>模式感应</h3>
-                <div class="ctrl-row">
+                <div class="ctrl-row mobile-stack">
                     <button onclick="runInquiry('phi')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
                         <h3 style="color:var(--bg); border:none; padding:0; font-size:14px;">哲思模式 (Philosophy)</h3>
                         <p style="margin-top:8px; font-size:11px; opacity:0.8;">本体论视角解析文字的存在状态</p>
@@ -461,17 +382,69 @@
     </div>
 
     <script>
+        // --- 1. 存储层升级 (IndexedDB) ---
+        const DB_NAME = "AlterDB";
+        const STORE_NAME = "Notes";
+        let db;
+
+        async function initDB() {
+            return new Promise((resolve) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: "id" });
+                    }
+                };
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    migrateData().then(resolve);
+                };
+            });
+        }
+
+        async function migrateData() {
+            const oldData = localStorage.getItem('alter_v52_data');
+            if (oldData) {
+                try {
+                    const notesToMigrate = JSON.parse(oldData);
+                    for (const note of notesToMigrate) { await dbAction("put", note); }
+                    localStorage.removeItem('alter_v52_data');
+                    console.log("✅ 数据从 LocalStorage 迁移成功");
+                } catch(e) { console.error("迁移失败", e); }
+            }
+        }
+
+        async function dbAction(type, data) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                const store = tx.objectStore(STORE_NAME);
+                let request;
+                if (type === "put") request = store.put(data);
+                else if (type === "get") request = store.get(data);
+                else if (type === "getAll") request = store.getAll();
+                else if (type === "delete") request = store.delete(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // --- 状态与变量 ---
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
-        let notes = JSON.parse(localStorage.getItem('alter_v52_data')) || [];
+        let notes = [];
         let sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
         let user = localStorage.getItem('alter_v52_user') || "NIK";
-        const apiKey = ""; // 为 Gemini 保留的空密钥
+        const geminiKey = ""; 
         
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
 
-        function init() {
+        // 核心初始化
+        async function init() {
+            await initDB();
+            notes = await dbAction("getAll");
+            notes.sort((a,b) => b.id - a.id);
             notes = notes.filter(n => !n.deleteAt || n.deleteAt > Date.now());
-            localStorage.setItem('alter_v52_data', JSON.stringify(notes));
+            
             if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
             if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
@@ -481,23 +454,99 @@
             lucide.createIcons();
         }
 
-        function enterApp(name) {
+        // --- 挂载到全局作用域的函数 (确保 HTML onclick 可用) ---
+        window.enterApp = function(name) {
             const n = name || document.getElementById('user-name-in').value.trim();
             if(!n) return;
-            if (sec.n && !name) { 
-                const pin = prompt("请输入笔记本访问 PIN：");
-                if (pin !== sec.n) { showMsg("PIN ERROR"); return; }
-            }
-            user = n;
-            localStorage.setItem('alter_v52_user', user);
+            if (sec.n && !name) { const pin = prompt("验证 PIN："); if (pin !== sec.n) { showMsg("PIN ERROR"); return; } }
+            user = n; localStorage.setItem('alter_v52_user', user);
             document.getElementById('auth-screen').style.display='none';
             document.getElementById('current-user-tag').innerText = user;
             document.getElementById('cur-login-name').innerText = user;
-            if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
             renderAll();
-        }
+        };
 
-        function renameLogin() {
+        window.switchView = function(m, el) {
+            viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
+            document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
+            document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
+            document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
+            document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
+            document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
+            if(m==='home') renderDailyReview();
+            renderGrid();
+        };
+
+        window.handleVaultAccess = function(el) {
+            if(sec.v) {
+                const p = prompt("验证灵感碎片库密码：");
+                if (p !== sec.v) { showMsg("DENIED"); return; }
+            }
+            window.switchView('vault', el);
+        };
+
+        window.togglePanel = function(id) {
+            document.querySelectorAll('.overlay').forEach(o=>o.style.display='none');
+            const target = document.getElementById(id);
+            if(target) target.style.display='flex';
+        };
+
+        window.closeOverlay = function(id) {
+            const target = document.getElementById(id);
+            if(target) target.style.display = 'none';
+        };
+
+        window.switchVaultMode = function(mode) {
+            vaultSubMode = mode;
+            document.getElementById('tab-soul').classList.toggle('active', mode === 'soul');
+            document.getElementById('tab-memory').classList.toggle('active', mode === 'memory');
+            renderGrid();
+        };
+
+        window.runInquiry = async function(type) {
+            const area = document.getElementById('reflect-report'); 
+            if (notes.length < 1) return showMsg("SAMPLES INSUFFICIENT");
+            area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
+            const targetNote = notes[0];
+            const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
+            const prompt = type === 'phi' ? `分析本体论视角：${contentSum}` : `挖掘潜意识：${contentSum}`;
+            const visionImages = targetNote.images && targetNote.images.length ? [targetNote.images[0]] : [];
+            await callDoubao(prompt, visionImages);
+            area.innerHTML = `回想报告已同步至侧边推演面板。`;
+        };
+
+        window.tabTo = function(id, el) { 
+            document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active')); 
+            document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); 
+            el.classList.add('active'); 
+            const target = document.getElementById(id); if(target) target.classList.add('active'); 
+        };
+
+        window.setTypo = function(k, v) { 
+            if(k==='weight') document.documentElement.style.setProperty('--text-weight', v); 
+            if(k==='line') document.documentElement.style.setProperty('--line-height', v); 
+        };
+
+        window.setAppBg = function() { 
+            const url = document.getElementById('custom-bg-url').value.trim(); 
+            if(url) { document.body.style.backgroundImage = `url(${url})`; showMsg("BACKGROUND UPDATED"); } 
+        };
+
+        window.drawMap = function() { 
+            const box = document.getElementById('map-box'); 
+            box.innerHTML = '<p style="padding:20px; font-size:10px; opacity:0.5">映射中...</p>'; 
+            setTimeout(() => { 
+                box.innerHTML = ''; 
+                ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { 
+                    const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
+                    n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
+                    n.style.fontSize = '12px'; n.style.opacity = '0.6';
+                    box.appendChild(n); 
+                }); 
+            }, 600); 
+        };
+
+        window.renameLogin = function() {
             const n = document.getElementById('rename-user-in').value.trim();
             if(n) {
                 user = n;
@@ -506,88 +555,129 @@
                 document.getElementById('cur-login-name').innerText = user;
                 showMsg("IDENTITY UPDATED");
             }
-        }
+        };
 
-        function renderAll() { renderGrid(); renderSwitcher(); renderFixedList(); updateStats(); renderDailyReview(); }
+        window.saveSec = function() {
+            sec.v = document.getElementById('pass-vault').value;
+            sec.n = document.getElementById('pass-note').value;
+            localStorage.setItem('alter_v52_sec', JSON.stringify(sec));
+            showMsg("SECURITY SAVED");
+        };
 
-        function renderDailyReview() {
-            const box = document.getElementById('review-box'); 
-            if(!box) return;
-            const eligible = notes.filter(n => !n.isVault);
-            if(eligible.length === 0) { 
-                box.innerHTML = '<p style="opacity:0.2; font-size:11px; font-family:var(--font-main);">此刻虚无。</p>'; 
-                return; 
+        window.dlData = function() {
+            const b = new Blob([JSON.stringify(notes)],{type:'application/json'});
+            const a = document.createElement('a'); a.href=URL.createObjectURL(b);
+            a.download='alter_backup.json'; a.click();
+        };
+
+        window.upFiles = async function(e) {
+            const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length);
+            for (const f of selectedFiles) {
+                const r = new FileReader();
+                r.onload = async (ev) => {
+                    const compressed = await compressImage(ev.target.result);
+                    b64s.push(compressed);
+                    renderPrev();
+                };
+                r.readAsDataURL(f);
             }
-            const r = eligible[Math.floor(Math.random()*eligible.length)];
-            box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
-        }
+        };
 
-        async function synthesize() {
-            const soulNotes = notes.filter(n => n.isVault && !n.deleteAt);
-            if (soulNotes.length < 3) return showMsg("MIN 3 SOUL FRAGMENTS");
-            showMsg("重构灵魂中...");
-            const fullContent = soulNotes.map(n => n.content).join("\n---\n");
-            const prompt = `将以下心灵碎片重构为一篇散文，保持诗意与逻辑连贯，不要列表：\n${fullContent}`;
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) 
-                });
-                const data = await res.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "整合失败。";
-                const el = document.getElementById('reader-target');
-                document.getElementById('reader-overlay').style.display = 'flex';
-                el.innerHTML = `<div style="font-size:10px; opacity:0.3; letter-spacing:2px; margin-bottom:30px; text-align:center;">AI SYNTHESIZED ARTICLE / 心灵重构</div><div style="font-size:18px; line-height:2.6; text-align:justify; font-family:'Noto Serif SC';">${text.replace(/\n/g, '<br>')}</div><div style="margin-top:60px; border-top:1px solid var(--border); padding-top:20px; font-size:9px; opacity:0.3; text-align:right;">源自 ${soulNotes.length} 枚心灵碎片</div>`;
-            } catch (e) { showMsg("SYNC FAILED"); }
-        }
+        window.upGenericFile = function(e) { 
+            const f = e.target.files[0]; if(!f) return; 
+            const r = new FileReader(); 
+            r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); showMsg("FILE ATTACHED"); }; 
+            r.readAsDataURL(f); 
+        };
 
-        async function camOn() { 
+        window.toggleVault = function() {
+            inV = !inV;
+            document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
+        };
+
+        window.save = async function() { 
+            const t = document.getElementById('note-in').value.trim(); 
+            if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
+            const newNote = { 
+                id:Date.now(), content:t, images:[...b64s], files:[...files], 
+                isVault:inV, persona:activeP.n, i:activeP.i, 
+                time:new Date().toLocaleDateString(), replies:[], zs:0, 
+                tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
+            };
+            await dbAction("put", newNote);
+            notes.unshift(newNote);
+            resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
+        };
+
+        window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
+        window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
+
+        window.camOn = async function() { 
             try { 
                 stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
                 document.getElementById('v-stream').srcObject = stream; 
                 document.getElementById('cam-overlay').style.display = 'flex'; 
             } catch (e) { showMsg("CAMERA ERROR"); } 
-        }
+        };
 
-        function camOff() { if(stream) stream.getTracks().forEach(t=>t.stop()); document.getElementById('cam-overlay').style.display='none'; }
+        window.camOff = function() { 
+            if(stream) stream.getTracks().forEach(t=>t.stop()); 
+            document.getElementById('cam-overlay').style.display='none'; 
+        };
 
-        function snap() { 
+        window.snap = function() { 
             const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); 
-            if (v.videoWidth === 0) return;
-            f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight;
-            c.getContext('2d').drawImage(v, 0, 0);
-            if(b64s.length < 3) { b64s.push(c.toDataURL('image/jpeg')); renderPrev(); }
-            setTimeout(() => { f.style.opacity = '0'; camOff(); }, 150);
+            if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0); if(b64s.length < 3) { b64s.push(c.toDataURL('image/jpeg')); renderPrev(); }
+            setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150);
+        };
+
+        // --- 内部逻辑函数 ---
+
+        async function compressImage(base64) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height, maxSide = 1080;
+                    if (width > maxSide || height > maxSide) {
+                        if (width > height) { height = (height / width) * maxSide; width = maxSide; }
+                        else { width = (width / height) * maxSide; height = maxSide; }
+                    }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+                img.src = base64;
+            });
         }
 
-        async function runInquiry(type) {
-            const area = document.getElementById('reflect-report'); if (notes.length < 2) return showMsg("SAMPLES INSUFFICIENT");
-            area.innerHTML = '<p style="font-size:11px; opacity:0.5;">分析中...</p>';
-            const contentSum = notes.slice(0, 10).map(n => n.content).join("\n");
-            const prompt = type === 'phi' ? `分析作者哲学观：${contentSum}` : `挖掘潜意识：${contentSum}`;
+        async function callDoubao(prompt, images = []) {
+            let apiKey = localStorage.getItem('alt_api_key') || "";
+            let apiModel = localStorage.getItem('alt_api_model') || "doubao-pro-32k";
+            const chatBox = document.getElementById('ai-chat-box');
+            if (!apiKey) { appendMsg('bot', '⚠️ 请先在 🧪 设置中配置 API Key'); return; }
+            const loadingMsg = appendMsg('bot', '推演中...');
+            
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                const contentParts = [{ type: "text", text: prompt }];
+                images.forEach(b64 => { contentParts.push({ type: "image_url", image_url: { url: b64 } }); });
+                const res = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: apiModel, messages: [{role: "system", content: "你是一个深刻协作伙伴，分析拟演存在。"}, {role: "user", content: contentParts}] })
+                });
                 const data = await res.json();
-                area.innerHTML = `<div style="font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">回想报告</div>` + (data.candidates?.[0]?.content?.parts?.[0]?.text || "同步失败");
-            } catch (e) { area.innerHTML = "同步失败。"; }
+                chatBox.removeChild(loadingMsg);
+                if (data.choices && data.choices[0]) { appendMsg('bot', data.choices[0].message.content); }
+                else { appendMsg('bot', '❌ 错误: ' + (data.error?.message || '接口异常')); }
+            } catch (e) { chatBox.removeChild(loadingMsg); appendMsg('bot', '❌ 失败: ' + e.message); }
         }
 
-        function switchView(m, el) {
-            viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
-            document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
-            document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
-            document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
-            document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
-            document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
-            const tit = document.getElementById('view-title'), sub = document.getElementById('view-subtitle');
-            if(m==='home'){ tit.innerText="他我笔记"; sub.innerText="DASHBOARD / 概览"; renderDailyReview(); }
-            if(m==='timeline'){ tit.innerText="他我笔记"; sub.innerText="TIMELINE / 主页"; }
-            if(m==='vault'){ tit.innerText="他我笔记"; sub.innerText="INSPIRATION / 灵感碎片"; }
-            renderGrid();
-        }
-
-        function renderGrid(q = "") {
+        async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
-            grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed #000; height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
+            grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="window.togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed #000; height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
             const pFilter = document.getElementById('persona-filter').value;
             let list = notes.filter(n => {
                 if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter);
@@ -604,43 +694,73 @@
             lucide.createIcons();
         }
 
+        window.doZ = function(e, id) { 
+            e.stopPropagation(); 
+            const n = notes.find(x=>x.id===id); 
+            if(n){ n.zs = (n.zs||0) + 1; dbAction("put", n); renderGrid(); } 
+        };
+
+        window.deleteNote = async function(e, id) { 
+            e.stopPropagation(); 
+            const i = notes.findIndex(x=>x.id===id); 
+            if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } 
+        };
+
         function showNote(n) {
             const el = document.getElementById('reader-target'); document.getElementById('reader-overlay').style.display = 'flex';
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
-            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="setRT('${r.who}')">回复</span></div><p style="font-size:14px; font-family:'Noto Serif SC';">${r.txt}</p></div>`).join('');
-            const pChips = FIXED_P.map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
-            el.innerHTML = `<div style="margin-bottom:40px;">${imgsHtml}</div><div style="font-size:20px; line-height:2.2; text-align:justify; font-family:'Noto Serif SC'; margin-bottom:60px;">${n.content}</div><div style="border-top:1px solid var(--border); padding-top:60px;"><h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4><div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px; padding:20px 0;">静候回声。</p'}</div><div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;"><div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div><div class="p-picker">${pChips}</div><input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响..." onkeydown="if(event.key==='Enter') sendR(${n.id})"><button class="btn-black" style="width:100%;" onclick="sendR(${n.id})">同步回响</button></div></div>`;
+            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px; font-family:'Noto Serif SC';">${r.txt}</p></div>`).join('');
+            const pChips = FIXED_P.map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
+            el.innerHTML = `<div style="margin-bottom:40px;">${imgsHtml}</div><div style="font-size:20px; line-height:2.2; text-align:justify; font-family:'Noto Serif SC'; margin-bottom:60px;">${n.content}</div><div style="border-top:1px solid var(--border); padding-top:60px;"><h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4><div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px; padding:20px 0;">静候回声。</p'}</div><div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;"><div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div><div class="p-picker">${pChips}</div><input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响..." onkeydown="if(event.key==='Enter') window.sendR(${n.id})"><button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button></div></div>`;
         }
 
-        function saveSec() { sec.v = document.getElementById('pass-vault').value; sec.n = document.getElementById('pass-note').value; localStorage.setItem('alter_v52_sec', JSON.stringify(sec)); showMsg("SECURITY SAVED"); }
-        function save() { const t = document.getElementById('note-in').value.trim(); if(!t && !b64s.length) return closeOverlay('editor-overlay'); notes.unshift({ id:Date.now(), content:t, images:[...b64s], files:[...files], isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] }); localStorage.setItem('alter_v52_data', JSON.stringify(notes)); resetEditor(); renderAll(); closeOverlay('editor-overlay'); }
-        function resetEditor() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; if(document.getElementById('vaultToggle')) document.getElementById('vaultToggle').style.color='var(--text-dim)'; renderPrev(); }
-        function deleteNote(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; localStorage.setItem('alter_v52_data', JSON.stringify(notes)); renderAll(); } }
-        function togglePanel(id) { const t = document.getElementById(id); if(!t) return; document.querySelectorAll('.overlay').forEach(o=>o.style.display='none'); t.style.display='flex'; }
-        function closeOverlay(id) { const t = document.getElementById(id); if(t) t.style.display = 'none'; }
-        function switchVaultMode(mode) { vaultSubMode = mode; document.getElementById('tab-soul').classList.toggle('active', mode === 'soul'); document.getElementById('tab-memory').classList.toggle('active', mode === 'memory'); renderGrid(); }
-        function upFiles(e) { Array.from(e.target.files).slice(0, 3 - b64s.length).forEach(f => { const r = new FileReader(); r.onload = ev => { b64s.push(ev.target.result); renderPrev(); }; r.readAsDataURL(f); }); }
-        function upGenericFile(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); showMsg("FILE ATTACHED"); }; r.readAsDataURL(f); }
-        function renderPrev() { const box = document.getElementById('prevBox'); box.style.display = b64s.length ? 'grid' : 'none'; box.innerHTML = b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="killImg(${i})">×</div></div>`).join(''); }
-        function killImg(i) { b64s.splice(i, 1); renderPrev(); }
-        function setCommAction(n, el) { commP = FIXED_P.find(p=>p.n === n); document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); };
         window.setRT = (n) => { rTo = n; document.getElementById('r-ind').style.display = 'block'; document.getElementById('r-name').innerText = n; document.getElementById('comIn').focus(); };
-        window.sendR = (id) => { const txt = document.getElementById('comIn').value.trim(); if(!txt) return; const n = notes.find(x=>x.id===id); if(n){ if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `回复 @${rTo}：${txt}` : txt, who: commP.n }); localStorage.setItem('alter_v52_data', JSON.stringify(notes)); showNote(n); rTo = null; showMsg("SYNCED"); } };
-        function tabTo(id, el) { document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); el.classList.add('active'); const target = document.getElementById(id); if(target) target.classList.add('active'); }
-        function setTypo(k, v) { if(k==='weight') document.documentElement.style.setProperty('--text-weight', v); if(k==='line') document.documentElement.style.setProperty('--line-height', v); }
-        function drawMap() { const box = document.getElementById('map-box'); box.innerHTML = '<p style="padding:20px; font-size:10px; opacity:0.5">映射中...</p>'; setTimeout(() => { box.innerHTML = ''; ["自我", "虚无", "共鸣"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*70}%`; n.style.top = `${Math.random()*70}%`; box.appendChild(n); }); }, 600); }
-        function setAppBg() { const url = document.getElementById('custom-bg-url').value.trim(); if(url) { document.body.style.backgroundImage = `url(${url})`; showMsg("BACKGROUND UPDATED"); } }
-        function showNoteById(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); }
-        function handleVaultAccess(el) { if(sec.v && prompt("验证密码：") !== sec.v) return; switchView('vault', el); }
+        window.setCommAction = (n, el) => { commP = FIXED_P.find(p=>p.n === n); document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); };
+        window.sendR = async (id) => { const txt = document.getElementById('comIn').value.trim(); if(!txt) return; const n = notes.find(x=>x.id===id); if(n){ if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `回复 @${rTo}：${txt}` : txt, who: commP.n }); await dbAction("put", n); showNote(n); rTo = null; showMsg("SYNCED"); } };
+
+        function appendMsg(role, text) {
+            const chatBox = document.getElementById('ai-chat-box');
+            const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text;
+            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight;
+            return msg;
+        }
+
+        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); updateStats(); renderDailyReview(); }
+        function renderDailyReview() {
+            const box = document.getElementById('review-box'); if(!box) return;
+            const eligible = notes.filter(n => !n.isVault);
+            if(eligible.length === 0) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; }
+            const r = eligible[Math.floor(Math.random()*eligible.length)];
+            box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
+        }
+        function renderSwitcher() { document.getElementById('p-sel-box').innerHTML = FIXED_P.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP=FIXED_P.find(x=>x.n==='${p.n}'); renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
+        function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
+        function resetEditor() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; renderPrev(); }
+        function renderPrev() { const box = document.getElementById('prevBox'); box.style.display = b64s.length ? 'grid' : 'none'; box.innerHTML = b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); }
+        window.killImg = function(i) { b64s.splice(i, 1); renderPrev(); };
         function showMsg(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 2000); }
         function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
-        function doZ(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs=(n.zs||0)+1; localStorage.setItem('alter_v52_data', JSON.stringify(notes)); renderGrid(); } }
-        function toggleSearch() { document.getElementById('search-wrap').classList.toggle('active'); }
-        function handleSearch() { renderGrid(document.getElementById('searchInput').value); }
-        function renderSwitcher() { document.getElementById('p-sel-box').innerHTML = FIXED_P.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP=FIXED_P.find(x=>x.n==='${p.n}'); renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
-        function dlData() { const b = new Blob([JSON.stringify(notes)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='alter_backup.json'; a.click(); }
-        function toggleVault() { inV = !inV; document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; }
-        function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
+        window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
+
+        // AI 插件交互初始化
+        (function() {
+            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
+            if(trigger) trigger.onclick = () => panel.classList.toggle('show');
+            const closeBtn = document.querySelector('.ai-close');
+            if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
+            const sendBtn = document.getElementById('ai-send-btn');
+            if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if (!text) return; appendMsg('user', text); input.value = ''; callDoubao(text); };
+            if(input) input.onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('ai-send-btn').click(); };
+            if(labBtn) labBtn.onclick = () => labPanel.style.display = 'flex';
+            const labClose = document.getElementById('lab-close-btn');
+            if(labClose) labClose.onclick = () => labPanel.style.display = 'none';
+            const labSave = document.getElementById('lab-save-btn');
+            if(labSave) labSave.onclick = () => {
+                const k = document.getElementById('lab-key-in').value.trim(), m = document.getElementById('lab-model-in').value.trim();
+                if (k) localStorage.setItem('alt_api_key', k); if (m) localStorage.setItem('alt_api_model', m);
+                labPanel.style.display = 'none'; appendMsg('bot', '✅ 实验室配置已同步。');
+            };
+        })();
 
         window.addEventListener('load', init);
     </script>
