@@ -44,10 +44,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
 
+        /* --- 视觉一致性补丁 --- */
         .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs {
             font-family: var(--font-main) !important;
         }
 
+        /* --- AI 插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
         #ai-trigger:hover { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
@@ -235,8 +237,8 @@
                 <h1 id="view-title">他我笔记</h1>
                 <p class="view-subtitle-meta" id="view-subtitle">DASHBOARD / 概览</p>
                 <div class="vault-tabs" id="vault-tabs" style="display:none;">
-                    <span class="v-tab active" id="tab-soul" onclick="switchVaultMode('soul')">心灵碎片 (Soul)</span>
-                    <span class="v-tab" id="tab-memory" onclick="switchVaultMode('memory')">记忆碎片 (Memory)</span>
+                    <span class="v-tab active" id="tab-soul" onclick="window.switchVaultMode('soul')">心灵碎片 (Soul)</span>
+                    <span class="v-tab" id="tab-memory" onclick="window.switchVaultMode('memory')">记忆碎片 (Memory)</span>
                 </div>
             </div>
             <div class="header-tools">
@@ -247,7 +249,7 @@
                     <input type="text" id="searchInput" placeholder="搜索..." oninput="handleSearch()">
                 </div>
                 <div class="search-trigger" onclick="toggleSearch()"><i data-lucide="search" size="16"></i></div>
-                <button id="synth-btn" class="btn-black" style="display:none; padding:6px 12px; font-size:8px;" onclick="synthesize()">重构心灵文章</button>
+                <button id="synth-btn" class="btn-black" style="display:none; padding:6px 12px; font-size:8px;" onclick="window.synthesize()">重构心灵文章</button>
             </div>
         </header>
 
@@ -275,11 +277,11 @@
             <div class="section-block">
                 <h3>模式感应</h3>
                 <div class="ctrl-row mobile-stack">
-                    <button onclick="runInquiry('phi')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
+                    <button onclick="window.runInquiry('phi')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
                         <h3 style="color:var(--bg); border:none; padding:0; font-size:14px;">哲思模式 (Philosophy)</h3>
                         <p style="margin-top:8px; font-size:11px; opacity:0.8;">本体论视角解析文字的存在状态</p>
                     </button>
-                    <button onclick="runInquiry('mind')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
+                    <button onclick="window.runInquiry('mind')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
                         <h3 style="color:var(--bg); border:none; padding:0; font-size:14px;">心灵模式 (Psychology)</h3>
                         <p style="margin-top:8px; font-size:11px; opacity:0.8;">挖掘日常独白中的潜意识阴影</p>
                     </button>
@@ -306,7 +308,7 @@
                 </div>
                 <div class="section-block">
                     <h3>意识地图</h3>
-                    <button class="btn-black" onclick="drawMap()">重绘意识地图</button>
+                    <button class="btn-black" onclick="window.drawMap()">重绘意识地图</button>
                     <div id="map-box" style="width:100%; height:300px; margin-top:20px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
                 </div>
             </div>
@@ -342,7 +344,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <h3>基础信息</h3>
                 <div class="ctrl-row">
                     <span class="ctrl-label">登录名修改</span>
-                    <div class="ctrl-input-wrap"><input type="text" id="rename-user-in" class="input-line" style="margin:0; text-align:right;" onchange="renameLogin()"></div>
+                    <div class="ctrl-input-wrap"><input type="text" id="rename-user-in" class="input-line" style="margin:0; text-align:right;" onchange="window.renameLogin()"></div>
                 </div>
             </div>
             <div class="section-block">
@@ -351,10 +353,10 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             </div>
             <div class="section-block">
                 <h3>安全机制</h3>
-                <div class="ctrl-row"><span class="ctrl-label">灵感碎片密码</span><div class="ctrl-input-wrap"><input type="password" id="pass-vault" class="input-line" style="margin:0; text-align:right;" onchange="saveSec()"></div></div>
-                <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="saveSec()"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">灵感碎片密码</span><div class="ctrl-input-wrap"><input type="password" id="pass-vault" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
             </div>
-            <button class="btn-black" style="width:100%;" onclick="dlData()">导出备份 (.JSON)</button>
+            <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出备份 (.JSON)</button>
         </div>
     </div>
 
@@ -367,14 +369,14 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
             <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:30px;">
                 <div style="display:flex; gap:20px; align-items:center;">
-                    <i data-lucide="camera" style="cursor:pointer; color:var(--text-dim)" onclick="camOn()"></i>
+                    <i data-lucide="camera" style="cursor:pointer; color:var(--text-dim)" onclick="window.camOn()"></i>
                     <i data-lucide="image" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('f-in').click()"></i>
-                    <input type="file" id="f-in" hidden accept="image/*" multiple onchange="upFiles(event)">
+                    <input type="file" id="f-in" hidden accept="image/*" multiple onchange="window.upFiles(event)">
                     <i data-lucide="file-up" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('doc-in').click()"></i>
-                    <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="upGenericFile(event)">
-                    <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="toggleVault()"></i>
+                    <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="window.upGenericFile(event)">
+                    <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="window.toggleVault()"></i>
                 </div>
-                <button class="btn-black" onclick="save()">封存回响</button>
+                <button class="btn-black" onclick="window.save()">封存回响</button>
             </div>
         </div>
     </div>
@@ -392,8 +394,8 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         <div id="flash-effect" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; opacity:0; pointer-events:none; z-index:10005;"></div>
         <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
         <div style="position:absolute; bottom:50px; left:50%; transform:translateX(-50%); text-align:center; z-index:10006;">
-            <div onclick="snap()" style="width:70px; height:70px; border:4px solid #fff; border-radius:50%; margin:0 auto; cursor:pointer; display:flex; align-items:center; justify-content:center;"><div style="width:50px; height:50px; background:#fff; border-radius:50%;"></div></div>
-            <p onclick="camOff()" style="color:#fff; margin-top:20px; font-size:10px; letter-spacing:2px; cursor:pointer; opacity:0.6;">CANCEL</p>
+            <div onclick="window.snap()" style="width:70px; height:70px; border:4px solid #fff; border-radius:50%; margin:0 auto; cursor:pointer; display:flex; align-items:center; justify-content:center;"><div style="width:50px; height:50px; background:#fff; border-radius:50%;"></div></div>
+            <p onclick="window.camOff()" style="color:#fff; margin-top:20px; font-size:10px; letter-spacing:2px; cursor:pointer; opacity:0.6;">CANCEL</p>
         </div>
         <canvas id="v-canvas" style="display:none;"></canvas>
     </div>
@@ -557,7 +559,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
             if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
-
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
             lucide.createIcons(); loadSamplePlugins();
@@ -604,7 +605,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.showMsg("SECURITY SAVED");
         };
 
-        // --- 修复：注入 switchVaultMode ---
         window.switchVaultMode = function(mode) {
             vaultSubMode = mode;
             document.getElementById('tab-soul').classList.toggle('active', mode === 'soul');
@@ -612,7 +612,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             renderGrid();
         };
 
-        // --- 修复：注入 synthesize ---
         window.synthesize = async function() {
             const soulNotes = notes.filter(n => n.isVault);
             if(soulNotes.length < 2) return window.showMsg("碎片不足");
@@ -620,7 +619,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             await callAI("请基于这些碎片重构一段深刻的自省独白：\n" + context);
         };
 
-        // --- 修复：注入 runInquiry ---
         window.runInquiry = async function(type) {
             const area = document.getElementById('reflect-report'); 
             if (notes.length < 1) return window.showMsg("缺乏样本");
@@ -630,13 +628,11 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             area.innerHTML = `分析回响已同步至侧边。`;
         };
 
-        // --- 修复：注入 renameLogin ---
         window.renameLogin = function() {
             const n = document.getElementById('rename-user-in').value.trim();
             if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
         };
 
-        // --- 修复：注入 dlData ---
         window.dlData = function() {
             const b = new Blob([JSON.stringify(notes)],{type:'application/json'});
             const a = document.createElement('a'); a.href=URL.createObjectURL(b);
@@ -691,7 +687,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <div style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:60px;">${n.content}</div>
                 <div style="border-top:1px solid var(--border); padding-top:60px;">
                     <h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4>
-                    <div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px;">静候回声。</p'}</div>
+                    <div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px;">静候回声。</p>'}</div>
                     <div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;">
                         <div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div>
                         <div class="p-picker">${pChips}</div>
@@ -715,69 +711,23 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             }
         };
 
-        window.camOn = async function() { 
-            try { 
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
-                document.getElementById('v-stream').srcObject = stream; 
-                document.getElementById('cam-overlay').style.display = 'flex'; 
-            } catch (e) { window.showMsg("相机启动失败"); } 
-        };
-
-        window.camOff = function() { 
-            if(stream) stream.getTracks().forEach(t=>t.stop()); 
-            document.getElementById('cam-overlay').style.display='none'; 
-        };
-
+        window.camOn = async function() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'flex'; } catch (e) { window.showMsg("相机启动失败"); } };
+        window.camOff = function() { if(stream) stream.getTracks().forEach(t=>t.stop()); document.getElementById('cam-overlay').style.display='none'; };
         window.snap = function() { 
             const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); 
             if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight;
             c.getContext('2d').drawImage(v, 0, 0); 
             const originalB64 = c.toDataURL('image/jpeg');
-            if(b64s.length < 3) { 
-                compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); });
-            }
+            if(b64s.length < 3) compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); });
             setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150);
         };
-
-        async function compressImage(base64) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width, height = img.height, maxSide = 1080;
-                    if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } }
-                    canvas.width = width; canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
-                };
-                img.src = base64;
-            });
-        }
-
-        window.upFiles = async function(e) {
-            const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length);
-            for (const f of selectedFiles) {
-                const r = new FileReader();
-                r.onload = async (ev) => { const compressed = await compressImage(ev.target.result); b64s.push(compressed); window.renderPrev(); };
-                r.readAsDataURL(f);
-            }
-        };
-
-        window.upGenericFile = function(e) { 
-            const f = e.target.files[0]; if(!f) return; 
-            const r = new FileReader(); 
-            r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); window.showMsg("FILE ATTACHED"); }; 
-            r.readAsDataURL(f); 
-        };
-
+        async function compressImage(base64) { return new Promise((resolve) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let width = img.width, height = img.height, maxSide = 1080; if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; img.src = base64; }); }
+        window.upFiles = async function(e) { const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length); for (const f of selectedFiles) { const r = new FileReader(); r.onload = async (ev) => { const compressed = await compressImage(ev.target.result); b64s.push(compressed); window.renderPrev(); }; r.readAsDataURL(f); } };
+        window.upGenericFile = function(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); window.showMsg("FILE ATTACHED"); }; r.readAsDataURL(f); };
         window.killImg = function(i) { b64s.splice(i, 1); window.renderPrev(); };
-
         window.toggleVault = function() { inV = !inV; document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
-
         window.resetEditor = function() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML=""; document.getElementById('prevBox').style.display="none"; document.getElementById('vaultToggle').style.color='var(--text-dim)'; };
-
         window.renderPrev = function() { const box = document.getElementById('prevBox'); box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); };
-
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
         function renderDailyReview() {
             const box = document.getElementById('review-box'); if(!box) return;
@@ -791,38 +741,36 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); }
         function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
-
-        function drawMap() { 
-            const box = document.getElementById('map-box'); box.innerHTML = ''; 
-            ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { 
-                const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
-                n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
-                n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); 
-            }); 
-        }
-
+        function drawMap() { const box = document.getElementById('map-box'); box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); }
         window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
         window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
+        function appendMsg(role, text) { const chatBox = document.getElementById('ai-chat-box'); const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text; chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight; return msg; }
 
-        function appendMsg(role, text) {
-            const chatBox = document.getElementById('ai-chat-box');
-            const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text;
-            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight;
-            return msg;
-        }
-
+        /* --- 核心修复：推演面板交互逻辑 --- */
         (function() {
-            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input');
+            const trigger = document.getElementById('ai-trigger'), 
+                  panel = document.getElementById('ai-panel'), 
+                  closeBtn = document.querySelector('.ai-close'), // 显式获取关闭按钮
+                  sendBtn = document.getElementById('ai-send-btn'), 
+                  input = document.getElementById('ai-input'),
+                  labBtn = document.getElementById('ai-lab-btn'),
+                  labPanel = document.getElementById('ai-lab-panel');
+
             if(trigger) trigger.onclick = () => panel.classList.toggle('show');
+            
+            // 修复：补全关闭按钮逻辑
+            if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
+            
             if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } };
             if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn.click(); };
-            document.getElementById('ai-lab-btn').onclick = () => document.getElementById('ai-lab-panel').style.display='flex';
-            document.getElementById('lab-close-btn').onclick = () => document.getElementById('ai-lab-panel').style.display='none';
+            
+            if(labBtn) labBtn.onclick = () => labPanel.style.display='flex';
+            document.getElementById('lab-close-btn').onclick = () => labPanel.style.display='none';
             document.getElementById('lab-save-btn').onclick = () => {
                 localStorage.setItem('alt_api_url', document.getElementById('lab-url-in').value);
                 localStorage.setItem('alt_api_key', document.getElementById('lab-key-in').value);
                 localStorage.setItem('alt_api_model', document.getElementById('lab-model-in').value);
-                document.getElementById('ai-lab-panel').style.display='none'; window.showMsg("LAB SYNCED");
+                labPanel.style.display='none'; window.showMsg("LAB SYNCED");
             };
         })();
 
