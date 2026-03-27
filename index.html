@@ -240,7 +240,6 @@
                 </div>
             </div>
             <div class="header-tools">
-                <!-- 过滤器动态生成 -->
                 <select id="persona-filter" class="minimal-select" onchange="renderGrid()" style="display:none;">
                     <option value="all">所有身份</option>
                 </select>
@@ -320,7 +319,6 @@
                 <button class="btn-black" onclick="drawMap()">重绘意识地图</button>
                 <div id="map-box" style="width:100%; height:450px; margin-top:20px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
             </div>
-            <!-- 插件市场面板 -->
             <div id="tab-plugin" class="tab-pane">
                 <div class="section-block">
                     <h3>功能动态挂载</h3>
@@ -375,7 +373,6 @@
                     <i data-lucide="file-up" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('doc-in').click()"></i>
                     <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="upGenericFile(event)">
                     <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="toggleVault()"></i>
-                    <!-- 插件快捷入口（如果有） -->
                     <div id="plugin-shortcut-area" style="display:flex; gap:15px; margin-left:10px; padding-left:10px; border-left:1px solid var(--border);"></div>
                 </div>
                 <button class="btn-black" onclick="save()">封存回响</button>
@@ -403,7 +400,7 @@
     </div>
 
     <script>
-        // --- 1. 插件系统接口实现 ---
+        // --- 1. 插件系统 ---
         window.AlterPlugins = {
             registry: {},
             register(id, fn, icon = "zap") { 
@@ -436,12 +433,10 @@
             }
         };
 
-        // 打样插件 1：字数推演
         AlterPlugins.register('字数推演', (data) => {
             showMsg(`当前共捕捉到 ${data.content.length} 个思绪符号`);
         }, 'bar-chart-2');
 
-        // 打样插件 2：意识注入
         AlterPlugins.register('意识注入', (data) => {
             const thoughts = ["（此处的虚无即是存在的证词）", "（一切回声皆为孤独的共鸣）", "（在这一刻，我观察着观察着的我）"];
             document.getElementById('note-in').value += "\n" + thoughts[Math.floor(Math.random()*thoughts.length)];
@@ -455,9 +450,8 @@
             document.getElementById('plugin-code-in').value = "";
         };
 
-        // --- 2. 核心数据与状态 ---
-        const DB_NAME = "AlterNoteDB";
-        const STORE_NAME = "Notes";
+        // --- 2. 数据与底层 ---
+        const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
         let db;
 
         async function initDB() {
@@ -465,26 +459,10 @@
                 const request = indexedDB.open(DB_NAME, 1);
                 request.onupgradeneeded = (e) => {
                     const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-                    }
+                    if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "id" });
                 };
-                request.onsuccess = (e) => {
-                    db = e.target.result;
-                    migrateData().then(resolve);
-                };
+                request.onsuccess = (e) => { db = e.target.result; resolve(); };
             });
-        }
-
-        async function migrateData() {
-            const oldData = localStorage.getItem('alter_v52_data');
-            if (oldData) {
-                try {
-                    const notesToMigrate = JSON.parse(oldData);
-                    for (const note of notesToMigrate) { await dbAction("put", note); }
-                    localStorage.removeItem('alter_v52_data');
-                } catch(e) { console.error("迁移失败", e); }
-            }
         }
 
         async function dbAction(type, data) {
@@ -502,22 +480,85 @@
         }
 
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
-        let notes = [];
-        let sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
-        let user = localStorage.getItem('alter_v52_user') || "NIK";
-        
+        let notes = [], sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" }, user = localStorage.getItem('alter_v52_user') || "NIK";
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
+
+        // --- 核心更新：底层 API 加固与容错 ---
+        async function callAI(prompt, images = [], system = "你是一个深思熟虑的自省空间伙伴。") {
+            const rawUrl = localStorage.getItem('alt_api_url') || "";
+            const apiKey = localStorage.getItem('alt_api_key') || "";
+            const apiModel = localStorage.getItem('alt_api_model') || "";
+            
+            const chatBox = document.getElementById('ai-chat-box');
+            if (!apiKey || !rawUrl) {
+                appendMsg('bot', '⚠️ 配置缺失：请在侧边面板设置 API Key 和端点。');
+                return;
+            }
+
+            // 1. 地址容错与拼接
+            const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
+            const loadingMsg = appendMsg('bot', '正在推演...');
+
+            try {
+                // 2. Payload 兼容性检测
+                const isVisionModel = /vision|gpt-4o|gemini|vl|claude-3|phi-3\.5/i.test(apiModel);
+                let contentPayload;
+
+                if (isVisionModel && images.length > 0) {
+                    contentPayload = [{ type: "text", text: prompt }];
+                    images.forEach(b64 => contentPayload.push({ type: "image_url", image_url: { url: b64 } }));
+                } else {
+                    // 对于纯文本模型（如 DeepSeek），即使有图片也过滤掉图片数据
+                    contentPayload = prompt;
+                }
+
+                const res = await fetch(apiBase, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${apiKey}` 
+                    },
+                    body: JSON.stringify({ 
+                        model: apiModel, 
+                        messages: [
+                            { role: "system", content: system },
+                            { role: "user", content: contentPayload }
+                        ] 
+                    })
+                });
+
+                // 3. 显式错误上报逻辑
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    const errMsg = errData.error?.message || `HTTP ${res.status}: ${res.statusText}`;
+                    chatBox.removeChild(loadingMsg);
+                    appendMsg('bot', `❌ 推演中断：${errMsg}`);
+                    return;
+                }
+
+                const data = await res.json();
+                chatBox.removeChild(loadingMsg);
+
+                if (data.choices && data.choices[0]) {
+                    appendMsg('bot', data.choices[0].message.content);
+                } else {
+                    appendMsg('bot', '❌ 接口返回格式异常，未能捕获回响。');
+                }
+
+            } catch (e) {
+                if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
+                appendMsg('bot', `❌ 网络或底层故障：${e.message}`);
+            }
+        }
 
         async function init() {
             await initDB();
             notes = await dbAction("getAll");
             notes.sort((a,b) => b.id - a.id);
             notes = notes.filter(n => !n.deleteAt || n.deleteAt > Date.now());
-            
             if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
             if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
-
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
             lucide.createIcons();
@@ -539,13 +580,11 @@
             viewMode = m; 
             document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); 
             if(el) el.classList.add('active');
-            
             document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
             document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
             document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
             document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
             document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
-            
             if(m === 'vault') {
                 document.getElementById('view-title').innerText = "他我笔记";
                 document.getElementById('view-subtitle').innerText = "INSPIRATION / 灵感碎片";
@@ -555,7 +594,6 @@
                 document.getElementById('view-title').innerText = titles[m];
                 document.getElementById('view-subtitle').innerText = subs[m];
             }
-
             if(m==='home') renderDailyReview();
             renderGrid();
         };
@@ -588,20 +626,18 @@
 
         window.synthesize = async function() {
             const soulNotes = notes.filter(n => n.isVault && !n.deleteAt);
-            if(soulNotes.length < 2) return showMsg("SOUL FRAGMENTS INSUFFICIENT");
+            if(soulNotes.length < 2) return showMsg("碎片不足");
             const context = soulNotes.slice(0, 10).map(n => n.content).join("\n---\n");
-            appendMsg('bot', '正在重构意识结构...');
-            await callAI("重构文章：\n" + context);
+            await callAI("请基于这些碎片重构一段深刻的自省独白：\n" + context);
         };
 
         window.runInquiry = async function(type) {
             const area = document.getElementById('reflect-report'); 
-            if (notes.length < 1) return showMsg("SAMPLES INSUFFICIENT");
+            if (notes.length < 1) return showMsg("缺乏样本");
             area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
             const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-            const systemPrompt = type === 'phi' ? "哲学分析" : "潜意识洞察";
-            await callAI(`分析：\n${contentSum}`, [], systemPrompt);
-            area.innerHTML = `分析已同步至侧边。`;
+            await callAI(`分析以下碎片的潜意识模式：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
+            area.innerHTML = `推演报告已同步至推演面板。`;
         };
 
         window.tabTo = function(id, el) { 
@@ -676,21 +712,13 @@
             const t = document.getElementById('note-in').value.trim(); 
             if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             const newNote = { 
-                id:Date.now(), 
-                content:t, 
-                author: user, 
-                images:[...b64s], 
-                files:[...files], 
-                isVault:inV, persona:activeP.n, i:activeP.i, 
-                time:new Date().toLocaleDateString(), replies:[], zs:0, 
+                id:Date.now(), content:t, author: user, images:[...b64s], files:[...files], 
+                isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
                 tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
             };
             await dbAction("put", newNote);
             notes.unshift(newNote);
-            resetEditor(); 
-            await renderAll(); 
-            window.closeOverlay('editor-overlay'); 
-            showMsg("FRAGMENT SAVED");
+            resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
         };
 
         window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
@@ -741,25 +769,6 @@
             });
         }
 
-        async function callAI(prompt, images = [], system = "你是一个深思熟虑的自省空间伙伴。") {
-            const apiBase = localStorage.getItem('alt_api_url') || "https://api.openai.com/v1";
-            const apiKey = localStorage.getItem('alt_api_key') || "";
-            const apiModel = localStorage.getItem('alt_api_model') || "gpt-4o";
-            if (!apiKey) return;
-            try {
-                const res = await fetch(`${apiBase}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ 
-                        model: apiModel, 
-                        messages: [{role: "system", content: system}, {role: "user", content: prompt}] 
-                    })
-                });
-                const data = await res.json();
-                if (data.choices) { appendMsg('bot', data.choices[0].message.content); }
-            } catch (e) { showMsg("AI FAIL"); }
-        }
-
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
             grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="window.togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
@@ -770,13 +779,11 @@
                 return true;
             });
             if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
-            
             list.forEach(n => {
                 const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
                 const mainImg = (n.images && n.images.length) ? n.images[0] : null;
                 div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
                     <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
-                    ${n.deleteAt ? `<div style="color:#ff5555; font-size:5px; margin-bottom:8px; opacity:0.6; letter-spacing:1px;">DELETION IN ${Math.ceil((n.deleteAt-Date.now())/3600000)}H</div>` : ''}
                     <div class="card-content">${n.content}</div>
                     <div class="card-footer">
                         <div class="footer-tools">
@@ -791,11 +798,7 @@
         }
 
         window.doZ = function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; dbAction("put", n); renderGrid(); } };
-
-        window.deleteNote = async function(e, id) { 
-            e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); 
-            if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } 
-        };
+        window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } };
 
         function showNote(n) {
             const el = document.getElementById('reader-target'); document.getElementById('reader-overlay').style.display = 'flex';
@@ -807,19 +810,7 @@
 
         window.setRT = (n) => { rTo = n; document.getElementById('r-ind').style.display = 'block'; document.getElementById('r-name').innerText = n; document.getElementById('comIn').focus(); };
         window.setCommAction = (n, el) => { commP = FIXED_P.find(p=>p.n === n); document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); };
-        
-        window.sendR = async (id) => { 
-            const txt = document.getElementById('comIn').value.trim(); 
-            if(!txt) return; 
-            const n = notes.find(x=>x.id===id); 
-            if(n){ 
-                if(!n.replies) n.replies = []; 
-                const finalTxt = rTo ? `@${rTo} ${txt}` : txt;
-                n.replies.push({ txt: finalTxt, who: commP.n }); 
-                await dbAction("put", n); 
-                showNote(n); rTo = null; showMsg("SYNCED"); 
-            } 
-        };
+        window.sendR = async (id) => { const txt = document.getElementById('comIn').value.trim(); if(!txt) return; const n = notes.find(x=>x.id===id); if(n){ if(!n.replies) n.replies = []; const finalTxt = rTo ? `@${rTo} ${txt}` : txt; n.replies.push({ txt: finalTxt, who: commP.n }); await dbAction("put", n); showNote(n); rTo = null; showMsg("SYNCED"); } };
 
         function appendMsg(role, text) {
             const chatBox = document.getElementById('ai-chat-box');
@@ -829,12 +820,7 @@
         }
 
         async function renderAll() { 
-            await renderGrid(); 
-            renderSwitcher(); 
-            renderFixedList(); 
-            renderPersonaFilter(); // 注入：刷新过滤器
-            updateStats(); 
-            renderDailyReview(); 
+            await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); 
         }
         
         function renderDailyReview() {
@@ -850,30 +836,23 @@
             document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); 
         }
 
-        // 注入：过滤器选项同步函数
         function renderPersonaFilter() {
             const sel = document.getElementById('persona-filter');
             if(!sel) return;
-            const currentVal = sel.value; // 保存当前选择
+            const currentVal = sel.value;
             sel.innerHTML = '<option value="all">所有身份</option>';
-            const allP = [...FIXED_P, {n: user, i: "👤"}];
-            allP.forEach(p => {
+            [...FIXED_P, {n: user, i: "👤"}].forEach(p => {
                 const opt = document.createElement('option');
-                opt.value = p.n;
-                opt.innerText = `${p.i} ${p.n}`;
-                sel.appendChild(opt);
+                opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt);
             });
-            sel.value = currentVal || 'all'; // 还原选择
+            sel.value = currentVal || 'all';
         }
 
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
         
         function resetEditor() { 
-            b64s=[]; files=[]; inV=false; 
-            document.getElementById('note-in').value=""; 
-            document.getElementById('prevBox').innerHTML = "";
-            document.getElementById('prevBox').style.display = "none";
-            document.getElementById('vaultToggle').style.color = 'var(--text-dim)'; 
+            b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML = "";
+            document.getElementById('prevBox').style.display = "none"; document.getElementById('vaultToggle').style.color = 'var(--text-dim)'; 
         }
 
         function renderPrev() { const box = document.getElementById('prevBox'); box.style.display = b64s.length ? 'grid' : 'none'; box.innerHTML = b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); }
@@ -882,25 +861,50 @@
         function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
 
+        // --- 核心更新：显式事件锚点 ---
         (function() {
             const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
+            
             if(trigger) trigger.onclick = () => panel.classList.toggle('show');
+            
             const closeBtn = document.querySelector('.ai-close');
             if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
+            
             const sendBtn = document.getElementById('ai-send-btn');
-            if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if (!text) return; appendMsg('user', text); input.value = ''; callAI(text); };
-            if(input) input.onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('ai-send-btn').click(); };
+            if(sendBtn) {
+                sendBtn.onclick = () => {
+                    const text = input.value.trim();
+                    if (!text) return;
+                    appendMsg('user', text);
+                    input.value = '';
+                    callAI(text);
+                };
+            }
+            
+            if(input) {
+                input.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendBtn.click();
+                    }
+                };
+            }
+            
             if(labBtn) labBtn.onclick = () => labPanel.style.display = 'flex';
+            
             const labClose = document.getElementById('lab-close-btn');
             if(labClose) labClose.onclick = () => labPanel.style.display = 'none';
+            
             const labSave = document.getElementById('lab-save-btn');
-            if(labSave) labSave.onclick = () => {
-                const u = document.getElementById('lab-url-in').value.trim(), k = document.getElementById('lab-key-in').value.trim(), m = document.getElementById('lab-model-in').value.trim();
-                if (u) localStorage.setItem('alt_api_url', u);
-                if (k) localStorage.setItem('alt_api_key', k); 
-                if (m) localStorage.setItem('alt_api_model', m);
-                labPanel.style.display = 'none'; appendMsg('bot', '✅ 实验室配置已同步。');
-            };
+            if(labSave) {
+                labSave.onclick = () => {
+                    const u = document.getElementById('lab-url-in').value.trim(), k = document.getElementById('lab-key-in').value.trim(), m = document.getElementById('lab-model-in').value.trim();
+                    if (u) localStorage.setItem('alt_api_url', u);
+                    if (k) localStorage.setItem('alt_api_key', k); 
+                    if (m) localStorage.setItem('alt_api_model', m);
+                    labPanel.style.display = 'none'; showMsg("LAB SYNCED");
+                };
+            }
         })();
 
         window.addEventListener('load', init);
