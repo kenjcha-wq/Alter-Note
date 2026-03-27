@@ -240,11 +240,9 @@
                 </div>
             </div>
             <div class="header-tools">
+                <!-- 过滤器动态生成 -->
                 <select id="persona-filter" class="minimal-select" onchange="renderGrid()" style="display:none;">
                     <option value="all">所有身份</option>
-                    <option value="他我">🎭 他我</option>
-                    <option value="乌鸦">🐦 乌鸦</option>
-                    <option value="影子">🐍 影子</option>
                 </select>
                 <div class="search-input-wrap" id="search-wrap">
                     <input type="text" id="searchInput" placeholder="搜索..." oninput="handleSearch()">
@@ -830,7 +828,14 @@
             return msg;
         }
 
-        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); updateStats(); renderDailyReview(); }
+        async function renderAll() { 
+            await renderGrid(); 
+            renderSwitcher(); 
+            renderFixedList(); 
+            renderPersonaFilter(); // 注入：刷新过滤器
+            updateStats(); 
+            renderDailyReview(); 
+        }
         
         function renderDailyReview() {
             const box = document.getElementById('review-box'); if(!box) return;
@@ -840,10 +845,25 @@
             box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
         }
         
-        // 增量修正：renderSwitcher 支持登录名作为化身
         function renderSwitcher() { 
             const allP = [...FIXED_P, {n: user, i: "👤"}];
             document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); 
+        }
+
+        // 注入：过滤器选项同步函数
+        function renderPersonaFilter() {
+            const sel = document.getElementById('persona-filter');
+            if(!sel) return;
+            const currentVal = sel.value; // 保存当前选择
+            sel.innerHTML = '<option value="all">所有身份</option>';
+            const allP = [...FIXED_P, {n: user, i: "👤"}];
+            allP.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.n;
+                opt.innerText = `${p.i} ${p.n}`;
+                sel.appendChild(opt);
+            });
+            sel.value = currentVal || 'all'; // 还原选择
         }
 
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
