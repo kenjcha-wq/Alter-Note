@@ -44,6 +44,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
 
+        /* --- 视觉一致性强制补丁 --- */
+        .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p {
+            font-family: var(--font-main) !important;
+        }
+
         /* --- AI 插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
@@ -58,7 +63,7 @@
         .ai-close:hover { opacity: 1; }
         
         #ai-chat-box { flex: 1; padding: 15px; overflow-y: auto; background: var(--ai-panel-bg); display: flex; flex-direction: column; }
-        .ai-msg { margin-bottom: 15px; font-size: 13px; line-height: 1.6; max-width: 85%; padding: 10px; border-radius: 8px; font-family: var(--font-main); }
+        .ai-msg { margin-bottom: 15px; font-size: 13px; line-height: 1.6; max-width: 85%; padding: 10px; border-radius: 8px; }
         .ai-msg.user { background: var(--ai-msg-user); color: var(--text-main); margin-left: auto; border-bottom-right-radius: 2px; text-align: left; }
         .ai-msg.bot { background: var(--ai-msg-bot); color: #fff; margin-right: auto; border-bottom-left-radius: 2px; }
         
@@ -80,7 +85,6 @@
         .nav-link:hover, .nav-link.active { color: var(--accent); }
         .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
 
-        /* 注入：主视图居中布局 */
         main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; width: 100%; }
         header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
@@ -98,7 +102,6 @@
 
         .minimal-select { background: transparent; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; padding: 6px 12px; color: var(--text-dim); cursor: pointer; transition: 0.3s; text-transform: uppercase; }
 
-        /* 注入：Grid居中控制 */
         .grid { column-count: 3; column-gap: 40px; width: 100%; margin: 0 auto; }
         @media (max-width: 1400px) { .grid { column-count: 2; } }
         @media (max-width: 900px) { .grid { column-count: 1; } }
@@ -108,19 +111,29 @@
         .card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 20px; filter: grayscale(100%); transition: 0.6s; border-radius: 2px; }
         .card:hover .card-img { filter: grayscale(0%) !important; }
         .card-meta { font-size: 8px; color: var(--text-dim); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; display: flex; justify-content: space-between; }
-        .card-content { font-family: var(--font-main) !important; font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+        .card-content { font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
         .card-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
         .footer-tools { display: flex; gap: 8px; align-items: center; }
-        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 4px; display: flex; align-items: center; gap: 2px; cursor: pointer; transition: 0.3s; padding: 0; opacity: 0.08; }
-        .card:hover .footer-btn { opacity: 0.3; }
+        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 8px !important; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s; padding: 0; opacity: 0.3; }
+        .footer-btn i { width: 8px !important; height: 8px !important; }
+        .card:hover .footer-btn { opacity: 0.6; }
         .footer-btn:hover { opacity: 1; color: var(--accent); }
         
         .card-info { font-size: 5px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; opacity: 0.3; text-transform: uppercase; }
 
         .dash-card { padding: 40px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); text-align: center; }
         .dash-card h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 12px; }
-        .dash-card p { font-family: var(--font-main); }
+
+        /* 注入：手机端布局压实补丁 */
+        @media (max-width: 600px) {
+            .dash-row { gap: 10px !important; }
+            .dash-card { padding: 15px !important; }
+            .ctrl-row.mobile-stack { flex-direction: column; gap: 15px; }
+            .ctrl-row.mobile-stack button { margin-left: 0 !important; width: 100%; }
+            header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .header-tools { width: 100%; justify-content: space-between; }
+        }
 
         #prevBox { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .prev-item { position: relative; aspect-ratio: 1/1; border: 1px solid var(--border); overflow: hidden; }
@@ -132,13 +145,6 @@
         .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; position: sticky; top: 0; background: inherit; z-index: 10; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
         .panel-header h2 { font-family: var(--font-title) !important; font-size: 32px; font-weight: 400; color: var(--accent); }
         .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
-
-        @media (max-width: 600px) {
-            .ctrl-row.mobile-stack { flex-direction: column; gap: 15px; }
-            .ctrl-row.mobile-stack button { margin-left: 0 !important; width: 100%; }
-            header { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .header-tools { width: 100%; justify-content: space-between; }
-        }
 
         .tabs-nav { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
         .tab-btn { font-size: 10px; font-weight: 700; color: var(--text-dim); cursor: pointer; padding-bottom: 12px; position: relative; text-transform: uppercase; letter-spacing: 1px; }
@@ -282,7 +288,7 @@
                     </button>
                 </div>
             </div>
-            <div id="reflect-report" style="font-size:16px; line-height:2.6; border-left:1px solid var(--accent); padding-left:30px; text-align:justify; font-family:'Noto Serif SC';">选择分析模式。</div>
+            <div id="reflect-report" style="font-size:16px; line-height:2.6; border-left:1px solid var(--accent); padding-left:30px; text-align:justify;">选择分析模式。</div>
         </div>
     </div>
 
@@ -316,8 +322,18 @@
                 <button class="btn-black" onclick="drawMap()">重绘意识地图</button>
                 <div id="map-box" style="width:100%; height:450px; margin-top:20px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
             </div>
+            <!-- 插件市场面板 -->
             <div id="tab-plugin" class="tab-pane">
-                <p style="opacity:0.3; font-size:11px; letter-spacing:1px;">SYNCING MORE POSSIBILITIES...</p>
+                <div class="section-block">
+                    <h3>功能动态挂载</h3>
+                    <p style="font-size:11px; color:var(--text-dim); margin-bottom:20px;">粘贴插件代码以扩展“他我”系统的边界。</p>
+                    <textarea id="plugin-code-in" class="input-line" style="height:150px; font-family:monospace; font-size:11px; padding:15px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// window.AlterPlugins.register('my-plugin', (data) => { ... });"></textarea>
+                    <button class="btn-black" style="width:100%; margin-top:15px;" onclick="installPluginFromInput()">载入插件</button>
+                </div>
+                <div class="section-block">
+                    <h3>已激活插件</h3>
+                    <div id="plugin-list" style="font-size:10px; color:var(--text-main);">暂无活跃插件。</div>
+                </div>
             </div>
         </div>
     </div>
@@ -351,16 +367,18 @@
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
             <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:20px;"></div>
-            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none; font-family:'Noto Serif SC';" placeholder="在此刻寻找回声..."></textarea>
+            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none;" placeholder="在此刻寻找回声..."></textarea>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
             <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:30px;">
-                <div style="display:flex; gap:30px; align-items:center;">
+                <div style="display:flex; gap:20px; align-items:center;">
                     <i data-lucide="camera" style="cursor:pointer; color:var(--text-dim)" onclick="camOn()"></i>
                     <i data-lucide="image" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('f-in').click()"></i>
                     <input type="file" id="f-in" hidden accept="image/*" multiple onchange="upFiles(event)">
                     <i data-lucide="file-up" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('doc-in').click()"></i>
                     <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="upGenericFile(event)">
                     <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="toggleVault()"></i>
+                    <!-- 插件快捷入口（如果有） -->
+                    <div id="plugin-shortcut-area" style="display:flex; gap:15px; margin-left:10px; padding-left:10px; border-left:1px solid var(--border);"></div>
                 </div>
                 <button class="btn-black" onclick="save()">封存回响</button>
             </div>
@@ -371,7 +389,7 @@
     <div id="reader-overlay" class="overlay">
         <div class="overlay-content">
             <div class="reader-close" onclick="closeOverlay('reader-overlay')" style="position:fixed; top:40px; right:40px; cursor:pointer; z-index:100;"><i data-lucide="x" size="24"></i></div>
-            <div id="reader-target" style="font-family: 'Noto Serif SC', serif; line-height: 2.2;"></div>
+            <div id="reader-target" style="line-height: 2.2;"></div>
         </div>
     </div>
 
@@ -387,7 +405,59 @@
     </div>
 
     <script>
-        // --- 1. 存储层升级 (IndexedDB) ---
+        // --- 1. 插件系统接口实现 ---
+        window.AlterPlugins = {
+            registry: {},
+            register(id, fn, icon = "zap") { 
+                this.registry[id] = { fn, icon }; 
+                this.updateUI();
+                this.updateShortcuts();
+            },
+            install(code) {
+                try {
+                    eval(code);
+                    showMsg("PLUGIN MOUNTED");
+                } catch(e) {
+                    showMsg("COMPILE ERR: " + e.message);
+                }
+            },
+            run(id, data) {
+                if(this.registry[id]) return this.registry[id].fn(data);
+            },
+            updateUI() {
+                const list = document.getElementById('plugin-list');
+                if(!list) return;
+                const keys = Object.keys(this.registry);
+                list.innerHTML = keys.length ? keys.map(k => `· [${this.registry[k].icon}] ${k}`).join('<br>') : "暂无活跃插件。";
+            },
+            updateShortcuts() {
+                const area = document.getElementById('plugin-shortcut-area');
+                if(!area) return;
+                area.innerHTML = Object.keys(this.registry).map(k => `<i data-lucide="${this.registry[k].icon}" style="cursor:pointer; color:var(--text-dim); width:14px;" onclick="window.AlterPlugins.run('${k}', { content: document.getElementById('note-in').value })" title="${k}"></i>`).join('');
+                lucide.createIcons();
+            }
+        };
+
+        // 打样插件 1：字数推演
+        AlterPlugins.register('字数推演', (data) => {
+            showMsg(`当前共捕捉到 ${data.content.length} 个思绪符号`);
+        }, 'bar-chart-2');
+
+        // 打样插件 2：意识注入
+        AlterPlugins.register('意识注入', (data) => {
+            const thoughts = ["（此处的虚无即是存在的证词）", "（一切回声皆为孤独的共鸣）", "（在这一刻，我观察着观察着的我）"];
+            document.getElementById('note-in').value += "\n" + thoughts[Math.floor(Math.random()*thoughts.length)];
+            showMsg("意识片段已注入");
+        }, 'brain-circuit');
+
+        window.installPluginFromInput = function() {
+            const code = document.getElementById('plugin-code-in').value;
+            if(!code) return;
+            window.AlterPlugins.install(code);
+            document.getElementById('plugin-code-in').value = "";
+        };
+
+        // --- 2. 核心数据与状态 ---
         const DB_NAME = "AlterNoteDB";
         const STORE_NAME = "Notes";
         let db;
@@ -415,7 +485,6 @@
                     const notesToMigrate = JSON.parse(oldData);
                     for (const note of notesToMigrate) { await dbAction("put", note); }
                     localStorage.removeItem('alter_v52_data');
-                    console.log("✅ 数据从 LocalStorage 迁移成功至 IndexedDB");
                 } catch(e) { console.error("迁移失败", e); }
             }
         }
@@ -434,7 +503,6 @@
             });
         }
 
-        // --- 状态与变量 ---
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
         let notes = [];
         let sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
@@ -442,7 +510,6 @@
         
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
 
-        // 核心初始化
         async function init() {
             await initDB();
             notes = await dbAction("getAll");
@@ -453,16 +520,12 @@
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
             if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
 
-            if(document.getElementById('lab-url-in')) document.getElementById('lab-url-in').value = localStorage.getItem('alt_api_url') || "";
-            if(document.getElementById('lab-key-in')) document.getElementById('lab-key-in').value = localStorage.getItem('alt_api_key') || "";
-            if(document.getElementById('lab-model-in')) document.getElementById('lab-model-in').value = localStorage.getItem('alt_api_model') || "";
-
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
             lucide.createIcons();
+            window.AlterPlugins.updateShortcuts();
         }
 
-        // --- 挂载到全局作用域的函数 ---
         window.enterApp = function(name) {
             const n = name || document.getElementById('user-name-in').value.trim();
             if(!n) return;
@@ -475,18 +538,25 @@
         };
 
         window.switchView = function(m, el) {
-            viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
+            viewMode = m; 
+            document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); 
+            if(el) el.classList.add('active');
+            
             document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
             document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
             document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
             document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
             document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
             
-            // 注入：更新 H1 标题逻辑 (时间轴保持他我笔记，碎片去库字)
-            const titles = { 'home': '他我笔记', 'timeline': '他我笔记', 'vault': '灵感碎片' };
-            const subs = { 'home': 'DASHBOARD / 概览', 'timeline': 'FRAGMENTS / 时间流', 'vault': 'INSIGHTS / 碎片' };
-            document.getElementById('view-title').innerText = titles[m];
-            document.getElementById('view-subtitle').innerText = subs[m];
+            if(m === 'vault') {
+                document.getElementById('view-title').innerText = "他我笔记";
+                document.getElementById('view-subtitle').innerText = "INSPIRATION / 灵感碎片";
+            } else {
+                const titles = { 'home': '他我笔记', 'timeline': '他我笔记' };
+                const subs = { 'home': 'DASHBOARD / 概览', 'timeline': 'FRAGMENTS / 时间流' };
+                document.getElementById('view-title').innerText = titles[m];
+                document.getElementById('view-subtitle').innerText = subs[m];
+            }
 
             if(m==='home') renderDailyReview();
             renderGrid();
@@ -494,7 +564,6 @@
 
         window.handleVaultAccess = function(el) {
             if(sec.v) {
-                // 注入：去库字
                 const p = prompt("验证灵感碎片密码：");
                 if (p !== sec.v) { showMsg("DENIED"); return; }
             }
@@ -522,31 +591,19 @@
         window.synthesize = async function() {
             const soulNotes = notes.filter(n => n.isVault && !n.deleteAt);
             if(soulNotes.length < 2) return showMsg("SOUL FRAGMENTS INSUFFICIENT");
-            
             const context = soulNotes.slice(0, 10).map(n => n.content).join("\n---\n");
-            const prompt = `这是一组散乱的“心灵碎片”笔记。请以此为基础，重构一篇具有文学性和哲学深度的心灵文章。
-            要求：第一人称，风格深沉、自省，不需要标题。
-            碎片内容：\n${context}`;
-            
-            appendMsg('bot', '正在从碎片中重构意识结构...');
-            await callAI(prompt);
-            showMsg("SYNTHESIS COMPLETE");
+            appendMsg('bot', '正在重构意识结构...');
+            await callAI("重构文章：\n" + context);
         };
 
         window.runInquiry = async function(type) {
             const area = document.getElementById('reflect-report'); 
             if (notes.length < 1) return showMsg("SAMPLES INSUFFICIENT");
             area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
-            
-            const targetNote = notes[0];
             const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-            const systemPrompt = type === 'phi' 
-                ? "你是一个深刻的哲学合作者，通过本体论视角分析文字背后的存在状态。请提供简短而深刻的解析。" 
-                : "你是一个洞察力极强的心理分析者，挖掘独白中的潜意识阴影。请提供简短而犀利的洞察。";
-            
-            const visionImages = targetNote.images && targetNote.images.length ? [targetNote.images[0]] : [];
-            await callAI(`分析以下文字内容（可能包含图像回声）：\n${contentSum}`, visionImages, systemPrompt);
-            area.innerHTML = `推演报告已同步至侧边面板。`;
+            const systemPrompt = type === 'phi' ? "哲学分析" : "潜意识洞察";
+            await callAI(`分析：\n${contentSum}`, [], systemPrompt);
+            area.innerHTML = `分析已同步至侧边。`;
         };
 
         window.tabTo = function(id, el) { 
@@ -563,33 +620,21 @@
 
         window.setAppBg = function() { 
             const url = document.getElementById('custom-bg-url').value.trim(); 
-            if(url) { document.body.style.backgroundImage = `url(${url})`; showMsg("BACKGROUND UPDATED"); } 
+            if(url) { document.body.style.backgroundImage = `url(${url})`; showMsg("BG UPDATED"); } 
         };
 
         window.drawMap = function() { 
-            const box = document.getElementById('map-box'); 
-            box.innerHTML = '<p style="padding:20px; font-size:10px; opacity:0.5">映射中...</p>'; 
-            setTimeout(() => { 
-                box.innerHTML = ''; 
-                ["自我", "虚无", "共鸣", "影子", "回声", "它者", "起源", "终焉"].forEach(k => { 
-                    const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
-                    n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
-                    n.style.fontSize = '12px'; n.style.opacity = '0.6';
-                    n.style.fontFamily = 'var(--font-main)';
-                    box.appendChild(n); 
-                }); 
-            }, 600); 
+            const box = document.getElementById('map-box'); box.innerHTML = ''; 
+            ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { 
+                const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
+                n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
+                n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); 
+            }); 
         };
 
         window.renameLogin = function() {
             const n = document.getElementById('rename-user-in').value.trim();
-            if(n) {
-                user = n;
-                localStorage.setItem('alter_v52_user', user);
-                document.getElementById('current-user-tag').innerText = user;
-                document.getElementById('cur-login-name').innerText = user;
-                showMsg("IDENTITY UPDATED");
-            }
+            if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); showMsg("IDENTITY UPDATED"); }
         };
 
         window.saveSec = function() {
@@ -611,8 +656,7 @@
                 const r = new FileReader();
                 r.onload = async (ev) => {
                     const compressed = await compressImage(ev.target.result);
-                    b64s.push(compressed);
-                    renderPrev();
+                    b64s.push(compressed); renderPrev();
                 };
                 r.readAsDataURL(f);
             }
@@ -634,14 +678,21 @@
             const t = document.getElementById('note-in').value.trim(); 
             if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             const newNote = { 
-                id:Date.now(), content:t, images:[...b64s], files:[...files], 
+                id:Date.now(), 
+                content:t, 
+                author: user, 
+                images:[...b64s], 
+                files:[...files], 
                 isVault:inV, persona:activeP.n, i:activeP.i, 
                 time:new Date().toLocaleDateString(), replies:[], zs:0, 
                 tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
             };
             await dbAction("put", newNote);
             notes.unshift(newNote);
-            resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
+            resetEditor(); 
+            await renderAll(); 
+            window.closeOverlay('editor-overlay'); 
+            showMsg("FRAGMENT SAVED");
         };
 
         window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
@@ -667,8 +718,7 @@
             const originalB64 = c.toDataURL('image/jpeg');
             if(b64s.length < 3) { 
                 compressImage(originalB64).then(compressed => {
-                    b64s.push(compressed);
-                    renderPrev();
+                    b64s.push(compressed); renderPrev();
                 });
             }
             setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150);
@@ -694,36 +744,22 @@
         }
 
         async function callAI(prompt, images = [], system = "你是一个深思熟虑的自省空间伙伴。") {
-            let apiBase = localStorage.getItem('alt_api_url') || "https://api.openai.com/v1";
-            let apiKey = localStorage.getItem('alt_api_key') || "";
-            let apiModel = localStorage.getItem('alt_api_model') || "gpt-4o";
-            
-            const chatBox = document.getElementById('ai-chat-box');
-            if (!apiKey) { appendMsg('bot', '⚠️ 实验室配置缺失。请在侧边 🧪 面板完成 API 设置。'); return; }
-            const loadingMsg = appendMsg('bot', '推演中...');
-            
+            const apiBase = localStorage.getItem('alt_api_url') || "https://api.openai.com/v1";
+            const apiKey = localStorage.getItem('alt_api_key') || "";
+            const apiModel = localStorage.getItem('alt_api_model') || "gpt-4o";
+            if (!apiKey) return;
             try {
-                if(apiBase.endsWith('/')) apiBase = apiBase.slice(0, -1);
-                
-                const contentParts = [{ type: "text", text: prompt }];
-                images.forEach(b64 => { contentParts.push({ type: "image_url", image_url: { url: b64 } }); });
-                
                 const res = await fetch(`${apiBase}/chat/completions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify({ 
                         model: apiModel, 
-                        messages: [
-                            {role: "system", content: system}, 
-                            {role: "user", content: contentParts}
-                        ] 
+                        messages: [{role: "system", content: system}, {role: "user", content: prompt}] 
                     })
                 });
                 const data = await res.json();
-                chatBox.removeChild(loadingMsg);
-                if (data.choices && data.choices[0]) { appendMsg('bot', data.choices[0].message.content); }
-                else { appendMsg('bot', '❌ 推演失败: ' + (data.error?.message || '未知接口错误')); }
-            } catch (e) { chatBox.removeChild(loadingMsg); appendMsg('bot', '❌ 连接超时或失败: ' + e.message); }
+                if (data.choices) { appendMsg('bot', data.choices[0].message.content); }
+            } catch (e) { showMsg("AI FAIL"); }
         }
 
         async function renderGrid(q = "") {
@@ -741,13 +777,13 @@
                 const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
                 const mainImg = (n.images && n.images.length) ? n.images[0] : null;
                 div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
-                    <div class="card-meta"><span>${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
+                    <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
                     ${n.deleteAt ? `<div style="color:#ff5555; font-size:5px; margin-bottom:8px; opacity:0.6; letter-spacing:1px;">DELETION IN ${Math.ceil((n.deleteAt-Date.now())/3600000)}H</div>` : ''}
                     <div class="card-content">${n.content}</div>
                     <div class="card-footer">
                         <div class="footer-tools">
-                            <button class="footer-btn" onclick="doZ(event, ${n.id})"><i data-lucide="zap" size="4"></i> ${n.zs||0}</button>
-                            <button class="footer-btn" onclick="deleteNote(event, ${n.id})"><i data-lucide="trash-2" size="4"></i></button>
+                            <button class="footer-btn" onclick="doZ(event, ${n.id})"><i data-lucide="zap"></i> ${n.zs||0}</button>
+                            <button class="footer-btn" onclick="deleteNote(event, ${n.id})"><i data-lucide="trash-2"></i></button>
                         </div>
                         <div class="card-info">#${n.tag || 'FRAGMENT'} ${n.replies?.length ? '('+n.replies.length+')' : ''}</div>
                     </div>`;
@@ -756,34 +792,36 @@
             lucide.createIcons();
         }
 
-        window.doZ = function(e, id) { 
-            e.stopPropagation(); 
-            const n = notes.find(x=>x.id===id); 
-            if(n){ n.zs = (n.zs||0) + 1; dbAction("put", n); renderGrid(); } 
-        };
+        window.doZ = function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; dbAction("put", n); renderGrid(); } };
 
         window.deleteNote = async function(e, id) { 
-            e.stopPropagation(); 
-            const i = notes.findIndex(x=>x.id===id); 
-            if(i!==-1){ 
-                notes[i].isVault=true; 
-                notes[i].deleteAt=Date.now()+259200000; 
-                await dbAction("put", notes[i]); 
-                await renderAll(); 
-            } 
+            e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); 
+            if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } 
         };
 
         function showNote(n) {
             const el = document.getElementById('reader-target'); document.getElementById('reader-overlay').style.display = 'flex';
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
-            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px; font-family:'Noto Serif SC';">${r.txt}</p></div>`).join('');
+            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
             const pChips = FIXED_P.map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
-            el.innerHTML = `<div style="margin-bottom:40px;">${imgsHtml}</div><div style="font-size:20px; line-height:2.2; text-align:justify; font-family:'Noto Serif SC'; margin-bottom:60px;">${n.content}</div><div style="border-top:1px solid var(--border); padding-top:60px;"><h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4><div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px; padding:20px 0;">静候回声。</p'}</div><div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;"><div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div><div class="p-picker">${pChips}</div><input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响..." onkeydown="if(event.key==='Enter') window.sendR(${n.id})"><button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button></div></div>`;
+            el.innerHTML = `<div style="margin-bottom:40px;">${imgsHtml}</div><div style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:60px;">${n.content}</div><div style="border-top:1px solid var(--border); padding-top:60px;"><h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4><div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px; padding:20px 0;">静候回声。</p'}</div><div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;"><div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div><div class="p-picker">${pChips}</div><input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响..." onkeydown="if(event.key==='Enter') window.sendR(${n.id})"><button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button></div></div>`;
         }
 
         window.setRT = (n) => { rTo = n; document.getElementById('r-ind').style.display = 'block'; document.getElementById('r-name').innerText = n; document.getElementById('comIn').focus(); };
         window.setCommAction = (n, el) => { commP = FIXED_P.find(p=>p.n === n); document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); };
-        window.sendR = async (id) => { const txt = document.getElementById('comIn').value.trim(); if(!txt) return; const n = notes.find(x=>x.id===id); if(n){ if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `回复 @${rTo}：${txt}` : txt, who: commP.n }); await dbAction("put", n); showNote(n); rTo = null; showMsg("SYNCED"); } };
+        
+        window.sendR = async (id) => { 
+            const txt = document.getElementById('comIn').value.trim(); 
+            if(!txt) return; 
+            const n = notes.find(x=>x.id===id); 
+            if(n){ 
+                if(!n.replies) n.replies = []; 
+                const finalTxt = rTo ? `@${rTo} ${txt}` : txt;
+                n.replies.push({ txt: finalTxt, who: commP.n }); 
+                await dbAction("put", n); 
+                showNote(n); rTo = null; showMsg("SYNCED"); 
+            } 
+        };
 
         function appendMsg(role, text) {
             const chatBox = document.getElementById('ai-chat-box');
@@ -802,9 +840,22 @@
             box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
         }
         
-        function renderSwitcher() { document.getElementById('p-sel-box').innerHTML = FIXED_P.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP=FIXED_P.find(x=>x.n==='${p.n}'); renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
+        // 增量修正：renderSwitcher 支持登录名作为化身
+        function renderSwitcher() { 
+            const allP = [...FIXED_P, {n: user, i: "👤"}];
+            document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); 
+        }
+
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
-        function resetEditor() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; renderPrev(); document.getElementById('vaultToggle').style.color = 'var(--text-dim)'; }
+        
+        function resetEditor() { 
+            b64s=[]; files=[]; inV=false; 
+            document.getElementById('note-in').value=""; 
+            document.getElementById('prevBox').innerHTML = "";
+            document.getElementById('prevBox').style.display = "none";
+            document.getElementById('vaultToggle').style.color = 'var(--text-dim)'; 
+        }
+
         function renderPrev() { const box = document.getElementById('prevBox'); box.style.display = b64s.length ? 'grid' : 'none'; box.innerHTML = b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); }
         window.killImg = function(i) { b64s.splice(i, 1); renderPrev(); };
         function showMsg(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 2000); }
@@ -824,9 +875,7 @@
             if(labClose) labClose.onclick = () => labPanel.style.display = 'none';
             const labSave = document.getElementById('lab-save-btn');
             if(labSave) labSave.onclick = () => {
-                const u = document.getElementById('lab-url-in').value.trim();
-                const k = document.getElementById('lab-key-in').value.trim();
-                const m = document.getElementById('lab-model-in').value.trim();
+                const u = document.getElementById('lab-url-in').value.trim(), k = document.getElementById('lab-key-in').value.trim(), m = document.getElementById('lab-model-in').value.trim();
                 if (u) localStorage.setItem('alt_api_url', u);
                 if (k) localStorage.setItem('alt_api_key', k); 
                 if (m) localStorage.setItem('alt_api_model', m);
