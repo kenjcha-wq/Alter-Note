@@ -73,6 +73,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
+        /* --- 核心布局 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
@@ -191,9 +192,10 @@
                 <input type="text" id="lab-url-in" class="lab-input" placeholder="API Base URL (e.g. https://api.openai.com/v1)">
                 <input type="password" id="lab-key-in" class="lab-input" placeholder="API Key (sk-...)">
                 <input type="text" id="lab-model-in" class="lab-input" placeholder="Model ID (gpt-4o...)">
-                <div style="margin-top:auto; display:flex; gap:10px;">
-                    <button id="lab-save-btn" class="btn-black" style="padding: 8px 15px; font-size:10px; flex:1;">保存</button>
-                    <button id="lab-close-btn" style="background:none; border:none; color:var(--text-dim); font-size:10px; cursor:pointer;">取消</button>
+                <div style="margin-top:auto; display:flex; gap:10px; flex-direction:column;">
+                    <button id="lab-save-btn" class="btn-black" style="padding: 8px 15px; font-size:10px; width:100%;">保存配置</button>
+                    <button onclick="window.clearAIHistory()" style="background:none; border:1px solid #ff5555; color:#ff5555; font-size:8px; cursor:pointer; padding:5px; border-radius:2px; margin-top:5px;">清除推演历史</button>
+                    <button id="lab-close-btn" style="background:none; border:none; color:var(--text-dim); font-size:10px; cursor:pointer; margin-top:10px;">取消</button>
                 </div>
             </div>
             <div id="ai-chat-box">
@@ -528,7 +530,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const chatBox = document.getElementById('ai-chat-box');
             if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。'); return; }
             const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
-            const loadingMsg = appendMsg('bot', '正在推演...', false); // 不保存临时占位符
+            const loadingMsg = appendMsg('bot', '正在推演...', false); 
             try {
                 const isVision = /vision|gpt-4o|vl|gemini|claude/i.test(apiModel);
                 let payload;
@@ -560,11 +562,11 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if(document.getElementById('lab-key-in')) document.getElementById('lab-key-in').value = localStorage.getItem('alt_api_key') || "";
             if(document.getElementById('lab-model-in')) document.getElementById('lab-model-in').value = localStorage.getItem('alt_api_model') || "";
 
-            // 修正：统一键名读取聊天历史
+            // --- 统一键名：alt_ai_history ---
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
+            chatBox.innerHTML = ''; // 清空
             if(history.length > 0) {
-                chatBox.innerHTML = '';
                 history.forEach(m => appendMsg(m.role, m.text, false)); 
             } else {
                 appendMsg('bot', '在此刻寻找推演的回声...', false);
@@ -632,7 +634,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if (notes.length < 1) return window.showMsg("缺乏样本");
             area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
             const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-            await callAI(`分析模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
+            await callAI(`分析模式模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
             area.innerHTML = `分析回响已同步至侧边。`;
         };
 
@@ -738,7 +740,14 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
         window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
 
-        // 修正：修正键名统一为 alt_ai_history
+        window.clearAIHistory = function() {
+            if(confirm("确定要永久抹除所有推演历史吗？")) {
+                localStorage.removeItem('alt_ai_history');
+                document.getElementById('ai-chat-box').innerHTML = '<div class="ai-msg bot">在此刻寻找推演的回声...</div>';
+                window.showMsg("HISTORY ERASED");
+            }
+        };
+
         function appendMsg(role, text, shouldSave = true) { 
             const chatBox = document.getElementById('ai-chat-box'); 
             const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text; 
