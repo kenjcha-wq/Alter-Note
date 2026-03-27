@@ -73,6 +73,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
+        /* --- 核心布局 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
@@ -175,7 +176,7 @@
 </head>
 <body class="theme-default">
 
-    <!-- AI 插件 -->
+    <!-- AI 推演 -->
     <div id="alter-ai-plugin">
         <div id="ai-trigger" title="他我推演">🧪</div>
         <div id="ai-panel">
@@ -208,7 +209,6 @@
 
     <div id="toast">SYSTEM SYNCED</div>
 
-    <!-- 登录界面 -->
     <div id="auth-screen">
         <div class="auth-box">
             <div class="auth-logo">Alter.</div>
@@ -389,7 +389,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         </div>
     </div>
 
-    <!-- 相机 Overlay -->
     <div id="cam-overlay" class="overlay" style="background:#000;">
         <div id="flash-effect" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; opacity:0; pointer-events:none; z-index:10005;"></div>
         <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
@@ -559,6 +558,20 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
             if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
+            
+            // 修复：回显 API 配置
+            if(document.getElementById('lab-url-in')) document.getElementById('lab-url-in').value = localStorage.getItem('alt_api_url') || "";
+            if(document.getElementById('lab-key-in')) document.getElementById('lab-key-in').value = localStorage.getItem('alt_api_key') || "";
+            if(document.getElementById('lab-model-in')) document.getElementById('lab-model-in').value = localStorage.getItem('alt_api_model') || "";
+
+            // 修复：加载持久化推演历史
+            const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
+            const chatBox = document.getElementById('ai-chat-box');
+            if(history.length > 0) {
+                chatBox.innerHTML = '';
+                history.forEach(m => appendMsg(m.role, m.text, false)); // false 表示加载时不重复保存
+            }
+
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
             lucide.createIcons(); loadSamplePlugins();
@@ -713,14 +726,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         window.camOn = async function() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'flex'; } catch (e) { window.showMsg("相机启动失败"); } };
         window.camOff = function() { if(stream) stream.getTracks().forEach(t=>t.stop()); document.getElementById('cam-overlay').style.display='none'; };
-        window.snap = function() { 
-            const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); 
-            if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight;
-            c.getContext('2d').drawImage(v, 0, 0); 
-            const originalB64 = c.toDataURL('image/jpeg');
-            if(b64s.length < 3) compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); });
-            setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150);
-        };
+        window.snap = function() { const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0); const originalB64 = c.toDataURL('image/jpeg'); if(b64s.length < 3) compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); }); setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150); };
         async function compressImage(base64) { return new Promise((resolve) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let width = img.width, height = img.height, maxSide = 1080; if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; img.src = base64; }); }
         window.upFiles = async function(e) { const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length); for (const f of selectedFiles) { const r = new FileReader(); r.onload = async (ev) => { const compressed = await compressImage(ev.target.result); b64s.push(compressed); window.renderPrev(); }; r.readAsDataURL(f); } };
         window.upGenericFile = function(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); window.showMsg("FILE ATTACHED"); }; r.readAsDataURL(f); };
@@ -741,35 +747,37 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); }
         function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
-        function drawMap() { const box = document.getElementById('map-box'); box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); }
+        window.drawMap = function() { const box = document.getElementById('map-box'); box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); };
         window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
         window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
-        function appendMsg(role, text) { const chatBox = document.getElementById('ai-chat-box'); const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text; chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight; return msg; }
 
-        /* --- 核心修复：推演面板交互逻辑 --- */
+        // 修复：记录管理聊天历史
+        function appendMsg(role, text, shouldSave = true) { 
+            const chatBox = document.getElementById('ai-chat-box'); 
+            const msg = document.createElement('div'); msg.className = `ai-msg ${role}`; msg.innerText = text; 
+            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight; 
+            if(shouldSave) {
+                const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
+                history.push({ role, text });
+                if(history.length > 50) history.shift(); // 保持最近 50 条
+                localStorage.setItem('alt_api_history', JSON.stringify(history));
+            }
+            return msg; 
+        }
+
         (function() {
-            const trigger = document.getElementById('ai-trigger'), 
-                  panel = document.getElementById('ai-panel'), 
-                  closeBtn = document.querySelector('.ai-close'), // 显式获取关闭按钮
-                  sendBtn = document.getElementById('ai-send-btn'), 
-                  input = document.getElementById('ai-input'),
-                  labBtn = document.getElementById('ai-lab-btn'),
-                  labPanel = document.getElementById('ai-lab-panel');
-
+            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
             if(trigger) trigger.onclick = () => panel.classList.toggle('show');
-            
-            // 修复：补全关闭按钮逻辑
             if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
-            
             if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } };
             if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn.click(); };
-            
             if(labBtn) labBtn.onclick = () => labPanel.style.display='flex';
             document.getElementById('lab-close-btn').onclick = () => labPanel.style.display='none';
             document.getElementById('lab-save-btn').onclick = () => {
-                localStorage.setItem('alt_api_url', document.getElementById('lab-url-in').value);
-                localStorage.setItem('alt_api_key', document.getElementById('lab-key-in').value);
-                localStorage.setItem('alt_api_model', document.getElementById('lab-model-in').value);
+                // 修复：确保正确持久化 API 配置
+                localStorage.setItem('alt_api_url', document.getElementById('lab-url-in').value.trim());
+                localStorage.setItem('alt_api_key', document.getElementById('lab-key-in').value.trim());
+                localStorage.setItem('alt_api_model', document.getElementById('lab-model-in').value.trim());
                 labPanel.style.display='none'; window.showMsg("LAB SYNCED");
             };
         })();
