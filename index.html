@@ -44,12 +44,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
 
-        /* --- 视觉一致性强制补丁 --- */
-        .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p {
+        .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs {
             font-family: var(--font-main) !important;
         }
 
-        /* --- AI 插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
         #ai-trigger:hover { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
@@ -73,7 +71,6 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局样式 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
@@ -125,7 +122,6 @@
         .dash-card { padding: 40px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); text-align: center; }
         .dash-card h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 12px; }
 
-        /* 注入：手机端布局压实补丁 */
         @media (max-width: 600px) {
             .dash-row { gap: 10px !important; }
             .dash-card { padding: 15px !important; }
@@ -167,6 +163,10 @@
         .p-chip { font-size: 9px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 15px; cursor: pointer; opacity: 0.5; transition: 0.2s; white-space: nowrap; }
         .p-chip.active { opacity: 1; border-color: var(--accent); color: var(--accent); font-weight: 700; background: rgba(0,0,0,0.02); }
 
+        .plugin-card { padding: 20px; background: rgba(0,0,0,0.02); border: 1px solid var(--border); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 2px; }
+        .plugin-info h4 { font-size: 13px; margin-bottom: 4px; color: var(--text-main); }
+        .plugin-info p { font-size: 10px; color: var(--text-dim); }
+
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 8px 16px; font-size: 9px; border-radius: 20px; z-index: 11000; display: none; letter-spacing: 1px; }
         ::-webkit-scrollbar { display: none; }
     </style>
@@ -188,7 +188,7 @@
                 <h4 style="font-size:10px; margin-bottom:20px; letter-spacing:1px; color: var(--text-dim);">实验室配置</h4>
                 <input type="text" id="lab-url-in" class="lab-input" placeholder="API Base URL (e.g. https://api.openai.com/v1)">
                 <input type="password" id="lab-key-in" class="lab-input" placeholder="API Key (sk-...)">
-                <input type="text" id="lab-model-in" class="lab-input" placeholder="Model ID (gpt-4o, doubao-pro...)">
+                <input type="text" id="lab-model-in" class="lab-input" placeholder="Model ID (gpt-4o...)">
                 <div style="margin-top:auto; display:flex; gap:10px;">
                     <button id="lab-save-btn" class="btn-black" style="padding: 8px 15px; font-size:10px; flex:1;">保存</button>
                     <button id="lab-close-btn" style="background:none; border:none; color:var(--text-dim); font-size:10px; cursor:pointer;">取消</button>
@@ -285,7 +285,7 @@
                     </button>
                 </div>
             </div>
-            <div id="reflect-report" style="font-size:16px; line-height:2.6; border-left:1px solid var(--accent); padding-left:30px; text-align:justify;">选择分析模式。</div>
+            <div id="reflect-report" style="font-size:16px; line-height:2.6; border-left:1px solid var(--accent); padding-left:30px; text-align:justify;">在此感应意识的频率。</div>
         </div>
     </div>
 
@@ -295,8 +295,8 @@
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">LABORATORY / 实验室</p></div><span class="close-btn" onclick="closeOverlay('lab-overlay')">CLOSE</span></div>
             <div class="tabs-nav">
                 <div class="tab-btn active" onclick="tabTo('lab-style', this)">外观调节</div>
-                <div class="tab-btn" onclick="tabTo('lab-mind', this)">思维导图</div>
-                <div class="tab-btn" onclick="tabTo('tab-plugin', this)">插件市场</div>
+                <div class="tab-btn" onclick="tabTo('tab-market', this)">插件市场</div>
+                <div class="tab-btn" onclick="tabTo('tab-docs', this)">开发者规则</div>
             </div>
             <div id="lab-style" class="tab-pane active">
                 <div class="section-block">
@@ -305,30 +305,30 @@
                     <div class="ctrl-row"><span class="ctrl-label">行间间距</span><div class="ctrl-input-wrap"><input type="range" min="1.2" max="2.6" step="0.1" value="1.8" oninput="setTypo('line', this.value)" style="width:150px;"></div></div>
                 </div>
                 <div class="section-block">
-                    <h3>背景意象</h3>
-                    <div class="ctrl-row">
-                        <span class="ctrl-label">自定义背景 URL</span>
-                        <div class="ctrl-input-wrap" style="flex:1; gap:10px;">
-                            <input type="text" id="custom-bg-url" class="input-line" placeholder="粘贴图像链接..." style="margin:0;">
-                            <button class="btn-black" onclick="setAppBg()" style="padding:0 15px; height:35px;">应用</button>
-                        </div>
-                    </div>
+                    <h3>意识地图</h3>
+                    <button class="btn-black" onclick="drawMap()">重绘意识地图</button>
+                    <div id="map-box" style="width:100%; height:300px; margin-top:20px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
                 </div>
             </div>
-            <div id="lab-mind" class="tab-pane">
-                <button class="btn-black" onclick="drawMap()">重绘意识地图</button>
-                <div id="map-box" style="width:100%; height:450px; margin-top:20px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
-            </div>
-            <div id="tab-plugin" class="tab-pane">
+            <div id="tab-market" class="tab-pane">
                 <div class="section-block">
-                    <h3>功能动态挂载</h3>
-                    <p style="font-size:11px; color:var(--text-dim); margin-bottom:20px;">粘贴插件代码以扩展“他我”系统的边界。</p>
-                    <textarea id="plugin-code-in" class="input-line" style="height:150px; font-family:monospace; font-size:11px; padding:15px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// window.AlterPlugins.register('my-plugin', (data) => { ... });"></textarea>
-                    <button class="btn-black" style="width:100%; margin-top:15px;" onclick="installPluginFromInput()">载入插件</button>
+                    <h3>动态功能扩展</h3>
+                    <textarea id="plugin-code-in" class="input-line" style="height:150px; font-family:monospace; font-size:11px; padding:15px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// 粘贴 JS 代码或输入以 http 开头的插件链接..."></textarea>
+                    <button class="btn-black" style="width:100%; margin-top:15px;" onclick="installPluginFromInput()">载入功能</button>
                 </div>
                 <div class="section-block">
-                    <h3>已激活插件</h3>
-                    <div id="plugin-list" style="font-size:10px; color:var(--text-main);">暂无活跃插件。</div>
+                    <h3>已激活回响</h3>
+                    <div id="plugin-list-view"></div>
+                </div>
+            </div>
+            <div id="tab-docs" class="tab-pane">
+                <div class="section-block">
+                    <h3>开发者规则</h3>
+                    <p style="font-size:12px; margin-bottom:10px;">通过 <code>AlterPlugins.register({ name, author, run })</code> 挂载功能。</p>
+                    <pre class="pre-docs" style="background:rgba(0,0,0,0.05); padding:15px; font-size:10px; overflow-x:auto;">
+const data = AlterAPI.getNotes();
+AlterAPI.showMsg("同步中...");
+AlterAPI.openPanel("reflect-overlay");</pre>
                 </div>
             </div>
         </div>
@@ -373,7 +373,6 @@
                     <i data-lucide="file-up" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('doc-in').click()"></i>
                     <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="upGenericFile(event)">
                     <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="toggleVault()"></i>
-                    <div id="plugin-shortcut-area" style="display:flex; gap:15px; margin-left:10px; padding-left:10px; border-left:1px solid var(--border);"></div>
                 </div>
                 <button class="btn-black" onclick="save()">封存回响</button>
             </div>
@@ -400,67 +399,110 @@
     </div>
 
     <script>
-        // --- 1. 插件系统 ---
+        /* --- 0. 基础全局工具 --- */
+        window.showMsg = function(m) { 
+            const t = document.getElementById('toast'); 
+            if(!t) return;
+            t.innerText = m; t.style.display = 'block'; 
+            setTimeout(() => t.style.display = 'none', 2000); 
+        };
+
+        window.togglePanel = function(id) { 
+            document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
+            const target = document.getElementById(id); 
+            if(target) target.style.display = 'flex'; 
+        };
+
+        window.closeOverlay = function(id) { 
+            const target = document.getElementById(id); 
+            if(target) target.style.display = 'none'; 
+        };
+
+        window.tabTo = function(id, el) { 
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active')); 
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); 
+            if(el) el.classList.add('active'); 
+            const target = document.getElementById(id); 
+            if(target) target.classList.add('active'); 
+        };
+
+        // --- 1. 标准通讯协议 & 插件注册 ---
+        window.AlterAPI = {
+            getNotes: () => JSON.parse(JSON.stringify(notes)),
+            showMsg: (text) => window.showMsg(text),
+            openPanel: (id) => window.togglePanel(id)
+        };
+
         window.AlterPlugins = {
-            registry: {},
-            register(id, fn, icon = "zap") { 
-                this.registry[id] = { fn, icon }; 
+            registry: [],
+            register(plugin) {
+                if(!plugin.name || !plugin.run) return;
+                this.registry.push(plugin);
                 this.updateUI();
-                this.updateShortcuts();
             },
-            install(code) {
+            install(input) {
+                const code = input.trim();
+                if (!code) return;
                 try {
-                    eval(code);
-                    showMsg("PLUGIN MOUNTED");
-                } catch(e) {
-                    showMsg("COMPILE ERR: " + e.message);
-                }
+                    if (code.startsWith('http')) {
+                        const script = document.createElement('script'); script.src = code; document.head.appendChild(script);
+                        window.showMsg("URL 载入中...");
+                    } else { eval(code); window.showMsg("代码片段已挂载"); }
+                } catch (e) { window.showMsg("ERR: " + e.message); }
             },
-            run(id, data) {
-                if(this.registry[id]) return this.registry[id].fn(data);
-            },
+            run(i) { try { this.registry[i].run(); } catch (e) { window.showMsg("ERR: " + e.message); } },
             updateUI() {
-                const list = document.getElementById('plugin-list');
-                if(!list) return;
-                const keys = Object.keys(this.registry);
-                list.innerHTML = keys.length ? keys.map(k => `· [${this.registry[k].icon}] ${k}`).join('<br>') : "暂无活跃插件。";
-            },
-            updateShortcuts() {
-                const area = document.getElementById('plugin-shortcut-area');
-                if(!area) return;
-                area.innerHTML = Object.keys(this.registry).map(k => `<i data-lucide="${this.registry[k].icon}" style="cursor:pointer; color:var(--text-dim); width:14px;" onclick="window.AlterPlugins.run('${k}', { content: document.getElementById('note-in').value })" title="${k}"></i>`).join('');
-                lucide.createIcons();
+                const list = document.getElementById('plugin-list-view'); if(!list) return;
+                list.innerHTML = this.registry.map((p, i) => `
+                    <div class="plugin-card">
+                        <div class="plugin-info"><h4>${p.name}</h4><p>by ${p.author || 'Anon'}</p></div>
+                        <button class="btn-black" style="padding: 6px 12px; font-size: 8px;" onclick="AlterPlugins.run(${i})">执行</button>
+                    </div>`).join('');
             }
         };
 
-        AlterPlugins.register('字数推演', (data) => {
-            showMsg(`当前共捕捉到 ${data.content.length} 个思绪符号`);
-        }, 'bar-chart-2');
-
-        AlterPlugins.register('意识注入', (data) => {
-            const thoughts = ["（此处的虚无即是存在的证词）", "（一切回声皆为孤独的共鸣）", "（在这一刻，我观察着观察着的我）"];
-            document.getElementById('note-in').value += "\n" + thoughts[Math.floor(Math.random()*thoughts.length)];
-            showMsg("意识片段已注入");
-        }, 'brain-circuit');
+        function loadSamplePlugins() {
+            AlterPlugins.register({
+                name: "Markdown 全量导出", author: "Alter System",
+                run: () => {
+                    const data = AlterAPI.getNotes();
+                    let md = "# 他我笔记全量导出\n\n" + data.map(n => `## ${n.author || 'Guest'} · ${n.persona} (${n.time})\n\n${n.content}\n\n---\n`).join('\n');
+                    const blob = new Blob([md], { type: 'text/markdown' });
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Alter_Export.md"; a.click();
+                    AlterAPI.showMsg("已下载 MD 导出文件");
+                }
+            });
+            AlterPlugins.register({
+                name: "核心词频感应", author: "Alter Analytics",
+                run: () => {
+                    const text = AlterAPI.getNotes().map(n => n.content).join(' ');
+                    const words = text.match(/[\u4e00-\u9fa5]{2,4}/g) || [];
+                    const freq = {}; words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+                    const top5 = Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 5);
+                    const report = document.getElementById('reflect-report');
+                    if(report) {
+                        report.innerHTML = `<h3 style="font-size:14px; margin-bottom:20px;">词频感应报告</h3>` + top5.map(f => `<p>· <strong>${f[0]}</strong> (回响 ${f[1]} 次)</p>`).join('');
+                        AlterAPI.openPanel("reflect-overlay");
+                    }
+                }
+            });
+        }
 
         window.installPluginFromInput = function() {
-            const code = document.getElementById('plugin-code-in').value;
-            if(!code) return;
-            window.AlterPlugins.install(code);
-            document.getElementById('plugin-code-in').value = "";
+            const input = document.getElementById('plugin-code-in');
+            AlterPlugins.install(input.value); input.value = "";
         };
 
-        // --- 2. 数据与底层 ---
+        // --- 2. 核心数据与状态 ---
         const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
-        let db;
+        let db, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
+        const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
+        let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
 
         async function initDB() {
             return new Promise((resolve) => {
                 const request = indexedDB.open(DB_NAME, 1);
-                request.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "id" });
-                };
+                request.onupgradeneeded = (e) => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "id" }); };
                 request.onsuccess = (e) => { db = e.target.result; resolve(); };
             });
         }
@@ -479,96 +521,54 @@
             });
         }
 
-        const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
-        let notes = [], sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" }, user = localStorage.getItem('alter_v52_user') || "NIK";
-        let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
-
-        // --- 核心更新：底层 API 加固与容错 ---
         async function callAI(prompt, images = [], system = "你是一个深思熟虑的自省空间伙伴。") {
             const rawUrl = localStorage.getItem('alt_api_url') || "";
             const apiKey = localStorage.getItem('alt_api_key') || "";
             const apiModel = localStorage.getItem('alt_api_model') || "";
-            
             const chatBox = document.getElementById('ai-chat-box');
-            if (!apiKey || !rawUrl) {
-                appendMsg('bot', '⚠️ 配置缺失：请在侧边面板设置 API Key 和端点。');
-                return;
-            }
-
-            // 1. 地址容错与拼接
+            if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。'); return; }
             const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
             const loadingMsg = appendMsg('bot', '正在推演...');
-
             try {
-                // 2. Payload 兼容性检测
-                const isVisionModel = /vision|gpt-4o|gemini|vl|claude-3|phi-3\.5/i.test(apiModel);
-                let contentPayload;
-
-                if (isVisionModel && images.length > 0) {
-                    contentPayload = [{ type: "text", text: prompt }];
-                    images.forEach(b64 => contentPayload.push({ type: "image_url", image_url: { url: b64 } }));
+                const isVision = /vision|gpt-4o|vl|gemini|claude/i.test(apiModel);
+                let payload;
+                if(isVision && images.length) {
+                    payload = [{ type: "text", text: prompt }];
+                    images.forEach(img => payload.push({ type: "image_url", image_url: { url: img } }));
                 } else {
-                    // 对于纯文本模型（如 DeepSeek），即使有图片也过滤掉图片数据
-                    contentPayload = prompt;
+                    payload = prompt;
                 }
-
                 const res = await fetch(apiBase, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'Authorization': `Bearer ${apiKey}` 
-                    },
-                    body: JSON.stringify({ 
-                        model: apiModel, 
-                        messages: [
-                            { role: "system", content: system },
-                            { role: "user", content: contentPayload }
-                        ] 
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: apiModel, messages: [{ role: "system", content: system }, { role: "user", content: payload }] })
                 });
-
-                // 3. 显式错误上报逻辑
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    const errMsg = errData.error?.message || `HTTP ${res.status}: ${res.statusText}`;
-                    chatBox.removeChild(loadingMsg);
-                    appendMsg('bot', `❌ 推演中断：${errMsg}`);
-                    return;
-                }
-
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                chatBox.removeChild(loadingMsg);
-
-                if (data.choices && data.choices[0]) {
-                    appendMsg('bot', data.choices[0].message.content);
-                } else {
-                    appendMsg('bot', '❌ 接口返回格式异常，未能捕获回响。');
-                }
-
-            } catch (e) {
                 if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
-                appendMsg('bot', `❌ 网络或底层故障：${e.message}`);
-            }
+                if (data.choices) appendMsg('bot', data.choices[0].message.content);
+            } catch (e) { if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg); appendMsg('bot', `❌ 推演中断：${e.message}`); }
         }
 
         async function init() {
             await initDB();
             notes = await dbAction("getAll");
             notes.sort((a,b) => b.id - a.id);
-            notes = notes.filter(n => !n.deleteAt || n.deleteAt > Date.now());
+            if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
             if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
             if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
-            if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
+
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
-            lucide.createIcons();
-            window.AlterPlugins.updateShortcuts();
+            lucide.createIcons(); loadSamplePlugins();
         }
 
         window.enterApp = function(name) {
-            const n = name || document.getElementById('user-name-in').value.trim();
-            if(!n) return;
-            if (sec.n && !name) { const pin = prompt("验证 PIN："); if (pin !== sec.n) { showMsg("PIN ERROR"); return; } }
+            const n = name || document.getElementById('user-name-in').value.trim(); if(!n) return;
+            if (sec.n && !name) { 
+                const pin = prompt("验证 PIN："); 
+                if (pin !== sec.n) { window.showMsg("PIN ERROR"); return; } 
+            }
             user = n; localStorage.setItem('alter_v52_user', user);
             document.getElementById('auth-screen').style.display='none';
             document.getElementById('current-user-tag').innerText = user;
@@ -577,46 +577,34 @@
         };
 
         window.switchView = function(m, el) {
-            viewMode = m; 
-            document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); 
-            if(el) el.classList.add('active');
+            viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
             document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
             document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
             document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
             document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
-            if(m === 'vault') {
-                document.getElementById('view-title').innerText = "他我笔记";
-                document.getElementById('view-subtitle').innerText = "INSPIRATION / 灵感碎片";
-            } else {
-                const titles = { 'home': '他我笔记', 'timeline': '他我笔记' };
-                const subs = { 'home': 'DASHBOARD / 概览', 'timeline': 'FRAGMENTS / 时间流' };
-                document.getElementById('view-title').innerText = titles[m];
-                document.getElementById('view-subtitle').innerText = subs[m];
-            }
+            document.getElementById('view-title').innerText = "他我笔记";
+            document.getElementById('view-subtitle').innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
             if(m==='home') renderDailyReview();
             renderGrid();
         };
 
-        window.handleVaultAccess = function(el) {
+        window.handleVaultAccess = function(el) { 
             if(sec.v) {
                 const p = prompt("验证灵感碎片密码：");
-                if (p !== sec.v) { showMsg("DENIED"); return; }
+                if (p !== sec.v) { window.showMsg("DENIED"); return; }
             }
-            window.switchView('vault', el);
+            window.switchView('vault', el); 
         };
 
-        window.togglePanel = function(id) {
-            document.querySelectorAll('.overlay').forEach(o=>o.style.display='none');
-            const target = document.getElementById(id);
-            if(target) target.style.display='flex';
+        window.saveSec = function() {
+            sec.v = document.getElementById('pass-vault').value;
+            sec.n = document.getElementById('pass-note').value;
+            localStorage.setItem('alter_v52_sec', JSON.stringify(sec));
+            window.showMsg("SECURITY SAVED");
         };
 
-        window.closeOverlay = function(id) {
-            const target = document.getElementById(id);
-            if(target) target.style.display = 'none';
-        };
-
+        // --- 修复：注入 switchVaultMode ---
         window.switchVaultMode = function(mode) {
             vaultSubMode = mode;
             document.getElementById('tab-soul').classList.toggle('active', mode === 'soul');
@@ -624,112 +612,115 @@
             renderGrid();
         };
 
+        // --- 修复：注入 synthesize ---
         window.synthesize = async function() {
-            const soulNotes = notes.filter(n => n.isVault && !n.deleteAt);
-            if(soulNotes.length < 2) return showMsg("碎片不足");
+            const soulNotes = notes.filter(n => n.isVault);
+            if(soulNotes.length < 2) return window.showMsg("碎片不足");
             const context = soulNotes.slice(0, 10).map(n => n.content).join("\n---\n");
             await callAI("请基于这些碎片重构一段深刻的自省独白：\n" + context);
         };
 
+        // --- 修复：注入 runInquiry ---
         window.runInquiry = async function(type) {
             const area = document.getElementById('reflect-report'); 
-            if (notes.length < 1) return showMsg("缺乏样本");
+            if (notes.length < 1) return window.showMsg("缺乏样本");
             area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
             const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-            await callAI(`分析以下碎片的潜意识模式：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
-            area.innerHTML = `推演报告已同步至推演面板。`;
+            await callAI(`分析模式模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
+            area.innerHTML = `分析回响已同步至侧边。`;
         };
 
-        window.tabTo = function(id, el) { 
-            document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active')); 
-            document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active')); 
-            el.classList.add('active'); 
-            const target = document.getElementById(id); if(target) target.classList.add('active'); 
-        };
-
-        window.setTypo = function(k, v) { 
-            if(k==='weight') document.documentElement.style.setProperty('--text-weight', v); 
-            if(k==='line') document.documentElement.style.setProperty('--line-height', v); 
-        };
-
-        window.setAppBg = function() { 
-            const url = document.getElementById('custom-bg-url').value.trim(); 
-            if(url) { document.body.style.backgroundImage = `url(${url})`; showMsg("BG UPDATED"); } 
-        };
-
-        window.drawMap = function() { 
-            const box = document.getElementById('map-box'); box.innerHTML = ''; 
-            ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { 
-                const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
-                n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
-                n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); 
-            }); 
-        };
-
+        // --- 修复：注入 renameLogin ---
         window.renameLogin = function() {
             const n = document.getElementById('rename-user-in').value.trim();
-            if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); showMsg("IDENTITY UPDATED"); }
+            if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
         };
 
-        window.saveSec = function() {
-            sec.v = document.getElementById('pass-vault').value;
-            sec.n = document.getElementById('pass-note').value;
-            localStorage.setItem('alter_v52_sec', JSON.stringify(sec));
-            showMsg("SECURITY SAVED");
-        };
-
+        // --- 修复：注入 dlData ---
         window.dlData = function() {
             const b = new Blob([JSON.stringify(notes)],{type:'application/json'});
             const a = document.createElement('a'); a.href=URL.createObjectURL(b);
             a.download='alter_backup.json'; a.click();
         };
 
-        window.upFiles = async function(e) {
-            const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length);
-            for (const f of selectedFiles) {
-                const r = new FileReader();
-                r.onload = async (ev) => {
-                    const compressed = await compressImage(ev.target.result);
-                    b64s.push(compressed); renderPrev();
-                };
-                r.readAsDataURL(f);
-            }
-        };
-
-        window.upGenericFile = function(e) { 
-            const f = e.target.files[0]; if(!f) return; 
-            const r = new FileReader(); 
-            r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); showMsg("FILE ATTACHED"); }; 
-            r.readAsDataURL(f); 
-        };
-
-        window.toggleVault = function() {
-            inV = !inV;
-            document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
-        };
-
         window.save = async function() { 
-            const t = document.getElementById('note-in').value.trim(); 
-            if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
+            const t = document.getElementById('note-in').value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             const newNote = { 
                 id:Date.now(), content:t, author: user, images:[...b64s], files:[...files], 
                 isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
                 tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
             };
-            await dbAction("put", newNote);
-            notes.unshift(newNote);
-            resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
+            await dbAction("put", newNote); notes.unshift(newNote);
+            window.resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
         };
 
-        window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
-        window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
+        async function renderGrid(q = "") {
+            const grid = document.getElementById('note-grid'); if(!grid) return;
+            grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="window.togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
+            const pFilter = document.getElementById('persona-filter').value;
+            let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
+            if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
+            list.forEach(n => {
+                const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
+                const mainImg = (n.images && n.images.length) ? n.images[0] : null;
+                div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
+                    <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
+                    <div class="card-content">${n.content}</div>
+                    <div class="card-footer">
+                        <div class="footer-tools">
+                            <button class="footer-btn" onclick="window.doZ(event, ${n.id})"><i data-lucide="zap"></i> ${n.zs||0}</button>
+                            <button class="footer-btn" onclick="window.deleteNote(event, ${n.id})"><i data-lucide="trash-2"></i></button>
+                        </div>
+                        <div class="card-info">#${n.tag || 'FRAGMENT'} ${n.replies?.length ? '('+n.replies.length+')' : ''}</div>
+                    </div>`;
+                grid.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        window.doZ = async function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; await dbAction("put", n); renderGrid(); } };
+        window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } };
+
+        function showNote(n) {
+            const el = document.getElementById('reader-target'); window.togglePanel('reader-overlay');
+            const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
+            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
+            const pChips = [...FIXED_P, {n: user, i: "👤"}].map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
+            el.innerHTML = `
+                <div style="margin-bottom:40px;">${imgsHtml}</div>
+                <div style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:60px;">${n.content}</div>
+                <div style="border-top:1px solid var(--border); padding-top:60px;">
+                    <h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4>
+                    <div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px;">静候回声。</p'}</div>
+                    <div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;">
+                        <div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div>
+                        <div class="p-picker">${pChips}</div>
+                        <input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响...">
+                        <button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button>
+                    </div>
+                </div>`;
+        }
+
+        window.setRT = (name) => { rTo = name; const ind = document.getElementById('r-ind'); if(ind){ ind.style.display='block'; document.getElementById('r-name').innerText=name; } };
+        window.setCommAction = (name, el) => { 
+            const allP = [...FIXED_P, {n: user, i: "👤"}];
+            commP = allP.find(p=>p.n===name);
+            document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active');
+        };
+        window.sendR = async (id) => {
+            const txt = document.getElementById('comIn').value.trim(); if(!txt) return;
+            const n = notes.find(x=>x.id===id); if(n){
+                if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `@${rTo} ${txt}` : txt, who: commP.n });
+                await dbAction("put", n); showNote(n); rTo = null; window.showMsg("SYNCED");
+            }
+        };
 
         window.camOn = async function() { 
             try { 
                 stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
                 document.getElementById('v-stream').srcObject = stream; 
                 document.getElementById('cam-overlay').style.display = 'flex'; 
-            } catch (e) { showMsg("CAMERA ERROR"); } 
+            } catch (e) { window.showMsg("相机启动失败"); } 
         };
 
         window.camOff = function() { 
@@ -743,9 +734,7 @@
             c.getContext('2d').drawImage(v, 0, 0); 
             const originalB64 = c.toDataURL('image/jpeg');
             if(b64s.length < 3) { 
-                compressImage(originalB64).then(compressed => {
-                    b64s.push(compressed); renderPrev();
-                });
+                compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); });
             }
             setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150);
         };
@@ -756,61 +745,64 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width, height = img.height, maxSide = 1080;
-                    if (width > maxSide || height > maxSide) {
-                        if (width > height) { height = (height / width) * maxSide; width = maxSide; }
-                        else { width = (width / height) * maxSide; height = maxSide; }
-                    }
+                    if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } }
                     canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                     resolve(canvas.toDataURL('image/jpeg', 0.7));
                 };
                 img.src = base64;
             });
         }
 
-        async function renderGrid(q = "") {
-            const grid = document.getElementById('note-grid'); if(!grid) return;
-            grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="window.togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
-            const pFilter = document.getElementById('persona-filter').value;
-            let list = notes.filter(n => {
-                if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter);
-                if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt);
-                return true;
-            });
-            if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
-            list.forEach(n => {
-                const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
-                const mainImg = (n.images && n.images.length) ? n.images[0] : null;
-                div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
-                    <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
-                    <div class="card-content">${n.content}</div>
-                    <div class="card-footer">
-                        <div class="footer-tools">
-                            <button class="footer-btn" onclick="doZ(event, ${n.id})"><i data-lucide="zap"></i> ${n.zs||0}</button>
-                            <button class="footer-btn" onclick="deleteNote(event, ${n.id})"><i data-lucide="trash-2"></i></button>
-                        </div>
-                        <div class="card-info">#${n.tag || 'FRAGMENT'} ${n.replies?.length ? '('+n.replies.length+')' : ''}</div>
-                    </div>`;
-                grid.appendChild(div);
-            });
-            lucide.createIcons();
+        window.upFiles = async function(e) {
+            const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length);
+            for (const f of selectedFiles) {
+                const r = new FileReader();
+                r.onload = async (ev) => { const compressed = await compressImage(ev.target.result); b64s.push(compressed); window.renderPrev(); };
+                r.readAsDataURL(f);
+            }
+        };
+
+        window.upGenericFile = function(e) { 
+            const f = e.target.files[0]; if(!f) return; 
+            const r = new FileReader(); 
+            r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); window.showMsg("FILE ATTACHED"); }; 
+            r.readAsDataURL(f); 
+        };
+
+        window.killImg = function(i) { b64s.splice(i, 1); window.renderPrev(); };
+
+        window.toggleVault = function() { inV = !inV; document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
+
+        window.resetEditor = function() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML=""; document.getElementById('prevBox').style.display="none"; document.getElementById('vaultToggle').style.color='var(--text-dim)'; };
+
+        window.renderPrev = function() { const box = document.getElementById('prevBox'); box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); };
+
+        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
+        function renderDailyReview() {
+            const box = document.getElementById('review-box'); if(!box) return;
+            const eligible = notes.filter(n => !n.isVault);
+            if(!eligible.length) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; }
+            const r = eligible[Math.floor(Math.random()*eligible.length)];
+            box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
+        }
+        function renderSwitcher() { const allP = [...FIXED_P, {n: user, i: "👤"}]; document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
+        function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
+        function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); }
+        function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
+        window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
+
+        function drawMap() { 
+            const box = document.getElementById('map-box'); box.innerHTML = ''; 
+            ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { 
+                const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; 
+                n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; 
+                n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); 
+            }); 
         }
 
-        window.doZ = function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; dbAction("put", n); renderGrid(); } };
-        window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } };
-
-        function showNote(n) {
-            const el = document.getElementById('reader-target'); document.getElementById('reader-overlay').style.display = 'flex';
-            const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
-            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
-            const pChips = FIXED_P.map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
-            el.innerHTML = `<div style="margin-bottom:40px;">${imgsHtml}</div><div style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:60px;">${n.content}</div><div style="border-top:1px solid var(--border); padding-top:60px;"><h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4><div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px; padding:20px 0;">静候回声。</p'}</div><div style="margin-top:60px; background:rgba(0,0,0,0.01); padding:30px; border-radius:4px;"><div id="r-ind" style="font-size:9px; color:var(--text-dim); margin-bottom:15px; display:none;">回复 @<span id="r-name"></span>...</div><div class="p-picker">${pChips}</div><input type="text" id="comIn" class="input-line" style="margin-bottom:15px;" placeholder="写下回响..." onkeydown="if(event.key==='Enter') window.sendR(${n.id})"><button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button></div></div>`;
-        }
-
-        window.setRT = (n) => { rTo = n; document.getElementById('r-ind').style.display = 'block'; document.getElementById('r-name').innerText = n; document.getElementById('comIn').focus(); };
-        window.setCommAction = (n, el) => { commP = FIXED_P.find(p=>p.n === n); document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); if(el) el.classList.add('active'); };
-        window.sendR = async (id) => { const txt = document.getElementById('comIn').value.trim(); if(!txt) return; const n = notes.find(x=>x.id===id); if(n){ if(!n.replies) n.replies = []; const finalTxt = rTo ? `@${rTo} ${txt}` : txt; n.replies.push({ txt: finalTxt, who: commP.n }); await dbAction("put", n); showNote(n); rTo = null; showMsg("SYNCED"); } };
+        window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
+        window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
 
         function appendMsg(role, text) {
             const chatBox = document.getElementById('ai-chat-box');
@@ -819,92 +811,19 @@
             return msg;
         }
 
-        async function renderAll() { 
-            await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); 
-        }
-        
-        function renderDailyReview() {
-            const box = document.getElementById('review-box'); if(!box) return;
-            const eligible = notes.filter(n => !n.isVault);
-            if(eligible.length === 0) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; }
-            const r = eligible[Math.floor(Math.random()*eligible.length)];
-            box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`;
-        }
-        
-        function renderSwitcher() { 
-            const allP = [...FIXED_P, {n: user, i: "👤"}];
-            document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); 
-        }
-
-        function renderPersonaFilter() {
-            const sel = document.getElementById('persona-filter');
-            if(!sel) return;
-            const currentVal = sel.value;
-            sel.innerHTML = '<option value="all">所有身份</option>';
-            [...FIXED_P, {n: user, i: "👤"}].forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt);
-            });
-            sel.value = currentVal || 'all';
-        }
-
-        function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px; letter-spacing:1px;">IDENTITY LOCKED</span></div>`).join(''); }
-        
-        function resetEditor() { 
-            b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML = "";
-            document.getElementById('prevBox').style.display = "none"; document.getElementById('vaultToggle').style.color = 'var(--text-dim)'; 
-        }
-
-        function renderPrev() { const box = document.getElementById('prevBox'); box.style.display = b64s.length ? 'grid' : 'none'; box.innerHTML = b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); }
-        window.killImg = function(i) { b64s.splice(i, 1); renderPrev(); };
-        function showMsg(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 2000); }
-        function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
-        window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
-
-        // --- 核心更新：显式事件锚点 ---
         (function() {
-            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
-            
+            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input');
             if(trigger) trigger.onclick = () => panel.classList.toggle('show');
-            
-            const closeBtn = document.querySelector('.ai-close');
-            if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
-            
-            const sendBtn = document.getElementById('ai-send-btn');
-            if(sendBtn) {
-                sendBtn.onclick = () => {
-                    const text = input.value.trim();
-                    if (!text) return;
-                    appendMsg('user', text);
-                    input.value = '';
-                    callAI(text);
-                };
-            }
-            
-            if(input) {
-                input.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        sendBtn.click();
-                    }
-                };
-            }
-            
-            if(labBtn) labBtn.onclick = () => labPanel.style.display = 'flex';
-            
-            const labClose = document.getElementById('lab-close-btn');
-            if(labClose) labClose.onclick = () => labPanel.style.display = 'none';
-            
-            const labSave = document.getElementById('lab-save-btn');
-            if(labSave) {
-                labSave.onclick = () => {
-                    const u = document.getElementById('lab-url-in').value.trim(), k = document.getElementById('lab-key-in').value.trim(), m = document.getElementById('lab-model-in').value.trim();
-                    if (u) localStorage.setItem('alt_api_url', u);
-                    if (k) localStorage.setItem('alt_api_key', k); 
-                    if (m) localStorage.setItem('alt_api_model', m);
-                    labPanel.style.display = 'none'; showMsg("LAB SYNCED");
-                };
-            }
+            if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } };
+            if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn.click(); };
+            document.getElementById('ai-lab-btn').onclick = () => document.getElementById('ai-lab-panel').style.display='flex';
+            document.getElementById('lab-close-btn').onclick = () => document.getElementById('ai-lab-panel').style.display='none';
+            document.getElementById('lab-save-btn').onclick = () => {
+                localStorage.setItem('alt_api_url', document.getElementById('lab-url-in').value);
+                localStorage.setItem('alt_api_key', document.getElementById('lab-key-in').value);
+                localStorage.setItem('alt_api_model', document.getElementById('lab-model-in').value);
+                document.getElementById('ai-lab-panel').style.display='none'; window.showMsg("LAB SYNCED");
+            };
         })();
 
         window.addEventListener('load', init);
