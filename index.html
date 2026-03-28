@@ -49,6 +49,24 @@
             font-family: var(--font-main) !important;
         }
 
+        /* --- 理智/他我切换按钮样式 --- */
+        #persona-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: var(--font-main);
+            font-size: 8px;
+            padding: 2px 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 5px;
+            border-radius: 2px;
+        }
+        #persona-toggle-btn.mode-rational {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         /* --- AI 插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
@@ -67,7 +85,8 @@
         .ai-msg.user { background: var(--ai-msg-user); color: var(--text-main); margin-left: auto; border-bottom-right-radius: 2px; text-align: left; }
         .ai-msg.bot { background: var(--ai-msg-bot); color: #fff; margin-right: auto; border-bottom-left-radius: 2px; }
         
-        .ai-input-area { padding: 10px; background: var(--ai-panel-bg); border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .ai-input-area { padding: 10px; background: var(--ai-panel-bg); border-top: 1px solid var(--border); display: flex; flex-direction: column; }
+        .ai-input-row { display: flex; gap: 10px; }
         #ai-input { flex: 1; border: 1px solid var(--border); background: var(--bg); padding: 8px 12px; border-radius: 20px; font-size: 13px; outline: none; color: var(--text-main); }
         
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
@@ -114,13 +133,31 @@
         .card-content { font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
         .card-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
-        .footer-tools { display: flex; gap: 8px; align-items: center; }
-        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 8px !important; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s; padding: 0; opacity: 0.3; }
-        .footer-btn i { width: 8px !important; height: 8px !important; }
-        .card:hover .footer-btn { opacity: 0.6; }
+        .footer-tools { display: flex; gap: 6px; align-items: center; }
+        .footer-btn { background: none; border: none; color: var(--text-dim); font-size: 7px !important; display: flex; align-items: center; gap: 3px; cursor: pointer; transition: 0.3s; padding: 0; opacity: 0.2; }
+        .footer-btn i { width: 7px !important; height: 7px !important; }
+        .card:hover .footer-btn { opacity: 0.5; }
         .footer-btn:hover { opacity: 1; color: var(--accent); }
         
         .card-info { font-size: 5px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; opacity: 0.3; text-transform: uppercase; }
+
+        /* --- 文件标签样式 --- */
+        .file-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: var(--font-main);
+            font-size: 8px;
+            color: var(--text-dim);
+            text-decoration: none;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .file-tag:hover { color: var(--accent); border-color: var(--accent); }
 
         .dash-card { padding: 40px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); text-align: center; }
         .dash-card h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin-bottom: 12px; }
@@ -144,6 +181,13 @@
         .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; position: sticky; top: 0; background: inherit; z-index: 10; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
         .panel-header h2 { font-family: var(--font-title) !important; font-size: 32px; font-weight: 400; color: var(--accent); }
         .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
+
+        /* --- 彻底移除阅读器正文高度限制 --- */
+        #reader-target .content-body {
+            max-height: none !important;
+            mask-image: none !important;
+            -webkit-mask-image: none !important;
+        }
 
         .tabs-nav { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
         .tab-btn { font-size: 10px; font-weight: 700; color: var(--text-dim); cursor: pointer; padding-bottom: 12px; position: relative; text-transform: uppercase; letter-spacing: 1px; }
@@ -194,16 +238,20 @@
                 <input type="text" id="lab-model-in" class="lab-input" placeholder="Model ID (gpt-4o...)">
                 <div style="margin-top:auto; display:flex; gap:10px; flex-direction:column;">
                     <button id="lab-save-btn" class="btn-black" style="padding: 8px 15px; font-size:10px; width:100%;">保存配置</button>
+                    <button onclick="window.exportAIHistory()" style="background:none; border:1px solid var(--border); color:var(--text-main); font-size:8px; cursor:pointer; padding:5px; border-radius:2px; margin-top:5px;">导出推演记录</button>
                     <button onclick="window.clearAIHistory()" style="background:none; border:1px solid #ff5555; color:#ff5555; font-size:8px; cursor:pointer; padding:5px; border-radius:2px; margin-top:5px;">清除推演历史</button>
                     <button id="lab-close-btn" style="background:none; border:none; color:var(--text-dim); font-size:10px; cursor:pointer; margin-top:10px;">取消</button>
                 </div>
             </div>
-            <div id="ai-chat-box">
-                <!-- 推演内容在此同步 -->
-            </div>
+            <div id="ai-chat-box"></div>
             <div class="ai-input-area">
-                <input type="text" id="ai-input" placeholder="写下你的拟演想法...">
-                <button id="ai-send-btn" class="btn-black" style="padding: 8px 15px; font-size:10px;">同步</button>
+                <div style="display:flex; justify-content:flex-start;">
+                    <button id="persona-toggle-btn" onclick="window.toggleAIPersona()">模式：他我</button>
+                </div>
+                <div class="ai-input-row">
+                    <input type="text" id="ai-input" placeholder="写下你的拟演想法...">
+                    <button id="ai-send-btn" class="btn-black" style="padding: 8px 15px; font-size:10px;">同步</button>
+                </div>
             </div>
         </div>
     </div>
@@ -228,7 +276,7 @@
         <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i></div>
         <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
-        <div class="nav-link" onclick="togglePanel('editor-overlay')" title="封存"><i data-lucide="feather"></i></div>
+        <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
         <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
     </nav>
 
@@ -364,7 +412,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     <!-- 编辑器 Overlay -->
     <div id="editor-overlay" class="overlay">
         <div class="overlay-content">
-            <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
+            <div class="panel-header"><div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
             <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:20px;"></div>
             <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none;" placeholder="在此刻寻找回声..."></textarea>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
@@ -442,28 +490,58 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 this.registry.push(plugin);
                 this.updateUI();
             },
-            install(input) {
+            // 持久化载入与卸载逻辑实现
+            install(input, isAuto = false) {
                 const code = input.trim();
                 if (!code) return;
                 try {
                     if (code.startsWith('http')) {
                         const script = document.createElement('script'); script.src = code; document.head.appendChild(script);
-                        window.showMsg("URL 载入中...");
-                    } else { eval(code); window.showMsg("代码片段已挂载"); }
+                        if(!isAuto) window.showMsg("URL 载入中...");
+                    } else { 
+                        eval(code); 
+                        if(!isAuto) {
+                            const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
+                            saved.push({ id: Date.now(), name: "自定义插件", code: code });
+                            localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
+                            window.showMsg("代码已封存至本地"); 
+                        }
+                    }
                 } catch (e) { window.showMsg("ERR: " + e.message); }
+            },
+            uninstall(id) {
+                let saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
+                saved = saved.filter(p => p.id !== id);
+                localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
+                window.showMsg("功能已卸载，请刷新页面释放内存");
+                this.updateUI();
             },
             run(i) { try { this.registry[i].run(); } catch (e) { window.showMsg("ERR: " + e.message); } },
             updateUI() {
                 const list = document.getElementById('plugin-list-view'); if(!list) return;
-                list.innerHTML = this.registry.map((p, i) => `
+                const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
+                
+                let html = this.registry.map((p, i) => `
                     <div class="plugin-card">
                         <div class="plugin-info"><h4>${p.name}</h4><p>by ${p.author || 'Anon'}</p></div>
                         <button class="btn-black" style="padding: 6px 12px; font-size: 8px;" onclick="AlterPlugins.run(${i})">执行</button>
                     </div>`).join('');
+
+                html += saved.map(p => `
+                    <div class="plugin-card">
+                        <div class="plugin-info"><h4>${p.name}</h4><p>持久化存储 · ID:${p.id}</p></div>
+                        <a href="javascript:;" style="font-size:8px; color:#ff5555; text-decoration:none;" onclick="AlterPlugins.uninstall(${p.id})">卸载</a>
+                    </div>`).join('');
+                
+                list.innerHTML = html;
             }
         };
 
         function loadSamplePlugins() {
+            // 生命周期：自动加载持久化插件
+            const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
+            saved.forEach(p => AlterPlugins.install(p.code, true));
+
             AlterPlugins.register({
                 name: "Markdown 全量导出", author: "Alter System",
                 run: () => {
@@ -474,18 +552,18 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     AlterAPI.showMsg("已下载 MD 导出文件");
                 }
             });
+
+            // 新增：聊天记录一键生成文章插件 (限制最近 20 条记录)
             AlterPlugins.register({
-                name: "核心词频感应", author: "Alter Analytics",
-                run: () => {
-                    const text = AlterAPI.getNotes().map(n => n.content).join(' ');
-                    const words = text.match(/[\u4e00-\u9fa5]{2,4}/g) || [];
-                    const freq = {}; words.forEach(w => freq[w] = (freq[w] || 0) + 1);
-                    const top5 = Object.entries(freq).sort((a,b) => b[1] - a[1]).slice(0, 5);
-                    const report = document.getElementById('reflect-report');
-                    if(report) {
-                        report.innerHTML = `<h3 style="font-size:14px; margin-bottom:20px;">词频感应报告</h3>` + top5.map(f => `<p>· <strong>${f[0]}</strong> (回响 ${f[1]} 次)</p>`).join('');
-                        AlterAPI.openPanel("reflect-overlay");
-                    }
+                name: "推演凝练 (Chat to Article)",
+                author: "Alter AI",
+                run: async () => {
+                    const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
+                    if(history.length < 4) return AlterAPI.showMsg("推演记录过短");
+                    // 选取最近 20 条消息进行重构，兼顾语境深度与连贯性
+                    const context = history.slice(-20).map(h => `${h.role === 'user' ? '我' : '他我'}: ${h.text}`).join('\n');
+                    AlterAPI.showMsg("凝练中...");
+                    await callAI("请基于以下对话记录，撰写一篇具有文学色彩的深度自省文章：\n\n" + context);
                 }
             });
         }
@@ -493,6 +571,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.installPluginFromInput = function() {
             const input = document.getElementById('plugin-code-in');
             AlterPlugins.install(input.value); input.value = "";
+            AlterPlugins.updateUI();
         };
 
         // --- 2. 核心数据与状态 ---
@@ -500,6 +579,8 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         let db, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
+        let editingId = null; // 编辑状态回填 ID
+        let aiPersonaMode = 'alter'; // 他我(alter) | 理智(rational)
 
         async function initDB() {
             return new Promise((resolve) => {
@@ -523,12 +604,46 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             });
         }
 
-        async function callAI(prompt, images = [], system = "你是一个深思熟虑的自省空间伙伴。") {
+        // 双人格切换逻辑
+        window.toggleAIPersona = function() {
+            const btn = document.getElementById('persona-toggle-btn');
+            if (aiPersonaMode === 'alter') {
+                aiPersonaMode = 'rational';
+                btn.innerText = "模式：理智";
+                btn.classList.add('mode-rational');
+            } else {
+                aiPersonaMode = 'alter';
+                btn.innerText = "模式：他我";
+                btn.classList.remove('mode-rational');
+            }
+        };
+
+        // 推演导出逻辑
+        window.exportAIHistory = function() {
+            const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
+            if(!history.length) return window.showMsg("历史记录空空如也");
+            let output = history.map(h => `${h.role === 'user' ? '「我」' : '「他我」'}: ${h.text}`).join('\n\n');
+            const blob = new Blob([output], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Alter_Echo_${Date.now()}.txt`;
+            a.click();
+            window.showMsg("推演记录已导出");
+        };
+
+        async function callAI(prompt, images = [], systemOverride = null) {
             const rawUrl = localStorage.getItem('alt_api_url') || "";
             const apiKey = localStorage.getItem('alt_api_key') || "";
             const apiModel = localStorage.getItem('alt_api_model') || "";
             const chatBox = document.getElementById('ai-chat-box');
             if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。'); return; }
+            
+            // 双人格指令注入
+            let system = systemOverride || "你是一个深思熟虑的自省空间伙伴。";
+            if (aiPersonaMode === 'rational') {
+                system = "你是一个冷静、中立、客观的观察者。回复时直接切中要害，不使用讨好性语言，保持客观公正且不吹毛求疵。";
+            }
+
             const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
             const loadingMsg = appendMsg('bot', '正在推演...', false); 
             try {
@@ -562,10 +677,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if(document.getElementById('lab-key-in')) document.getElementById('lab-key-in').value = localStorage.getItem('alt_api_key') || "";
             if(document.getElementById('lab-model-in')) document.getElementById('lab-model-in').value = localStorage.getItem('alt_api_model') || "";
 
-            // --- 统一键名：alt_ai_history ---
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
-            chatBox.innerHTML = ''; // 清空
+            chatBox.innerHTML = ''; 
             if(history.length > 0) {
                 history.forEach(m => appendMsg(m.role, m.text, false)); 
             } else {
@@ -574,7 +688,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
             if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
             else enterApp(user);
-            lucide.createIcons(); loadSamplePlugins();
+            lucide.createIcons(); 
+            loadSamplePlugins();
+            AlterPlugins.updateUI();
         }
 
         window.enterApp = function(name) {
@@ -649,20 +765,65 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             a.download='alter_backup.json'; a.click();
         };
 
+        // 编辑回填逻辑
+        window.editNote = function(e, id) {
+            e.stopPropagation();
+            const n = notes.find(x => x.id === id);
+            if (!n) return;
+            editingId = n.id;
+            document.getElementById('editor-title').innerText = "修缮回响";
+            document.getElementById('editor-subtitle').innerText = `EDITING / #${n.id}`;
+            document.getElementById('note-in').value = n.content;
+            b64s = [...(n.images || [])];
+            files = [...(n.files || [])];
+            inV = n.isVault;
+            activeP = [...FIXED_P, {n: user, i: "👤"}].find(p => p.n === n.persona) || FIXED_P[0];
+            
+            window.renderPrev();
+            window.renderSwitcher();
+            document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
+            window.togglePanel('editor-overlay');
+        };
+
+        window.openNewEditor = function() {
+            editingId = null;
+            document.getElementById('editor-title').innerText = "他我笔记";
+            document.getElementById('editor-subtitle').innerText = "FRAGMENTS / 封存碎语";
+            window.resetEditor();
+            window.togglePanel('editor-overlay');
+        };
+
         window.save = async function() { 
             const t = document.getElementById('note-in').value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
-            const newNote = { 
-                id:Date.now(), content:t, author: user, images:[...b64s], files:[...files], 
-                isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
-                tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
-            };
-            await dbAction("put", newNote); notes.unshift(newNote);
+            
+            if (editingId) {
+                const idx = notes.findIndex(n => n.id === editingId);
+                if (idx !== -1) {
+                    notes[idx].content = t;
+                    notes[idx].images = [...b64s];
+                    notes[idx].files = [...files];
+                    notes[idx].isVault = inV;
+                    notes[idx].persona = activeP.n;
+                    notes[idx].i = activeP.i;
+                    await dbAction("put", notes[idx]);
+                    window.showMsg("回响已修缮");
+                }
+            } else {
+                const newNote = { 
+                    id:Date.now(), content:t, author: user, images:[...b64s], files:[...files], 
+                    isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
+                    tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
+                };
+                await dbAction("put", newNote); notes.unshift(newNote);
+                window.showMsg("回响已封存");
+            }
+            
             window.resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
         };
 
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
-            grid.innerHTML = (viewMode !== 'vault') ? '<div class="card" onclick="window.togglePanel(\'editor-overlay\')" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>' : "";
+            grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>` : "";
             const pFilter = document.getElementById('persona-filter').value;
             let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
             if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
@@ -675,6 +836,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     <div class="card-footer">
                         <div class="footer-tools">
                             <button class="footer-btn" onclick="window.doZ(event, ${n.id})"><i data-lucide="zap"></i> ${n.zs||0}</button>
+                            <button class="footer-btn" onclick="window.editNote(event, ${n.id})"><i data-lucide="edit-3"></i></button>
                             <button class="footer-btn" onclick="window.deleteNote(event, ${n.id})"><i data-lucide="trash-2"></i></button>
                         </div>
                         <div class="card-info">#${n.tag || 'FRAGMENT'} ${n.replies?.length ? '('+n.replies.length+')' : ''}</div>
@@ -689,11 +851,13 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         function showNote(n) {
             const el = document.getElementById('reader-target'); window.togglePanel('reader-overlay');
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
+            const filesHtml = (n.files || []).map(f => `<a href="${f.data}" download="${f.name}" class="file-tag"><i data-lucide="file-text" style="width:8px; height:8px;"></i> ${f.name}</a>`).join('');
             const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
             const pChips = [...FIXED_P, {n: user, i: "👤"}].map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
             el.innerHTML = `
                 <div style="margin-bottom:40px;">${imgsHtml}</div>
-                <div style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:60px;">${n.content}</div>
+                <div class="content-body" style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:40px;">${n.content}</div>
+                <div style="margin-bottom:60px;">${filesHtml}</div>
                 <div style="border-top:1px solid var(--border); padding-top:60px;">
                     <h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4>
                     <div id="replies-container">${rList || '<p style="opacity:0.2; font-size:11px;">静候回声。</p>'}</div>
@@ -704,6 +868,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                         <button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button>
                     </div>
                 </div>`;
+            lucide.createIcons();
         }
 
         window.setRT = (name) => { rTo = name; const ind = document.getElementById('r-ind'); if(ind){ ind.style.display='block'; document.getElementById('r-name').innerText=name; } };
@@ -724,14 +889,24 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.snap = function() { const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0); const originalB64 = c.toDataURL('image/jpeg'); if(b64s.length < 3) compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); }); setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150); };
         async function compressImage(base64) { return new Promise((resolve) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let width = img.width, height = img.height, maxSide = 1080; if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; img.src = base64; }); }
         window.upFiles = async function(e) { const selectedFiles = Array.from(e.target.files).slice(0, 3 - b64s.length); for (const f of selectedFiles) { const r = new FileReader(); r.onload = async (ev) => { const compressed = await compressImage(ev.target.result); b64s.push(compressed); window.renderPrev(); }; r.readAsDataURL(f); } };
-        window.upGenericFile = function(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { files.push({ name: f.name, data: ev.target.result }); window.showMsg("FILE ATTACHED"); }; r.readAsDataURL(f); };
+        window.upGenericFile = function(e) { 
+            const f = e.target.files[0]; 
+            if(!f) return; 
+            const r = new FileReader(); 
+            r.onload = ev => { 
+                files.push({ name: f.name, data: ev.target.result }); 
+                window.showMsg("ATTACHED: " + f.name); 
+            }; 
+            r.readAsDataURL(f); 
+        };
+        
         window.killImg = function(i) { b64s.splice(i, 1); window.renderPrev(); };
         window.toggleVault = function() { inV = !inV; document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
-        window.resetEditor = function() { b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML=""; document.getElementById('prevBox').style.display="none"; document.getElementById('vaultToggle').style.color='var(--text-dim)'; };
+        window.resetEditor = function() { editingId=null; b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML=""; document.getElementById('prevBox').style.display="none"; document.getElementById('vaultToggle').style.color='var(--text-dim)'; };
         window.renderPrev = function() { const box = document.getElementById('prevBox'); box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); };
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
         function renderDailyReview() { const box = document.getElementById('review-box'); if(!box) return; const eligible = notes.filter(n => !n.isVault); if(!eligible.length) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; } const r = eligible[Math.floor(Math.random()*eligible.length)]; box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`; }
-        function renderSwitcher() { const allP = [...FIXED_P, {n: user, i: "👤"}]; document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
+        window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
         function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
         function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); }
         function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
