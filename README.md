@@ -57,4 +57,39 @@
 
 💡 给你的一点“造物主”建议
 关于药瓶（🧪）：你可以把这个药瓶理解为**“炼金术”**。笔记是材料，AI 是催化剂，最后推演出来的就是认知的提升。
+---
 
+# Alter - A Space for Self-Reflection (English Version)
+
+> "Alter" is not just a notebook; it is an observer with a character of its own.
+
+## 核心哲学 / Philosophy
+* **Filter the Mundane**: Recording "I ate lunch" won't trigger anything. But when you distinguish the subtle difference between two species of cherry blossoms, your cognitive world expands—and the Observer lights up for you.
+* **Non-Intrusive Observation**: The "Vibe Observer" doesn't monitor you. It only emerges like a breath when you show deep thinking or sign of mental fatigue.
+* **Data Sovereignty**: All data is stored locally in your browser (IndexedDB). You own your memory.
+
+## 🕹️ Interface Guide: What do these buttons do?
+
+### 1. The Bridge (Left Sidebar)
+* 🏠 **Dashboard**: View your daily monologue stats and a random "Daily Recall."
+* 📅 **Timeline**: A chronological flow of your archived non-private reflections.
+* ✨ **Soul Fragments**: Your "Second Brain." Password-protected by default for your deepest thoughts.
+* 👁️ **Reflection**: Sensory mode to analyze your recent notes from Philosophical or Psychological perspectives.
+* 🧪 **Laboratory**: The Plugin Market and AI API configuration center.
+* 🪶 **Archive**: Create a new note. Supports photos, images, and file attachments.
+* ⚙️ **Identity**: Modify your login name, set passwords, or export/import full backups.
+
+### 2. The Deduction Lab (The Flask 🧪)
+Located at the bottom right, this is your portal to **Alter Ego Deduction**.
+* **What it is**: A real-time dialogue channel with your "Alter Ego."
+* **How to use**: Click the flask to open the chat. You can ask questions about your memories or perform logic deductions.
+* **Note**: Requires an API Key (configured in the Laboratory) to synchronize the soul.
+
+### 3. The Vibe Light (Top Left)
+* This is a passive indicator. It glows 🌱 when it detects **Cognitive Insight** (e.g., learning something new) or 🌧️ when you are in an **Energy Deficit**. It is your objective observer.
+
+## 🔌 Plugin Market
+Enhancements like "Word Count Audit" or "Background Switcher" can be found in the [**`plugins/`**](/plugins) folder.
+* **Installation**: Copy the JS code from any plugin file, go to **Laboratory -> Plugin Market**, paste it, and click "Sync."
+
+---
