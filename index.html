@@ -44,12 +44,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; background-size: cover; background-position: center; }
 
-        /* --- 视觉一致性补丁 --- */
         .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs {
             font-family: var(--font-main) !important;
         }
 
-        /* --- 理智/他我切换按钮样式 --- */
         #persona-toggle-btn {
             background: transparent;
             border: 1px solid var(--border);
@@ -67,7 +65,7 @@
             color: var(--accent);
         }
 
-        /* --- AI 插件样式 --- */
+        /* --- AI 推演插件样式 --- */
         #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
         #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
         #ai-trigger:hover { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
@@ -85,7 +83,6 @@
         .ai-msg.user { background: var(--ai-msg-user); color: var(--text-main); margin-left: auto; border-bottom-right-radius: 2px; text-align: left; }
         .ai-msg.bot { background: var(--ai-msg-bot); color: #fff; margin-right: auto; border-bottom-left-radius: 2px; }
 
-        /* --- 新增：消息内部工具条 --- */
         .ai-msg-tools {
             display: flex;
             gap: 10px;
@@ -162,7 +159,6 @@
         
         .card-info { font-size: 5px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; opacity: 0.3; text-transform: uppercase; }
 
-        /* --- 文件标签样式 --- */
         .file-tag {
             display: inline-flex;
             align-items: center;
@@ -203,7 +199,6 @@
         .panel-header h2 { font-family: var(--font-title) !important; font-size: 32px; font-weight: 400; color: var(--accent); }
         .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
 
-        /* --- 彻底移除阅读器正文高度限制 --- */
         #reader-target .content-body {
             max-height: none !important;
             mask-image: none !important;
@@ -237,11 +232,41 @@
 
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 8px 16px; font-size: 9px; border-radius: 20px; z-index: 11000; display: none; letter-spacing: 1px; }
         ::-webkit-scrollbar { display: none; }
+
+        /* --- AI 观察者挂件补丁 --- */
+        #observer-vibe-widget {
+            position: fixed; top: 20px; left: 70px; z-index: 9999; 
+            opacity: 0; transition: 2s ease; pointer-events: none;
+        }
+        #vibe-container {
+            padding: 8px 15px; border-radius: 4px; display: flex; 
+            align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        #vibe-icon { font-size: 16px; }
+        #vibe-text { 
+            font-size: 10px; letter-spacing: 1px; font-family: var(--font-sans); 
+            color: var(--text-main); font-weight: 600; text-transform: uppercase; 
+        }
+
+        /* --- 心情圆点补丁 --- */
+        .mood-dot {
+            width: 12px; height: 12px; border-radius: 50%; 
+            cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
+        }
+        .mood-dot:hover { transform: scale(1.2); }
     </style>
 </head>
 <body class="theme-default">
 
-    <!-- AI 推演 -->
+    <!-- AI 观察者：氛围灯 -->
+    <div id="observer-vibe-widget">
+        <div id="vibe-container">
+            <span id="vibe-icon"></span>
+            <span id="vibe-text"></span>
+        </div>
+    </div>
+
+    <!-- AI 推演主入口 (右下角) -->
     <div id="alter-ai-plugin">
         <div id="ai-trigger" title="他我推演">🧪</div>
         <div id="ai-panel">
@@ -428,6 +453,10 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
             </div>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出备份 (.JSON)</button>
+            
+            <!-- 导入备份补丁 -->
+            <button class="btn-black" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">导入备份 (.JSON)</button>
+            <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
         </div>
     </div>
 
@@ -435,7 +464,15 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     <div id="editor-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header"><div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
-            <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:20px;"></div>
+            <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:10px;"></div>
+            
+            <!-- 心情快捷色块补丁 -->
+            <div id="mood-picker" style="display:flex; gap:8px; margin-bottom:15px; opacity:0.6;">
+                <div class="mood-dot" style="background:#e0f7fa;" title="发现" onclick="window.setVibe('insight','🌱')"></div>
+                <div class="mood-dot" style="background:#fff9c4;" title="行动" onclick="window.setVibe('stagnant','⏳')"></div>
+                <div class="mood-dot" style="background:#cfd8dc;" title="状态" onclick="window.setVibe('tired','🌧️')"></div>
+            </div>
+
             <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none;" placeholder="在此刻寻找回声..."></textarea>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
             <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:30px;">
@@ -470,7 +507,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         <canvas id="v-canvas" style="display:none;"></canvas>
     </div>
 
-    <script>
+    <script id="alter-core-script">
         /* --- 0. 基础全局工具 --- */
         window.showMsg = function(m) { 
             const t = document.getElementById('toast'); 
@@ -512,7 +549,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 this.registry.push(plugin);
                 this.updateUI();
             },
-            // 持久化载入与卸载
             install(input, isAuto = false) {
                 const code = input.trim();
                 if (!code) return;
@@ -560,7 +596,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
 
         function loadSamplePlugins() {
-            // 自动加载持久化插件
             const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
             saved.forEach(p => AlterPlugins.install(p.code, true));
 
@@ -574,25 +609,14 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     AlterAPI.showMsg("已下载 MD 导出文件");
                 }
             });
-
-            // 聊天记录凝练插件
-            AlterPlugins.register({
-                name: "推演凝练 (Chat to Article)",
-                author: "Alter AI",
-                run: async () => {
-                    const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
-                    if(history.length < 4) return AlterAPI.showMsg("推演记录过短");
-                    const context = history.slice(-20).map(h => `${h.role === 'user' ? '我' : '他我'}: ${h.text}`).join('\n');
-                    AlterAPI.showMsg("凝练中...");
-                    await callAI("请基于以下对话记录，撰写一篇具有文学色彩的深度自省文章：\n\n" + context);
-                }
-            });
         }
 
         window.installPluginFromInput = function() {
             const input = document.getElementById('plugin-code-in');
-            AlterPlugins.install(input.value); input.value = "";
-            AlterPlugins.updateUI();
+            if (input) {
+                AlterPlugins.install(input.value); input.value = "";
+                AlterPlugins.updateUI();
+            }
         };
 
         // --- 2. 核心数据与状态 ---
@@ -650,7 +674,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.showMsg("聊天历史已导出");
         };
 
-        // 一键复制功能 (使用指令指定的 execCommand 方案)
         window.copyMsg = function(text) {
             const ta = document.createElement('textarea');
             ta.value = text;
@@ -661,7 +684,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.showMsg("已复制到剪贴板");
         };
 
-        // 单条消息导出功能 (用于导出写好的文章)
         window.downloadMsg = function(text) {
             const blob = new Blob([text], { type: 'text/plain' });
             const a = document.createElement('a');
@@ -699,9 +721,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
+                if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
                 if (data.choices) appendMsg('bot', data.choices[0].message.content);
-            } catch (e) { if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg); appendMsg('bot', `❌ 推演中断：${e.message}`); }
+            } catch (e) { if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg); appendMsg('bot', `❌ 推演中断：${e.message}`); }
         }
 
         async function init() {
@@ -718,15 +740,21 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
-            chatBox.innerHTML = ''; 
-            if(history.length > 0) {
-                history.forEach(m => appendMsg(m.role, m.text, false)); 
-            } else {
-                appendMsg('bot', '在此刻寻找推演的回声...', false);
+            if (chatBox) {
+                chatBox.innerHTML = ''; 
+                if(history.length > 0) {
+                    history.forEach(m => appendMsg(m.role, m.text, false)); 
+                } else {
+                    appendMsg('bot', '在此刻寻找推演的回声...', false);
+                }
             }
 
-            if(!localStorage.getItem('alter_v52_user')) document.getElementById('auth-screen').style.display='flex';
-            else enterApp(user);
+            if(!localStorage.getItem('alter_v52_user')) {
+                const authScreen = document.getElementById('auth-screen');
+                if (authScreen) authScreen.style.display='flex';
+            } else {
+                enterApp(user);
+            }
             lucide.createIcons(); 
             loadSamplePlugins();
             AlterPlugins.updateUI();
@@ -739,21 +767,42 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 if (pin !== sec.n) { window.showMsg("PIN ERROR"); return; } 
             }
             user = n; localStorage.setItem('alter_v52_user', user);
-            document.getElementById('auth-screen').style.display='none';
-            document.getElementById('current-user-tag').innerText = user;
-            document.getElementById('cur-login-name').innerText = user;
+            const authScreen = document.getElementById('auth-screen');
+            if (authScreen) authScreen.style.display='none';
+            
+            const currentUserTag = document.getElementById('current-user-tag');
+            if (currentUserTag) currentUserTag.innerText = user;
+            
+            const curLoginName = document.getElementById('cur-login-name');
+            if (curLoginName) curLoginName.innerText = user;
+            
             renderAll();
         };
 
         window.switchView = function(m, el) {
             viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
-            document.getElementById('dash-view-container').style.display = m === 'home' ? 'block' : 'none';
-            document.getElementById('timeline-container').style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
-            document.getElementById('vault-tabs').style.display = m === 'vault' ? 'flex' : 'none';
-            document.getElementById('persona-filter').style.display = m === 'timeline' ? 'block' : 'none';
-            document.getElementById('synth-btn').style.display = m === 'vault' ? 'block' : 'none';
-            document.getElementById('view-title').innerText = "他我笔记";
-            document.getElementById('view-subtitle').innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
+            
+            const dashView = document.getElementById('dash-view-container');
+            if (dashView) dashView.style.display = m === 'home' ? 'block' : 'none';
+            
+            const timelineView = document.getElementById('timeline-container');
+            if (timelineView) timelineView.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
+            
+            const vaultTabs = document.getElementById('vault-tabs');
+            if (vaultTabs) vaultTabs.style.display = m === 'vault' ? 'flex' : 'none';
+            
+            const personaFilter = document.getElementById('persona-filter');
+            if (personaFilter) personaFilter.style.display = m === 'timeline' ? 'block' : 'none';
+            
+            const synthBtn = document.getElementById('synth-btn');
+            if (synthBtn) synthBtn.style.display = m === 'vault' ? 'block' : 'none';
+            
+            const viewTitle = document.getElementById('view-title');
+            if (viewTitle) viewTitle.innerText = "他我笔记";
+            
+            const viewSubtitle = document.getElementById('view-subtitle');
+            if (viewSubtitle) viewSubtitle.innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
+            
             if(m==='home') renderDailyReview();
             renderGrid();
         };
@@ -764,16 +813,22 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
 
         window.saveSec = function() {
-            sec.v = document.getElementById('pass-vault').value;
-            sec.n = document.getElementById('pass-note').value;
-            localStorage.setItem('alt_v52_sec', JSON.stringify(sec));
-            window.showMsg("SECURITY SAVED");
+            const vPass = document.getElementById('pass-vault');
+            const nPass = document.getElementById('pass-note');
+            if (vPass && nPass) {
+                sec.v = vPass.value;
+                sec.n = nPass.value;
+                localStorage.setItem('alt_v52_sec', JSON.stringify(sec));
+                window.showMsg("SECURITY SAVED");
+            }
         };
 
         window.switchVaultMode = function(mode) {
             vaultSubMode = mode;
-            document.getElementById('tab-soul').classList.toggle('active', mode === 'soul');
-            document.getElementById('tab-memory').classList.toggle('active', mode === 'memory');
+            const soulTab = document.getElementById('tab-soul');
+            const memoryTab = document.getElementById('tab-memory');
+            if (soulTab) soulTab.classList.toggle('active', mode === 'soul');
+            if (memoryTab) memoryTab.classList.toggle('active', mode === 'memory');
             renderGrid();
         };
 
@@ -787,15 +842,20 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.runInquiry = async function(type) {
             const area = document.getElementById('reflect-report'); 
             if (notes.length < 1) return window.showMsg("缺乏样本");
-            area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
-            const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-            await callAI(`分析模式模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
-            area.innerHTML = `分析回响已同步至侧边。`;
+            if (area) {
+                area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
+                const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
+                await callAI(`分析模式模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
+                area.innerHTML = `分析回响已同步至侧边。`;
+            }
         };
 
         window.renameLogin = function() {
-            const n = document.getElementById('rename-user-in').value.trim();
-            if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
+            const nameIn = document.getElementById('rename-user-in');
+            if (nameIn) {
+                const n = nameIn.value.trim();
+                if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
+            }
         };
 
         window.dlData = function() {
@@ -809,9 +869,12 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const n = notes.find(x => x.id === id);
             if (!n) return;
             editingId = n.id;
-            document.getElementById('editor-title').innerText = "修缮回响";
-            document.getElementById('editor-subtitle').innerText = `EDITING / #${n.id}`;
-            document.getElementById('note-in').value = n.content;
+            const titleEl = document.getElementById('editor-title');
+            const subtitleEl = document.getElementById('editor-subtitle');
+            const noteIn = document.getElementById('note-in');
+            if (titleEl) titleEl.innerText = "修缮回响";
+            if (subtitleEl) subtitleEl.innerText = `EDITING / #${n.id}`;
+            if (noteIn) noteIn.value = n.content;
             b64s = [...(n.images || [])];
             files = [...(n.files || [])];
             inV = n.isVault;
@@ -819,20 +882,25 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             
             window.renderPrev();
             window.renderSwitcher();
-            document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
+            const vaultBtn = document.getElementById('vaultToggle');
+            if (vaultBtn) vaultBtn.style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
             window.togglePanel('editor-overlay');
         };
 
         window.openNewEditor = function() {
             editingId = null;
-            document.getElementById('editor-title').innerText = "他我笔记";
-            document.getElementById('editor-subtitle').innerText = "FRAGMENTS / 封存碎语";
+            const titleEl = document.getElementById('editor-title');
+            const subtitleEl = document.getElementById('editor-subtitle');
+            if (titleEl) titleEl.innerText = "他我笔记";
+            if (subtitleEl) subtitleEl.innerText = "FRAGMENTS / 封存碎语";
             window.resetEditor();
             window.togglePanel('editor-overlay');
         };
 
         window.save = async function() { 
-            const t = document.getElementById('note-in').value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
+            const noteIn = document.getElementById('note-in');
+            if (!noteIn) return;
+            const t = noteIn.value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             
             if (editingId) {
                 const idx = notes.findIndex(n => n.id === editingId);
@@ -862,7 +930,8 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
             grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>` : "";
-            const pFilter = document.getElementById('persona-filter').value;
+            const filterEl = document.getElementById('persona-filter');
+            const pFilter = filterEl ? filterEl.value : 'all';
             let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
             if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
             list.forEach(n => {
@@ -888,6 +957,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         function showNote(n) {
             const el = document.getElementById('reader-target'); window.togglePanel('reader-overlay');
+            if (!el) return;
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
             const filesHtml = (n.files || []).map(f => `<a href="${f.data}" download="${f.name}" class="file-tag"><i data-lucide="file-text" style="width:8px; height:8px;"></i> ${f.name}</a>`).join('');
             const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
@@ -915,7 +985,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             document.querySelectorAll('.p-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active');
         };
         window.sendR = async (id) => {
-            const txt = document.getElementById('comIn').value.trim(); if(!txt) return;
+            const inputEl = document.getElementById('comIn');
+            if (!inputEl) return;
+            const txt = inputEl.value.trim(); if(!txt) return;
             const n = notes.find(x=>x.id===id); if(n){
                 if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `@${rTo} ${txt}` : txt, who: commP.n });
                 await dbAction("put", n); showNote(n); rTo = null; window.showMsg("SYNCED");
@@ -939,39 +1011,51 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
         
         window.killImg = function(i) { b64s.splice(i, 1); window.renderPrev(); };
-        window.toggleVault = function() { inV = !inV; document.getElementById('vaultToggle').style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
-        window.resetEditor = function() { editingId=null; b64s=[]; files=[]; inV=false; document.getElementById('note-in').value=""; document.getElementById('prevBox').innerHTML=""; document.getElementById('prevBox').style.display="none"; document.getElementById('vaultToggle').style.color='var(--text-dim)'; };
-        window.renderPrev = function() { const box = document.getElementById('prevBox'); box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); };
+        window.toggleVault = function() { inV = !inV; const vaultBtn = document.getElementById('vaultToggle'); if (vaultBtn) vaultBtn.style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
+        window.resetEditor = function() { 
+            editingId=null; b64s=[]; files=[]; inV=false; 
+            const noteIn = document.getElementById('note-in');
+            const prevBox = document.getElementById('prevBox');
+            const vaultBtn = document.getElementById('vaultToggle');
+            if (noteIn) noteIn.value=""; 
+            if (prevBox) { prevBox.innerHTML=""; prevBox.style.display="none"; }
+            if (vaultBtn) vaultBtn.style.color='var(--text-dim)'; 
+        };
+        window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
         function renderDailyReview() { const box = document.getElementById('review-box'); if(!box) return; const eligible = notes.filter(n => !n.isVault); if(!eligible.length) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; } const r = eligible[Math.floor(Math.random()*eligible.length)]; box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`; }
-        window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; document.getElementById('p-sel-box').innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); }
+        window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; const box = document.getElementById('p-sel-box'); if (box) { box.innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); } }
         function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
-        function renderFixedList() { document.getElementById('persona-list-fixed').innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); }
-        function updateStats() { document.getElementById('count-today').innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; }
+        function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); } }
+        function updateStats() { 
+            const countEl = document.getElementById('count-today');
+            if (countEl) countEl.innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; 
+        }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
-        window.drawMap = function() { const box = document.getElementById('map-box'); box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); };
-        window.handleSearch = function() { renderGrid(document.getElementById('searchInput').value); };
-        window.toggleSearch = function() { document.getElementById('search-wrap').classList.toggle('active'); };
+        window.drawMap = function() { const box = document.getElementById('map-box'); if (box) { box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); } };
+        window.handleSearch = function() { const searchIn = document.getElementById('searchInput'); if (searchIn) renderGrid(searchIn.value); };
+        window.toggleSearch = function() { const wrap = document.getElementById('search-wrap'); if (wrap) wrap.classList.toggle('active'); };
 
         window.clearAIHistory = function() {
             if(confirm("确定要永久抹除所有推演历史吗？")) {
                 localStorage.removeItem('alt_ai_history');
-                document.getElementById('ai-chat-box').innerHTML = '<div class="ai-msg bot">在此刻寻找推演的回声...</div>';
+                const chatBox = document.getElementById('ai-chat-box');
+                if (chatBox) chatBox.innerHTML = '<div class="ai-msg bot">在此刻寻找推演的回声...</div>';
                 window.showMsg("HISTORY ERASED");
             }
         };
 
         function appendMsg(role, text, shouldSave = true) { 
             const chatBox = document.getElementById('ai-chat-box'); 
+            if (!chatBox) return null;
+            
             const msg = document.createElement('div'); 
             msg.className = `ai-msg ${role}`; 
             
-            // 文本容器
             const txtNode = document.createElement('div');
             txtNode.innerText = text;
             msg.appendChild(txtNode);
 
-            // 为回复增加独立工具条
             if (role === 'bot') {
                 const tools = document.createElement('div');
                 tools.className = 'ai-msg-tools';
@@ -992,21 +1076,106 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             return msg; 
         }
 
+        // --- AI 插件交互初始化 ---
         (function() {
             const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
-            if(trigger) trigger.onclick = () => panel.classList.toggle('show');
-            if(closeBtn) closeBtn.onclick = () => panel.classList.remove('show');
-            if(sendBtn) sendBtn.onclick = () => { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } };
-            if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn.click(); };
-            if(labBtn) labBtn.onclick = () => labPanel.style.display='flex';
-            document.getElementById('lab-close-btn').onclick = () => labPanel.style.display='none';
-            document.getElementById('lab-save-btn').onclick = () => {
-                localStorage.setItem('alt_api_url', document.getElementById('lab-url-in').value.trim());
-                localStorage.setItem('alt_api_key', document.getElementById('lab-key-in').value.trim());
-                localStorage.setItem('alt_api_model', document.getElementById('lab-model-in').value.trim());
-                labPanel.style.display='none'; window.showMsg("LAB SYNCED");
+            if(trigger) trigger.onclick = () => panel && panel.classList.toggle('show');
+            if(closeBtn) closeBtn.onclick = () => panel && panel.classList.remove('show');
+            if(sendBtn) sendBtn.onclick = () => { if (input) { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } } };
+            if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn && sendBtn.click(); };
+            if(labBtn) labBtn.onclick = () => labPanel && (labPanel.style.display='flex');
+            
+            const closeLab = document.getElementById('lab-close-btn');
+            if (closeLab) closeLab.onclick = () => labPanel && (labPanel.style.display='none');
+            
+            const saveLab = document.getElementById('lab-save-btn');
+            if (saveLab) saveLab.onclick = () => {
+                const urlIn = document.getElementById('lab-url-in');
+                const keyIn = document.getElementById('lab-key-in');
+                const modelIn = document.getElementById('lab-model-in');
+                if (urlIn && keyIn && modelIn) {
+                    localStorage.setItem('alt_api_url', urlIn.value.trim());
+                    localStorage.setItem('alt_api_key', keyIn.value.trim());
+                    localStorage.setItem('alt_api_model', modelIn.value.trim());
+                    labPanel && (labPanel.style.display='none'); window.showMsg("LAB SYNCED");
+                }
             };
         })();
+
+        /* --- 新增补丁逻辑：导入、心情与观察者 --- */
+
+        window.importData = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                try {
+                    const importedNotes = JSON.parse(ev.target.result);
+                    if (!Array.isArray(importedNotes)) throw new Error("INVALID_FORMAT");
+                    for (const n of importedNotes) {
+                        await dbAction("put", n); 
+                    }
+                    window.showMsg("MEMORY CONNECTED");
+                    setTimeout(() => location.reload(), 1000); 
+                } catch (err) { window.showMsg("IMPORT ERROR"); }
+            };
+            reader.readAsText(file);
+        };
+
+        window.setVibe = function(mode, icon) {
+            const widget = document.getElementById('observer-vibe-widget');
+            const label = document.getElementById('vibe-text');
+            const iconEl = document.getElementById('vibe-icon');
+            const container = document.getElementById('vibe-container');
+            
+            let config = {
+                insight: { t: "COGNITIVE INSIGHT", bg: "linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%)" },
+                stagnant: { t: "ACTION STAGNANT", bg: "#fff9c4" },
+                tired: { t: "ENERGY DEFICIT", bg: "#f0f4f8" }
+            };
+
+            if (widget && label && iconEl && container) {
+                iconEl.innerText = icon;
+                label.innerText = config[mode].t;
+                container.style.background = config[mode].bg;
+                widget.style.opacity = "1";
+                window.showMsg("VIBE SYNCED");
+            }
+        };
+
+        const noteEditor = document.getElementById('note-in');
+        if (noteEditor) {
+            noteEditor.addEventListener('input', (e) => {
+                const text = e.target.value;
+                const widget = document.getElementById('observer-vibe-widget');
+                const icon = document.getElementById('vibe-icon');
+                const label = document.getElementById('vibe-text');
+                const container = document.getElementById('vibe-container');
+
+                if (!widget || !icon || !label || !container) return;
+
+                if (text.includes("郭德纲") || text.includes("相声")) {
+                    widget.style.opacity = "0";
+                    return;
+                }
+
+                if (text.includes("分清") || text.includes("区别") || text.includes("发现") || text.includes("原来")) {
+                    updateUI("🌱", "COGNITIVE INSIGHT", "linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%)");
+                } 
+                else if (text.includes("累") || text.includes("烦")) {
+                    updateUI("🌧️", "ENERGY DEFICIT", "#f0f4f8");
+                } else {
+                    widget.style.opacity = "0";
+                }
+
+                function updateUI(i, t, bg) {
+                    icon.innerText = i;
+                    label.innerText = t;
+                    container.style.background = bg;
+                    widget.style.opacity = "1";
+                }
+            });
+        }
 
         window.addEventListener('load', init);
     </script>
