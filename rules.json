@@ -1,0 +1,82 @@
+[
+  {
+    "trigger": "分清了",
+    "action": "msg",
+    "value": "认知边界正在扩张，观察者已记录。"
+  },
+  {
+    "trigger": "原来如此",
+    "action": "msg",
+    "value": "顿悟的瞬间，比记忆本身更珍贵。"
+  },
+  {
+    "trigger": "本质",
+    "action": "vibe",
+    "value": "💎"
+  },
+  {
+    "trigger": "相声",
+    "action": "msg",
+    "value": "探测到日常享乐，系统保持静默。"
+  },
+  {
+    "trigger": "郭德纲",
+    "action": "msg",
+    "value": "屏蔽平庸记录，保持思维纯净。"
+  },
+  {
+    "trigger": "减肥",
+    "action": "msg",
+    "value": "身体是灵魂的圣殿，请温柔对待。"
+  },
+  {
+    "trigger": "焦虑",
+    "action": "msg",
+    "value": "觉察到焦虑，试着深呼吸，把这种感觉写下来。"
+  },
+  {
+    "trigger": "意义",
+    "action": "vibe",
+    "value": "🔮"
+  },
+  {
+    "trigger": "想通了",
+    "action": "msg",
+    "value": "逻辑闭环已达成，思想完成了一次跳跃。"
+  },
+  {
+    "trigger": "拖延",
+    "action": "vibe",
+    "value": "⏳"
+  },
+  {
+    "trigger": "无聊",
+    "action": "msg",
+    "value": "无聊是伟大的留白，在这里，日常才显现出它的形状。"
+  },
+  {
+    "trigger": "无辜",
+    "action": "vibe",
+    "value": "🛡️"
+  },
+  {
+    "trigger": "存在主义",
+    "action": "msg",
+    "value": "在无意义的荒原中，你此刻的记录就是唯一的意义。"
+  },
+  {
+    "trigger": "村上春树",
+    "action": "vibe",
+    "value": "🎷"
+  },
+  {
+    "trigger": "乌鸦",
+    "action": "vibe",
+    "value": "🐦‍⬛"
+  },
+  {
+    "trigger": "哲学",
+    "action": "vibe",
+    "value": "🏛️"
+  }
+]
