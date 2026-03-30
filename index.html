@@ -254,6 +254,31 @@
             cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
         }
         .mood-dot:hover { transform: scale(1.2); }
+
+        /* ============================================
+           哲学情绪样式集成（天象版）
+           ============================================ */
+        .philosophy-emotion-indicator {
+          position: fixed; top: 20px; left: 20px; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.06); user-select: none;
+        }
+        .philosophy-emotion-indicator:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+        .emotion-clarity { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.2); color: #B8860B; box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
+        .emotion-contemplation { background: linear-gradient(135deg, rgba(135, 206, 235, 0.12), rgba(70, 130, 180, 0.08)); border-color: rgba(135, 206, 235, 0.15); color: #5F9EA0; box-shadow: 0 0 15px rgba(135, 206, 235, 0.08); }
+        .emotion-melancholy { background: linear-gradient(135deg, rgba(112, 128, 144, 0.12), rgba(70, 80, 90, 0.08)); border-color: rgba(112, 128, 144, 0.15); color: #6B7B8C; box-shadow: 0 0 18px rgba(112, 128, 144, 0.1); }
+        .emotion-crisis { background: linear-gradient(135deg, rgba(75, 0, 130, 0.15), rgba(47, 79, 79, 0.1)); border-color: rgba(75, 0, 130, 0.2); color: #4B0082; box-shadow: 0 0 25px rgba(75, 0, 130, 0.15); }
+        .emotion-awakening { background: linear-gradient(135deg, rgba(255, 183, 197, 0.15), rgba(255, 192, 203, 0.1)); border-color: rgba(255, 183, 197, 0.2); color: #DB7093; box-shadow: 0 0 20px rgba(255, 183, 197, 0.1); }
+        .emotion-impermanence { background: linear-gradient(135deg, rgba(222, 184, 135, 0.15), rgba(188, 143, 143, 0.1)); border-color: rgba(222, 184, 135, 0.2); color: #CD853F; box-shadow: 0 0 15px rgba(222, 184, 135, 0.1); }
+        .emotion-serenity { background: linear-gradient(135deg, rgba(232, 245, 233, 0.2), rgba(200, 230, 201, 0.15)); border-color: rgba(232, 245, 233, 0.3); color: #6B8E23; box-shadow: 0 0 15px rgba(232, 245, 233, 0.1); }
+        .intensity-profound { animation-duration: 8s; }
+        .intensity-moderate { animation-duration: 12s; }
+        .intensity-subtle { animation-duration: 20s; opacity: 0.85; }
+        @keyframes glow-clarity { 0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.08); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); transform: scale(1.02); } }
+        .emotion-clarity.intensity-profound { animation: glow-clarity 8s ease-in-out infinite; }
+        .philosophy-particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; animation: particle-drift 4s ease-out forwards; opacity: 0.6; }
+        @keyframes particle-drift { 0% { transform: translate(0, 0) scale(1); opacity: 0.6; } 100% { transform: translate(var(--tx, 20px), var(--ty, -20px)) scale(0); opacity: 0; } }
+        .negative-emotion-alert { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.95); padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); border-left: 3px solid rgba(112, 128, 144, 0.4); z-index: 10000; font-size: 14px; line-height: 1.6; color: #555; max-width: 320px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: alert-appear 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .philosophy-stats-panel { position: fixed; top: 100px; left: 20px; width: 280px; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); padding: 24px; z-index: 9997; display: none; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(0, 0, 0, 0.04); }
+        .philosophy-stats-panel.show { display: block; animation: panel-appear 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body class="theme-default">
@@ -273,6 +298,8 @@
             <div class="ai-header">
                 <h3>他我推演</h3>
                 <div style="display:flex; gap:10px; align-items:center;">
+                    <!-- 重新加入：一键成文按钮 -->
+                    <span id="ai-organize-btn" title="整理成文" style="cursor:pointer; opacity:0.5;">📝</span>
                     <span id="ai-lab-btn" title="设置" style="cursor:pointer; opacity:0.5;">⚙️</span>
                     <span class="ai-close" title="关闭">&times;</span>
                 </div>
@@ -454,7 +481,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             </div>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出备份 (.JSON)</button>
             
-            <!-- 导入备份补丁 -->
             <button class="btn-black" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
         </div>
@@ -466,7 +492,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             <div class="panel-header"><div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
             <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:10px;"></div>
             
-            <!-- 心情快捷色块补丁 -->
             <div id="mood-picker" style="display:flex; gap:8px; margin-bottom:15px; opacity:0.6;">
                 <div class="mood-dot" style="background:#e0f7fa;" title="发现" onclick="window.setVibe('insight','🌱')"></div>
                 <div class="mood-dot" style="background:#fff9c4;" title="行动" onclick="window.setVibe('stagnant','⏳')"></div>
@@ -674,6 +699,15 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.showMsg("聊天历史已导出");
         };
 
+        // 重新加入：聊天记录一键成文逻辑
+        window.organizeChatToArticle = async function() {
+            const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
+            if (history.length < 2) return window.showMsg("对话回响过少，无法成文");
+            window.showMsg("正在梳理文脉...");
+            const context = history.map(h => `${h.role==='user'?'我':'他我'}: ${h.text}`).join('\n');
+            await callAI("请基于这段对话记录，整理并重构出一篇深刻的、具有文学色彩的自省文章。要求提炼其中的精神内核，使其逻辑严密、情感真挚：\n\n" + context);
+        };
+
         window.copyMsg = function(text) {
             const ta = document.createElement('textarea');
             ta.value = text;
@@ -758,6 +792,10 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             lucide.createIcons(); 
             loadSamplePlugins();
             AlterPlugins.updateUI();
+
+            if (typeof initPhilosophyEmotionSystem === 'function') {
+                initPhilosophyEmotionSystem();
+            }
         }
 
         window.enterApp = function(name) {
@@ -1078,13 +1116,16 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         // --- AI 插件交互初始化 ---
         (function() {
-            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel');
+            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel'), organizeBtn = document.getElementById('ai-organize-btn');
             if(trigger) trigger.onclick = () => panel && panel.classList.toggle('show');
             if(closeBtn) closeBtn.onclick = () => panel && panel.classList.remove('show');
             if(sendBtn) sendBtn.onclick = () => { if (input) { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } } };
             if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn && sendBtn.click(); };
             if(labBtn) labBtn.onclick = () => labPanel && (labPanel.style.display='flex');
             
+            // 绑定：整理成文功能
+            if(organizeBtn) organizeBtn.onclick = () => window.organizeChatToArticle();
+
             const closeLab = document.getElementById('lab-close-btn');
             if (closeLab) closeLab.onclick = () => labPanel && (labPanel.style.display='none');
             
@@ -1101,8 +1142,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 }
             };
         })();
-
-        /* --- 新增补丁逻辑：导入、心情与观察者 --- */
 
         window.importData = function(e) {
             const file = e.target.files[0];
@@ -1175,6 +1214,88 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     widget.style.opacity = "1";
                 }
             });
+        }
+
+        /* 集成：哲学情绪引擎 */
+        const PHILOSOPHY_EMOTIONS = {
+          clarity: { icon: '☀️', name: '澄明', description: '洞察本质，如晨光破晓', keywords: ['明白了', '懂了', '终于明白', '原来如此', '真相', '本质', '看清', '洞察', '领悟', '悟到', '顿悟', '豁然开朗', '想通了', '理清了', '思路清晰', '分清了', '区分', '识别', '通透'] },
+          contemplation: { icon: '🌤️', name: '思索', description: '探寻意义，如云中行走', keywords: ['想', '思考', '思索', '琢磨', '质疑', '探寻', '为什么', '怎么', '意义', '目的', '可能', '大概'] },
+          melancholy: { icon: '🌧️', name: '沉郁', description: '存在之重，如阴雨绵绵', keywords: ['沉重', '压抑', '窒息', '累', '疲惫', '无意义', '虚无', '孤独', '无助', '迷茫', '难受', '焦虑'] },
+          crisis: { icon: '⛈️', name: '雷暴', description: '存在危机，如雷霆万钧', keywords: ['恨', '愤怒', '绝望', '崩溃', '完了', '没救', '想死', '毁灭', '不存在', '撕裂', '爆发'] },
+          awakening: { icon: '🌸', name: '花开', description: '生命绽放，如春日花开', keywords: ['感悟', '发现', '珍惜', '感激', '生命力', '活力', '绽放', '美', '意识到', '感知'] },
+          impermanence: { icon: '🍂', name: '叶落', description: '接受无常，如秋叶静落', keywords: ['逝去', '告别', '离别', '无常', '变化', '接受现实', '放下', '遗憾', '错过', '流逝'] },
+          serenity: { icon: '☁️', name: '云散', description: '归于平静，如云散天青', keywords: ['平静', '安静', '宁静', '祥和', '淡定', '从容', '看淡', '看开', '释怀', '顺其自然', '心安'] }
+        };
+
+        function analyzePhilosophyEmotion(text) {
+          if (!text) return { emotion: 'serenity', icon: '☁️', intensity: 'subtle' };
+          const lowerText = text.toLowerCase();
+          let scores = {};
+          for (const [key, data] of Object.entries(PHILOSOPHY_EMOTIONS)) {
+            let score = 0;
+            data.keywords.forEach(kw => { if (lowerText.includes(kw)) score++; });
+            scores[key] = score;
+          }
+          const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+          return { emotion: dominant, icon: PHILOSOPHY_EMOTIONS[dominant].icon, name: PHILOSOPHY_EMOTIONS[dominant].name, intensity: 'moderate' };
+        }
+
+        class PhilosophyEmotionIndicator {
+          init() {
+            this.indicator = document.createElement('div');
+            this.indicator.className = 'philosophy-emotion-indicator emotion-serenity';
+            this.indicator.innerHTML = '☁️';
+            this.indicator.onclick = () => window.showMsg("观察者正在感应你的精神频率");
+            document.body.appendChild(this.indicator);
+          }
+          update(res) {
+            if (!this.indicator) return;
+            this.indicator.className = `philosophy-emotion-indicator emotion-${res.emotion}`;
+            this.indicator.innerHTML = res.icon;
+          }
+        }
+
+        class NegativeEmotionMonitor {
+          constructor() { this.alertElement = null; }
+          checkAndAlert(res) {
+            if (['melancholy', 'crisis'].includes(res.emotion)) {
+              this.showMsg(res);
+            }
+          }
+          showMsg(res) {
+            if (this.alertElement) return;
+            const alert = document.createElement('div');
+            alert.className = 'negative-emotion-alert';
+            alert.innerHTML = `<div><span>${res.icon}</span> <span>检测到情绪波动，需要聊聊吗？</span></div>
+              <div style="margin-top:10px; text-align:right;">
+                <button onclick="this.parentElement.parentElement.remove()" style="margin-right:10px; background:none; border:none; cursor:pointer; opacity:0.5;">暂不需要</button>
+                <button onclick="triggerPhilosophyDialog()" style="background:#000; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">开启推演</button>
+              </div>`;
+            document.body.appendChild(alert);
+            this.alertElement = alert;
+          }
+        }
+
+        function triggerPhilosophyDialog() {
+            const panel = document.getElementById('ai-panel');
+            if (panel) panel.classList.add('show');
+            const el = document.querySelector('.negative-emotion-alert');
+            if (el) el.remove();
+            window.showMsg("已进入他我推演环境");
+        }
+
+        function initPhilosophyEmotionSystem() {
+          const indicator = new PhilosophyEmotionIndicator();
+          const monitor = new NegativeEmotionMonitor();
+          indicator.init();
+          const editor = document.getElementById('note-in');
+          if (editor) {
+            editor.addEventListener('input', (e) => {
+              const res = analyzePhilosophyEmotion(e.target.value);
+              indicator.update(res);
+              monitor.checkAndAlert(res);
+            });
+          }
         }
 
         window.addEventListener('load', init);
