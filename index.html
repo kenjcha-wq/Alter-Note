@@ -111,7 +111,7 @@
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
         /* --- 核心布局 --- */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
 
@@ -233,7 +233,6 @@
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 8px 16px; font-size: 9px; border-radius: 20px; z-index: 11000; display: none; letter-spacing: 1px; }
         ::-webkit-scrollbar { display: none; }
 
-        /* --- AI 观察者挂件补丁 --- */
         #observer-vibe-widget {
             position: fixed; top: 20px; left: 70px; z-index: 9999; 
             opacity: 0; transition: 2s ease; pointer-events: none;
@@ -248,16 +247,12 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
-        /* --- 心情圆点补丁 --- */
         .mood-dot {
             width: 12px; height: 12px; border-radius: 50%; 
             cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
         }
         .mood-dot:hover { transform: scale(1.2); }
 
-        /* ============================================
-           哲学情绪样式集成（天象版）
-           ============================================ */
         .philosophy-emotion-indicator {
           position: fixed; top: 20px; left: 20px; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.06); user-select: none;
         }
@@ -272,7 +267,6 @@
 </head>
 <body class="theme-default">
 
-    <!-- AI 观察者：氛围灯 -->
     <div id="observer-vibe-widget">
         <div id="vibe-container">
             <span id="vibe-icon"></span>
@@ -280,14 +274,12 @@
         </div>
     </div>
 
-    <!-- AI 推演主入口 (右下角) -->
     <div id="alter-ai-plugin">
         <div id="ai-trigger" title="他我推演">🧪</div>
         <div id="ai-panel">
             <div class="ai-header">
                 <h3>他我推演</h3>
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <!-- [新增] 一键成文按钮 -->
                     <span id="ai-organize-btn" title="整理成文" style="cursor:pointer; opacity:0.5;">📝</span>
                     <span id="ai-lab-btn" title="设置" style="cursor:pointer; opacity:0.5;">⚙️</span>
                     <span class="ai-close" title="关闭">&times;</span>
@@ -381,7 +373,6 @@
         </div>
     </main>
 
-    <!-- 心灵回想 Overlay -->
     <div id="reflect-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">SOUL REFLECTION / 心灵回想</p></div><span class="close-btn" onclick="closeOverlay('reflect-overlay')">CLOSE</span></div>
@@ -402,7 +393,6 @@
         </div>
     </div>
 
-    <!-- 实验室 Overlay -->
     <div id="lab-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">LABORATORY / 实验室</p></div><span class="close-btn" onclick="closeOverlay('lab-overlay')">CLOSE</span></div>
@@ -448,7 +438,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         </div>
     </div>
 
-    <!-- 个人中心 Overlay -->
     <div id="settings-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">IDENTITY / 个人中心</p></div><span class="close-btn" onclick="closeOverlay('settings-overlay')">CLOSE</span></div>
@@ -469,13 +458,11 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
             </div>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出备份 (.JSON)</button>
-            
             <button class="btn-black" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
         </div>
     </div>
 
-    <!-- 编辑器 Overlay -->
     <div id="editor-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header"><div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div><span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span></div>
@@ -503,7 +490,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         </div>
     </div>
 
-    <!-- 阅读器 Overlay -->
     <div id="reader-overlay" class="overlay">
         <div class="overlay-content">
             <div class="reader-close" onclick="closeOverlay('reader-overlay')" style="position:fixed; top:40px; right:40px; cursor:pointer; z-index:100;"><i data-lucide="x" size="24"></i></div>
@@ -549,7 +535,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if(target) target.classList.add('active'); 
         };
 
-        // --- 1. 标准通讯协议 & 插件注册 ---
         window.AlterAPI = {
             getNotes: () => JSON.parse(JSON.stringify(notes)),
             showMsg: (text) => window.showMsg(text),
@@ -635,7 +620,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         // --- 2. 核心数据与状态 ---
         const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
-        let db, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
+        let db = null, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
         let editingId = null;
@@ -643,13 +628,20 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         async function initDB() {
             return new Promise((resolve) => {
-                const request = indexedDB.open(DB_NAME, 1);
-                request.onupgradeneeded = (e) => { const db = e.target.result; if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "id" }); };
-                request.onsuccess = (e) => { db = e.target.result; resolve(); };
+                try {
+                  const request = indexedDB.open(DB_NAME, 1);
+                  request.onupgradeneeded = (e) => { 
+                    const db = e.target.result; 
+                    if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME, { keyPath: "id" }); 
+                  };
+                  request.onsuccess = (e) => { db = e.target.result; resolve(); };
+                  request.onerror = () => { console.warn("DB blocked"); resolve(); };
+                } catch(e) { resolve(); }
             });
         }
 
         async function dbAction(type, data) {
+            if(!db) return type === "getAll" ? [] : null;
             return new Promise((resolve, reject) => {
                 const tx = db.transaction(STORE_NAME, "readwrite");
                 const store = tx.objectStore(STORE_NAME);
@@ -750,25 +742,26 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         async function init() {
             await initDB();
-            notes = await dbAction("getAll");
+            try {
+                notes = await dbAction("getAll");
+            } catch(e) { notes = []; }
             notes.sort((a,b) => b.id - a.id);
-            if(document.getElementById('rename-user-in')) document.getElementById('rename-user-in').value = user;
-            if(document.getElementById('pass-vault')) document.getElementById('pass-vault').value = sec.v || "";
-            if(document.getElementById('pass-note')) document.getElementById('pass-note').value = sec.n || "";
+
+            // 恢复 UI 状态
+            const rn = document.getElementById('rename-user-in'); if(rn) rn.value = user;
+            const pv = document.getElementById('pass-vault'); if(pv) pv.value = sec.v || "";
+            const pn = document.getElementById('pass-note'); if(pn) pn.value = sec.n || "";
             
-            if(document.getElementById('lab-url-in')) document.getElementById('lab-url-in').value = localStorage.getItem('alt_api_url') || "";
-            if(document.getElementById('lab-key-in')) document.getElementById('lab-key-in').value = localStorage.getItem('alt_api_key') || "";
-            if(document.getElementById('lab-model-in')) document.getElementById('lab-model-in').value = localStorage.getItem('alt_api_model') || "";
+            const lu = document.getElementById('lab-url-in'); if(lu) lu.value = localStorage.getItem('alt_api_url') || "";
+            const lk = document.getElementById('lab-key-in'); if(lk) lk.value = localStorage.getItem('alt_api_key') || "";
+            const lm = document.getElementById('lab-model-in'); if(lm) lm.value = localStorage.getItem('alt_api_model') || "";
 
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
             if (chatBox) {
                 chatBox.innerHTML = ''; 
-                if(history.length > 0) {
-                    history.forEach(m => appendMsg(m.role, m.text, false)); 
-                } else {
-                    appendMsg('bot', '在此刻寻找推演的回声...', false);
-                }
+                if(history.length > 0) history.forEach(m => appendMsg(m.role, m.text, false)); 
+                else appendMsg('bot', '在此刻寻找推演的回声...', false);
             }
 
             if(!localStorage.getItem('alter_v52_user')) {
@@ -777,35 +770,32 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             } else {
                 enterApp(user);
             }
+
             if (window.lucide) window.lucide.createIcons(); 
             loadSamplePlugins();
             AlterPlugins.updateUI();
 
-            if (typeof initPhilosophyEmotionSystem === 'function') {
-                initPhilosophyEmotionSystem();
-            }
-            
-            // 启动规则引擎
-            if (typeof AlterRuleEngine !== 'undefined') {
-                AlterRuleEngine.init();
-            }
+            if (typeof initPhilosophyEmotionSystem === 'function') initPhilosophyEmotionSystem();
+            if (typeof AlterRuleEngine !== 'undefined') AlterRuleEngine.init();
         }
 
         window.enterApp = function(name) {
-            const n = name || document.getElementById('user-name-in').value.trim(); if(!n) return;
+            const input = document.getElementById('user-name-in');
+            const n = name || (input ? input.value.trim() : ""); 
+            if(!n) return;
+            
             if (sec.n && !name) { 
                 const pin = prompt("验证 PIN："); 
                 if (pin !== sec.n) { window.showMsg("PIN ERROR"); return; } 
             }
-            user = n; localStorage.setItem('alter_v52_user', user);
+            
+            user = n; 
+            localStorage.setItem('alter_v52_user', user);
             const authScreen = document.getElementById('auth-screen');
             if (authScreen) authScreen.style.display='none';
             
-            const currentUserTag = document.getElementById('current-user-tag');
-            if (currentUserTag) currentUserTag.innerText = user;
-            
-            const curLoginName = document.getElementById('cur-login-name');
-            if (curLoginName) curLoginName.innerText = user;
+            const currentUserTag = document.getElementById('current-user-tag'); if (currentUserTag) currentUserTag.innerText = user;
+            const curLoginName = document.getElementById('cur-login-name'); if (curLoginName) curLoginName.innerText = user;
             
             renderAll();
         };
@@ -813,26 +803,13 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.switchView = function(m, el) {
             viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             
-            const dashView = document.getElementById('dash-view-container');
-            if (dashView) dashView.style.display = m === 'home' ? 'block' : 'none';
-            
-            const timelineView = document.getElementById('timeline-container');
-            if (timelineView) timelineView.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
-            
-            const vaultTabs = document.getElementById('vault-tabs');
-            if (vaultTabs) vaultTabs.style.display = m === 'vault' ? 'flex' : 'none';
-            
-            const personaFilter = document.getElementById('persona-filter');
-            if (personaFilter) personaFilter.style.display = m === 'timeline' ? 'block' : 'none';
-            
-            const synthBtn = document.getElementById('synth-btn');
-            if (synthBtn) synthBtn.style.display = m === 'vault' ? 'block' : 'none';
-            
-            const viewTitle = document.getElementById('view-title');
-            if (viewTitle) viewTitle.innerText = "他我笔记";
-            
-            const viewSubtitle = document.getElementById('view-subtitle');
-            if (viewSubtitle) viewSubtitle.innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
+            const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'block' : 'none';
+            const tv = document.getElementById('timeline-container'); if (tv) tv.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
+            const vt = document.getElementById('vault-tabs'); if (vt) vt.style.display = m === 'vault' ? 'flex' : 'none';
+            const pf = document.getElementById('persona-filter'); if (pf) pf.style.display = m === 'timeline' ? 'block' : 'none';
+            const sb = document.getElementById('synth-btn'); if (sb) sb.style.display = m === 'vault' ? 'block' : 'none';
+            const vt2 = document.getElementById('view-title'); if (vt2) vt2.innerText = "他我笔记";
+            const vs = document.getElementById('view-subtitle'); if (vs) vs.innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
             
             if(m==='home') renderDailyReview();
             renderGrid();
@@ -844,11 +821,10 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
 
         window.saveSec = function() {
-            const vPass = document.getElementById('pass-vault');
-            const nPass = document.getElementById('pass-note');
-            if (vPass && nPass) {
-                sec.v = vPass.value;
-                sec.n = nPass.value;
+            const vp = document.getElementById('pass-vault');
+            const np = document.getElementById('pass-note');
+            if (vp && np) {
+                sec.v = vp.value; sec.n = np.value;
                 localStorage.setItem('alt_v52_sec', JSON.stringify(sec));
                 window.showMsg("SECURITY SAVED");
             }
@@ -856,10 +832,10 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         window.switchVaultMode = function(mode) {
             vaultSubMode = mode;
-            const soulTab = document.getElementById('tab-soul');
-            const memoryTab = document.getElementById('tab-memory');
-            if (soulTab) soulTab.classList.toggle('active', mode === 'soul');
-            if (memoryTab) memoryTab.classList.toggle('active', mode === 'memory');
+            const st = document.getElementById('tab-soul');
+            const mt = document.getElementById('tab-memory');
+            if (st) st.classList.toggle('active', mode === 'soul');
+            if (mt) mt.classList.toggle('active', mode === 'memory');
             renderGrid();
         };
 
@@ -882,9 +858,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
 
         window.renameLogin = function() {
-            const nameIn = document.getElementById('rename-user-in');
-            if (nameIn) {
-                const n = nameIn.value.trim();
+            const ni = document.getElementById('rename-user-in');
+            if (ni) {
+                const n = ni.value.trim();
                 if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
             }
         };
@@ -900,48 +876,42 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const n = notes.find(x => x.id === id);
             if (!n) return;
             editingId = n.id;
-            const titleEl = document.getElementById('editor-title');
-            const subtitleEl = document.getElementById('editor-subtitle');
-            const noteIn = document.getElementById('note-in');
-            if (titleEl) titleEl.innerText = "修缮回响";
-            if (subtitleEl) subtitleEl.innerText = `EDITING / #${n.id}`;
-            if (noteIn) noteIn.value = n.content;
-            b64s = [...(n.images || [])];
-            files = [...(n.files || [])];
-            inV = n.isVault;
+            const te = document.getElementById('editor-title');
+            const se = document.getElementById('editor-subtitle');
+            const ni = document.getElementById('note-in');
+            if (te) te.innerText = "修缮回响";
+            if (se) se.innerText = `EDITING / #${n.id}`;
+            if (ni) ni.value = n.content;
+            b64s = [...(n.images || [])]; files = [...(n.files || [])]; inV = n.isVault;
             activeP = [...FIXED_P, {n: user, i: "👤"}].find(p => p.n === n.persona) || FIXED_P[0];
             
-            window.renderPrev();
-            window.renderSwitcher();
-            const vaultBtn = document.getElementById('vaultToggle');
-            if (vaultBtn) vaultBtn.style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
+            window.renderPrev(); window.renderSwitcher();
+            const vt = document.getElementById('vaultToggle');
+            if (vt) vt.style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
             window.togglePanel('editor-overlay');
         };
 
         window.openNewEditor = function() {
             editingId = null;
-            const titleEl = document.getElementById('editor-title');
-            const subtitleEl = document.getElementById('editor-subtitle');
-            if (titleEl) titleEl.innerText = "他我笔记";
-            if (subtitleEl) subtitleEl.innerText = "FRAGMENTS / 封存碎语";
+            const te = document.getElementById('editor-title');
+            const se = document.getElementById('editor-subtitle');
+            if (te) te.innerText = "他我笔记";
+            if (se) se.innerText = "FRAGMENTS / 封存碎语";
             window.resetEditor();
             window.togglePanel('editor-overlay');
         };
 
         window.save = async function() { 
-            const noteIn = document.getElementById('note-in');
-            if (!noteIn) return;
-            const t = noteIn.value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
+            const ni = document.getElementById('note-in');
+            if (!ni) return;
+            const t = ni.value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             
             if (editingId) {
                 const idx = notes.findIndex(n => n.id === editingId);
                 if (idx !== -1) {
-                    notes[idx].content = t;
-                    notes[idx].images = [...b64s];
-                    notes[idx].files = [...files];
-                    notes[idx].isVault = inV;
-                    notes[idx].persona = activeP.n;
-                    notes[idx].i = activeP.i;
+                    notes[idx].content = t; notes[idx].images = [...b64s];
+                    notes[idx].files = [...files]; notes[idx].isVault = inV;
+                    notes[idx].persona = activeP.n; notes[idx].i = activeP.i;
                     await dbAction("put", notes[idx]);
                     window.showMsg("回响已修缮");
                 }
@@ -954,16 +924,15 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 await dbAction("put", newNote); notes.unshift(newNote);
                 window.showMsg("回响已封存");
             }
-            
             window.resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
         };
 
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
             grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">START FRAGMENT</div>` : "";
-            const filterEl = document.getElementById('persona-filter');
-            const pFilter = filterEl ? filterEl.value : 'all';
-            let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pFilter === 'all' || n.persona === pFilter); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
+            const fe = document.getElementById('persona-filter');
+            const pf = fe ? fe.value : 'all';
+            let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pf === 'all' || n.persona === pf); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
             if(q) list = list.filter(n => n.content.toLowerCase().includes(q.toLowerCase()));
             list.forEach(n => {
                 const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
@@ -1042,15 +1011,15 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
         
         window.killImg = function(i) { b64s.splice(i, 1); window.renderPrev(); };
-        window.toggleVault = function() { inV = !inV; const vaultBtn = document.getElementById('vaultToggle'); if (vaultBtn) vaultBtn.style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
+        window.toggleVault = function() { inV = !inV; const vt = document.getElementById('vaultToggle'); if (vt) vt.style.color = inV ? 'var(--accent)' : 'var(--text-dim)'; };
         window.resetEditor = function() { 
             editingId=null; b64s=[]; files=[]; inV=false; 
-            const noteIn = document.getElementById('note-in');
-            const prevBox = document.getElementById('prevBox');
-            const vaultBtn = document.getElementById('vaultToggle');
-            if (noteIn) noteIn.value=""; 
-            if (prevBox) { prevBox.innerHTML=""; prevBox.style.display="none"; }
-            if (vaultBtn) vaultBtn.style.color='var(--text-dim)'; 
+            const ni = document.getElementById('note-in');
+            const pb = document.getElementById('prevBox');
+            const vt = document.getElementById('vaultToggle');
+            if (ni) ni.value=""; 
+            if (pb) { pb.innerHTML=""; pb.style.display="none"; }
+            if (vt) vt.style.color='var(--text-dim)'; 
         };
         window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
@@ -1063,7 +1032,79 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             if (countEl) countEl.innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; 
         }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
-        window.drawMap = function() { const box = document.getElementById('map-box'); if (box) { box.innerHTML = ''; ["自我", "虚无", "共鸣", "影子", "回声"].forEach(k => { const n = document.createElement('div'); n.innerText = k; n.style.position='absolute'; n.style.left = `${Math.random()*80}%`; n.style.top = `${Math.random()*80}%`; n.style.fontSize = '12px'; n.style.opacity = '0.6'; box.appendChild(n); }); } };
+        
+        window.drawMap = async function() { 
+            const box = document.getElementById('map-box'); 
+            if (!box) return;
+            box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">意识感应中...</div>';
+
+            const rawUrl = localStorage.getItem('alt_api_url') || "";
+            const apiKey = localStorage.getItem('alt_api_key') || "";
+            const apiModel = localStorage.getItem('alt_api_model') || "";
+            
+            if (!apiKey || !rawUrl) {
+                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">⚠️ 需配置 API 提取意识关键词</div>';
+                return;
+            }
+
+            const context = notes.slice(0, 15).map(n => n.content).join("\n").slice(0, 1500);
+            const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
+            
+            try {
+                const res = await fetch(apiBase, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ 
+                        model: apiModel, 
+                        messages: [{ 
+                            role: "system", 
+                            content: "你是一个文本分析专家。请根据提供的笔记内容，提取5到8个最能代表用户意识状态的深刻关键词（如'孤独'、'本体'、'渴望'等）。只返回一个JSON数组，例如: [\"词1\", \"词2\"]。不要回复任何其他文本。" 
+                        }, { 
+                            role: "user", 
+                            content: context || "用户尚未记录任何深度笔记。请提供默认的意识基准词。" 
+                        }] 
+                    })
+                });
+                
+                const data = await res.json();
+                let keywords = [];
+                try {
+                    const match = data.choices[0].message.content.match(/\[.*\]/s);
+                    keywords = JSON.parse(match ? match[0] : "[]");
+                } catch(e) { keywords = ["自我", "虚无", "共鸣", "影子", "回声"]; }
+
+                if (!keywords.length) keywords = ["自我", "虚无", "共鸣", "影子", "回声"];
+
+                box.innerHTML = '';
+                // 绘制核心节点
+                const core = document.createElement('div');
+                core.innerText = "意识核心";
+                core.style.cssText = "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:700;color:var(--accent);z-index:5;background:var(--bg);padding:8px 15px;border:1px solid var(--accent);border-radius:20px;";
+                box.appendChild(core);
+
+                // 绘制分支节点
+                keywords.forEach((k, i) => {
+                    const angle = (i / keywords.length) * Math.PI * 2;
+                    const dist = 100;
+                    const x = 50 + Math.cos(angle) * 35;
+                    const y = 50 + Math.sin(angle) * 35;
+                    
+                    const node = document.createElement('div');
+                    node.innerText = k;
+                    node.style.cssText = `position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);font-size:11px;opacity:0.8;padding:4px 10px;border-bottom:1px solid var(--border);transition:0.5s ease;`;
+                    box.appendChild(node);
+
+                    // 绘制连线
+                    const line = document.createElement('div');
+                    line.style.cssText = `position:absolute;left:50%;top:50%;width:1px;height:${dist}px;background:var(--border);transform:rotate(${angle + Math.PI/2}rad);transform-origin:0 0;z-index:1;opacity:0.3;`;
+                    box.appendChild(line);
+                });
+                window.showMsg("意识地图重绘完成");
+            } catch (e) {
+                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">❌ 提取失败: ' + e.message + '</div>';
+            }
+        };
+
         window.handleSearch = function() { const searchIn = document.getElementById('searchInput'); if (searchIn) renderGrid(searchIn.value); };
         window.toggleSearch = function() { const wrap = document.getElementById('search-wrap'); if (wrap) wrap.classList.toggle('active'); };
 
@@ -1128,7 +1169,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             };
         })();
 
-        /* --- 新增补丁逻辑：导入、心情与观察者 --- */
         window.importData = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1170,7 +1210,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             });
         }
 
-        /* --- 集成：哲学情绪引擎 --- */
         const PHILOSOPHY_EMOTIONS = {
           clarity: { icon: '☀️', keywords: ['明白了', '懂了', '终于明白', '原来如此', '真相', '本质', '看清', '洞察', '领悟', '顿悟', '豁然开朗', '想通了', '理清了', '思路清晰', '分清了', '识别', '通透'] },
           melancholy: { icon: '🌧️', keywords: ['沉重', '压抑', '窒息', '累', '疲惫', '无意义', '虚无', '孤独', '无助', '迷茫', '难受', '焦虑'] },
@@ -1193,10 +1232,13 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         }
 
         function initPhilosophyEmotionSystem() {
-          const indicator = document.createElement('div');
-          indicator.className = 'philosophy-emotion-indicator emotion-serenity';
-          indicator.innerHTML = '☁️';
-          document.body.appendChild(indicator);
+          let indicator = document.querySelector('.philosophy-emotion-indicator');
+          if(!indicator) {
+              indicator = document.createElement('div');
+              indicator.className = 'philosophy-emotion-indicator emotion-serenity';
+              indicator.innerHTML = '☁️';
+              document.body.appendChild(indicator);
+          }
           
           const editor = document.getElementById('note-in');
           if (editor) {
@@ -1228,18 +1270,20 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.showMsg("已进入他我推演环境");
         }
 
-        /* --- 集成：云端规则引擎 --- */
         const AlterRuleEngine = {
             rules: [],
-            // 注意：在此填入你 GitHub rules.json 的 Raw 链接
-            CLOUD_RULES_URL: "https://github.com/kenjcha-wq/Alter-Note", 
+            // 注意：GitHub 原始数据需要使用 raw.githubusercontent.com 链接
+            CLOUD_RULES_URL: "https://raw.githubusercontent.com/kenjcha-wq/Alter-Note/main/rules.json", 
 
             init: async function() {
                 try {
                     const response = await fetch(this.CLOUD_RULES_URL);
                     if (response.ok) {
-                        this.rules = await response.json();
-                        console.log("✅ 规则已同步");
+                        const text = await response.text();
+                        try {
+                            this.rules = JSON.parse(text);
+                            console.log("✅ 规则已同步");
+                        } catch(e) { console.warn("Rules format error"); }
                     }
                 } catch (e) {
                     this.rules = [{ "trigger": "减肥", "action": "msg", "value": "身体是灵魂的圣殿，慢慢来。" }];
@@ -1247,23 +1291,19 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 }
 
                 const editor = document.getElementById('note-in');
-                if (editor) {
-                    editor.addEventListener('input', (e) => this.check(e.target.value));
-                }
+                if (editor) editor.addEventListener('input', (e) => this.check(e.target.value));
             },
 
             check: function(text) {
-                if (text.length < 2) return;
+                if (!text || text.length < 2) return;
                 this.rules.forEach(rule => {
-                    if (text.includes(rule.trigger)) {
-                        this.execute(rule);
-                    }
+                    if (text.includes(rule.trigger)) this.execute(rule);
                 });
             },
 
             execute: function(rule) {
                 if(rule.action === "msg") AlterAPI.showMsg(rule.value);
-                if(rule.action === "vibe" && typeof setVibe === 'function') window.setVibe('insight', rule.value);
+                if(rule.action === "vibe" && typeof window.setVibe === 'function') window.setVibe('insight', rule.value);
             }
         };
 
