@@ -1,23 +1,26 @@
 /**
- * 插件名称：灵魂对谈 (Soul Link Pro v3.1)
- * 调整内容：平行于 AI 药瓶（药瓶在右，聊天在左），增加 enjoy 表情，优化移动端对齐。
+ * 插件名称：灵魂对谈 (Soul Link Pro v3.2)
+ * 调整内容：增加本地历史缓存，关闭/刷新后记录不丢失；保持药瓶对齐与 enjoy 表情。
  */
 (function() {
     const MQTT_CDN = "https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js";
     const BASE_TOPIC = "alter/soul_link/";
+    const MAX_HISTORY = 50; // 最大记忆条数
     
     let state = {
         isMuted: localStorage.getItem('soul_chat_muted') === 'true',
         channelCode: localStorage.getItem('soul_chat_channel') || "",
-        isMinimized: true, // 初始设为收起，以便对齐药瓶
-        lastTopic: ""
+        isMinimized: true,
+        lastTopic: "",
+        // 从本地读取历史记录
+        history: JSON.parse(localStorage.getItem('soul_chat_cache') || "[]")
     };
 
     let client = null;
     const myNick = localStorage.getItem('alter_v52_user') || "NIK";
 
     const soulChatPro = {
-        name: "灵魂对谈 (平行版)",
+        name: "灵魂对谈 (记忆版)",
         author: "Alter Lab",
         run: async function() {
             if (window.SoulChatActive) return AlterAPI.showMsg("频道已在线");
@@ -33,6 +36,8 @@
 
             this.buildUI();
             this.connectMQTT();
+            // 初始化时渲染历史记录
+            this.renderHistory();
             window.SoulChatActive = true;
         },
 
@@ -46,17 +51,14 @@
                 osc.frequency.setValueAtTime(880, ctx.currentTime); 
                 gain.gain.setValueAtTime(0.1, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.2);
-            } catch (e) { console.warn("音频受阻"); }
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.2);
+            } catch (e) {}
         },
 
         buildUI: function() {
             const chatWrap = document.createElement('div');
             chatWrap.id = "soul-chat-window";
-            // 初始收起位置：右下角，药瓶左侧 (药瓶在 right:20, width:50, 所以我们在 right:80)
             chatWrap.style = `
                 position: fixed; bottom: 20px; right: 80px; width: 120px; height: 44px;
                 background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(255,255,255,0.15); 
@@ -96,76 +98,85 @@
             const toggleMin = () => {
                 state.isMinimized = !state.isMinimized;
                 if (state.isMinimized) {
-                    // 收起状态：回到药瓶左侧
-                    chatWrap.style.width = '120px';
-                    chatWrap.style.height = '44px';
-                    chatWrap.style.right = '80px'; 
-                    chatWrap.style.bottom = '20px';
+                    chatWrap.style.width = '120px'; chatWrap.style.height = '44px';
+                    chatWrap.style.right = '80px'; chatWrap.style.bottom = '20px';
                     chatWrap.style.borderRadius = '22px';
                     document.getElementById('soul-chat-body').style.display = 'none';
                     document.getElementById('soul-ctrls').style.display = 'none';
-                    // 恢复绿灯状态颜色
                     document.getElementById('soul-status-dot').style.boxShadow = "none";
                 } else {
-                    // 展开状态：扩大并居中偏左，避开药瓶
-                    chatWrap.style.width = '290px';
-                    chatWrap.style.height = '450px';
-                    chatWrap.style.right = '15px';
-                    chatWrap.style.bottom = '85px';
+                    chatWrap.style.width = '290px'; chatWrap.style.height = '450px';
+                    chatWrap.style.right = '15px'; chatWrap.style.bottom = '85px';
                     chatWrap.style.borderRadius = '16px';
                     document.getElementById('soul-chat-body').style.display = 'flex';
                     document.getElementById('soul-ctrls').style.display = 'flex';
+                    const mb = document.getElementById('soul-messages');
+                    if(mb) mb.scrollTop = mb.scrollHeight;
                 }
             };
 
             document.getElementById('soul-chat-header').onclick = toggleMin;
-            
             document.getElementById('soul-mute-btn').onclick = (e) => {
-                e.stopPropagation();
-                state.isMuted = !state.isMuted;
+                e.stopPropagation(); state.isMuted = !state.isMuted;
                 localStorage.setItem('soul_chat_muted', state.isMuted);
                 e.target.innerText = state.isMuted ? '🔇' : '🔔';
             };
-
             document.getElementById('soul-channel-btn').onclick = (e) => { e.stopPropagation(); this.switchChannel(); };
             document.getElementById('soul-send').onclick = () => this.sendMessage();
             document.getElementById('soul-input').onkeydown = (e) => { if(e.key==='Enter') this.sendMessage(); };
         },
 
         connectMQTT: function() {
-            client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
-                keepalive: 60,
-                clientId: 'alter_pro_' + Math.random().toString(16).substr(2, 8),
-                clean: true
-            });
-
+            client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', { keepalive: 60, clientId: 'alter_p_' + Math.random().toString(16).substr(2, 6), clean: true });
             client.on('connect', () => {
                 document.getElementById('soul-status-dot').style.background = "#52c41a";
                 this.switchChannel(true);
             });
-
             client.on('message', (topic, message) => {
-                const data = JSON.parse(message.toString());
-                this.appendMessage(data);
-                if (data.user !== myNick) {
-                    this.playAlert();
-                    if (state.isMinimized) {
-                        document.getElementById('soul-status-dot').style.background = "#1890ff";
-                        document.getElementById('soul-status-dot').style.boxShadow = "0 0 10px #1890ff";
+                try {
+                    const data = JSON.parse(message.toString());
+                    // 核心：存入历史并持久化
+                    state.history.push(data);
+                    if(state.history.length > MAX_HISTORY) state.history.shift();
+                    localStorage.setItem('soul_chat_cache', JSON.stringify(state.history));
+                    
+                    this.appendMessage(data);
+                    if (data.user !== myNick) {
+                        this.playAlert();
+                        if (state.isMinimized) {
+                            document.getElementById('soul-status-dot').style.background = "#1890ff";
+                            document.getElementById('soul-status-dot').style.boxShadow = "0 0 10px #1890ff";
+                        }
                     }
-                }
+                } catch(e) {}
             });
+        },
+
+        renderHistory: function() {
+            const msgBox = document.getElementById('soul-messages');
+            if(!msgBox) return;
+            msgBox.innerHTML = ""; // 清空当前显示
+            state.history.forEach(data => this.appendMessage(data));
         },
 
         switchChannel: function(isInit = false) {
             const code = document.getElementById('soul-channel-code').value.trim();
             const newTopic = BASE_TOPIC + (code ? "private/" + code : "public_void_v1");
             if (!isInit && state.lastTopic) client.unsubscribe(state.lastTopic);
+            
+            // 如果频道变了，清空本地缓存的历史记录（可选，此处保留以防误触）
+            if (!isInit && state.channelCode !== code) {
+                state.history = [];
+                localStorage.setItem('soul_chat_cache', "[]");
+            }
+
             state.channelCode = code;
             state.lastTopic = newTopic;
             localStorage.setItem('soul_chat_channel', code);
             client.subscribe(newTopic);
-            document.getElementById('soul-messages').innerHTML = `<div style="text-align:center; opacity:0.2; font-size:9px; margin: 20px 0;">CHANNEL: ${code || 'PUBLIC'}</div>`;
+            this.renderHistory();
+            const mb = document.getElementById('soul-messages');
+            if(mb) mb.insertAdjacentHTML('beforeend', `<div style="text-align:center; opacity:0.2; font-size:9px; margin: 10px 0;">CHANNEL: ${code || 'PUBLIC'}</div>`);
         },
 
         sendMessage: function() {
@@ -202,4 +213,5 @@
         AlterPlugins.register(soulChatPro);
     }
 })();
+
 
