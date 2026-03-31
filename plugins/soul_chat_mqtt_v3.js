@@ -1,18 +1,24 @@
 /**
- * 插件名称：灵魂对谈 (Soul Link Pro v3.2)
- * 调整内容：增加本地历史缓存，关闭/刷新后记录不丢失；保持药瓶对齐与 enjoy 表情。
+ * 插件名称：灵魂对谈 (Soul Link Pro v3.3)
+ * 调整内容：引入 MQTT QoS 1 等级，增加持久化 ClientID，彻底解决偶发性丢包问题。
  */
 (function() {
     const MQTT_CDN = "https://cdn.jsdelivr.net/npm/mqtt/dist/mqtt.min.js";
     const BASE_TOPIC = "alter/soul_link/";
-    const MAX_HISTORY = 50; // 最大记忆条数
+    const MAX_HISTORY = 50; 
     
+    // 生成并固定设备 ID，以便服务器识别重连
+    let persistentId = localStorage.getItem('soul_chat_device_id');
+    if (!persistentId) {
+        persistentId = 'alter_v33_' + Math.random().toString(16).substr(2, 8);
+        localStorage.setItem('soul_chat_device_id', persistentId);
+    }
+
     let state = {
         isMuted: localStorage.getItem('soul_chat_muted') === 'true',
         channelCode: localStorage.getItem('soul_chat_channel') || "",
         isMinimized: true,
         lastTopic: "",
-        // 从本地读取历史记录
         history: JSON.parse(localStorage.getItem('soul_chat_cache') || "[]")
     };
 
@@ -20,7 +26,7 @@
     const myNick = localStorage.getItem('alter_v52_user') || "NIK";
 
     const soulChatPro = {
-        name: "灵魂对谈 (记忆版)",
+        name: "灵魂对谈 (稳定版)",
         author: "Alter Lab",
         run: async function() {
             if (window.SoulChatActive) return AlterAPI.showMsg("频道已在线");
@@ -36,7 +42,6 @@
 
             this.buildUI();
             this.connectMQTT();
-            // 初始化时渲染历史记录
             this.renderHistory();
             window.SoulChatActive = true;
         },
@@ -61,7 +66,7 @@
             chatWrap.id = "soul-chat-window";
             chatWrap.style = `
                 position: fixed; bottom: 20px; right: 80px; width: 120px; height: 44px;
-                background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(255,255,255,0.15); 
+                background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255,255,255,0.15); 
                 border-radius: 22px; z-index: 1000000; display: flex; flex-direction: column; 
                 transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
                 backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -127,15 +132,33 @@
         },
 
         connectMQTT: function() {
-            client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', { keepalive: 60, clientId: 'alter_p_' + Math.random().toString(16).substr(2, 6), clean: true });
+            // 配置持久化会话
+            const options = { 
+                keepalive: 30, 
+                clientId: persistentId, 
+                clean: false, // 启用持久化会话，不清除离线期间的消息
+                connectTimeout: 4000,
+                reconnectPeriod: 1000 
+            };
+            
+            client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', options);
+            
             client.on('connect', () => {
                 document.getElementById('soul-status-dot').style.background = "#52c41a";
                 this.switchChannel(true);
             });
+
+            client.on('error', () => {
+                document.getElementById('soul-status-dot').style.background = "#ff4d4f";
+            });
+
             client.on('message', (topic, message) => {
                 try {
                     const data = JSON.parse(message.toString());
-                    // 核心：存入历史并持久化
+                    
+                    // 查重：QoS 1 可能会导致极少量的重复接收
+                    if (state.history.some(h => h.time === data.time && h.user === data.user && h.text === data.text)) return;
+
                     state.history.push(data);
                     if(state.history.length > MAX_HISTORY) state.history.shift();
                     localStorage.setItem('soul_chat_cache', JSON.stringify(state.history));
@@ -155,16 +178,18 @@
         renderHistory: function() {
             const msgBox = document.getElementById('soul-messages');
             if(!msgBox) return;
-            msgBox.innerHTML = ""; // 清空当前显示
+            msgBox.innerHTML = ""; 
             state.history.forEach(data => this.appendMessage(data));
         },
 
         switchChannel: function(isInit = false) {
             const code = document.getElementById('soul-channel-code').value.trim();
             const newTopic = BASE_TOPIC + (code ? "private/" + code : "public_void_v1");
-            if (!isInit && state.lastTopic) client.unsubscribe(state.lastTopic);
             
-            // 如果频道变了，清空本地缓存的历史记录（可选，此处保留以防误触）
+            if (!isInit && state.lastTopic) {
+                client.unsubscribe(state.lastTopic);
+            }
+            
             if (!isInit && state.channelCode !== code) {
                 state.history = [];
                 localStorage.setItem('soul_chat_cache', "[]");
@@ -173,7 +198,10 @@
             state.channelCode = code;
             state.lastTopic = newTopic;
             localStorage.setItem('soul_chat_channel', code);
-            client.subscribe(newTopic);
+            
+            // 订阅时强制 QoS 1
+            client.subscribe(newTopic, { qos: 1 });
+            
             this.renderHistory();
             const mb = document.getElementById('soul-messages');
             if(mb) mb.insertAdjacentHTML('beforeend', `<div style="text-align:center; opacity:0.2; font-size:9px; margin: 10px 0;">CHANNEL: ${code || 'PUBLIC'}</div>`);
@@ -183,7 +211,14 @@
             const input = document.getElementById('soul-input');
             const text = input.value.trim();
             if (!text || !client) return;
-            client.publish(state.lastTopic, JSON.stringify({ user: myNick, text: text, time: Date.now() }));
+
+            // 发布时强制 QoS 1
+            client.publish(state.lastTopic, JSON.stringify({ 
+                user: myNick, 
+                text: text, 
+                time: Date.now() 
+            }), { qos: 1 });
+            
             input.value = "";
         },
 
@@ -213,5 +248,4 @@
         AlterPlugins.register(soulChatPro);
     }
 })();
-
 
