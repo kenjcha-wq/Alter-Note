@@ -508,6 +508,41 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     </div>
 
     <script id="alter-core-script">
+        // --- 全设备同步核心：Cloudflare KV 适配层 ---
+const SyncEngine = {
+    async pull() {
+        try {
+            const res = await fetch('/api/sync');
+            const data = await res.json();
+            if (data && Array.isArray(data)) {
+                // 1. 先更新内存里的笔记数组
+                notes = data; 
+                // 2. 更新本地存储
+                localStorage.setItem('alter_notes_data', JSON.stringify(data));
+                console.log("已从云端同步最新回响");
+                // 3. 刷新界面渲染
+                if(typeof renderGrid === 'function') renderGrid(); 
+                updateStats(); 
+            }
+        } catch (e) { console.error("同步拉取失败:", e); }
+    },
+    async push(data) {
+        try {
+            await fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            console.log("回响已同步至云端");
+        } catch (e) { console.error("同步推送失败:", e); }
+    }
+};
+
+// 页面加载 1.5 秒后自动同步一次
+window.addEventListener('load', () => {
+    setTimeout(() => SyncEngine.pull(), 1500); 
+});
+      
         /* --- 0. 基础全局工具 --- */
         window.showMsg = function(m) { 
             const t = document.getElementById('toast'); 
