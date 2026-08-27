@@ -66,12 +66,9 @@
         }
 
         /* --- AI 推演插件样式 --- */
-        #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); }
-        #ai-trigger { width: 50px; height: 50px; background: var(--accent); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.3s; border: 2px solid rgba(255,255,255,0.1); font-size: 20px; }
-        #ai-trigger:hover { transform: scale(1.1) rotate(15deg); filter: brightness(1.2); }
-        
-        #ai-panel { position: absolute; bottom: 70px; right: 0; width: 350px; height: 500px; background: var(--ai-panel-bg); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; opacity: 0; transition: 0.3s; transform: translateY(20px); }
-        #ai-panel.show { display: flex; opacity: 1; transform: translateY(0); }
+        #alter-ai-plugin { position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: var(--font-sans); pointer-events: none; }
+        #ai-panel { position: absolute; bottom: 0; right: 0; width: 360px; max-width: calc(100vw - 90px); max-height: min(560px, calc(100vh - 60px)); height: 520px; background: var(--ai-panel-bg); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; opacity: 0; transition: 0.3s; transform: translateY(20px); }
+        #ai-panel.show { display: flex; opacity: 1; transform: translateY(0); pointer-events: auto; }
         
         .ai-header { padding: 15px; background: var(--sidebar-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .ai-header h3 { margin: 0; font-size: 11px; font-weight: 600; color: var(--text-main); letter-spacing: 1px; text-transform: uppercase; }
@@ -326,7 +323,6 @@
     </div>
 
     <div id="alter-ai-plugin">
-        <div id="ai-trigger" title="他我推演">🧪</div>
         <div id="ai-panel">
             <div class="ai-header">
                 <h3>他我推演</h3>
@@ -382,6 +378,7 @@
         <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
         <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
+        <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical"></i></div>
         <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i></div>
         <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
     </nav>
@@ -908,6 +905,21 @@ const SyncEngine = {
                 request.onerror = () => reject(request.error);
             });
         }
+
+        // 打开推演面板：滚到最新一条，不用手动往下翻
+        window.scrollChatToBottom = function() {
+            const box = document.getElementById('ai-chat-box');
+            if (!box) return;
+            requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+        };
+
+        window.toggleAIPanel = function() {
+            const panel = document.getElementById('ai-panel');
+            if (!panel) return;
+            const opening = !panel.classList.contains('show');
+            panel.classList.toggle('show', opening);
+            if (opening) window.scrollChatToBottom();
+        };
 
         window.toggleAIPersona = function() {
             const btn = document.getElementById('persona-toggle-btn');
@@ -1446,7 +1458,8 @@ const SyncEngine = {
                 `;
                 msg.appendChild(tools);
             }
-            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight; 
+            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight;
+            if (chatBox.scrollHeight > chatBox.clientHeight) requestAnimationFrame(() => { chatBox.scrollTop = chatBox.scrollHeight; }); 
             if(shouldSave) {
                 const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
                 history.push({ role, text });
@@ -1458,8 +1471,7 @@ const SyncEngine = {
 
         // --- AI 插件交互初始化 ---
         (function() {
-            const trigger = document.getElementById('ai-trigger'), panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel'), organizeBtn = document.getElementById('ai-organize-btn');
-            if(trigger) trigger.onclick = () => panel && panel.classList.toggle('show');
+            const panel = document.getElementById('ai-panel'), closeBtn = document.querySelector('.ai-close'), sendBtn = document.getElementById('ai-send-btn'), input = document.getElementById('ai-input'), labBtn = document.getElementById('ai-lab-btn'), labPanel = document.getElementById('ai-lab-panel'), organizeBtn = document.getElementById('ai-organize-btn');
             if(closeBtn) closeBtn.onclick = () => panel && panel.classList.remove('show');
             if(sendBtn) sendBtn.onclick = () => { if (input) { const text = input.value.trim(); if(text){ appendMsg('user', text); input.value=''; callAI(text); } } };
             if(input) input.onkeydown = (e) => { if(e.key==='Enter') sendBtn && sendBtn.click(); };
@@ -1577,7 +1589,7 @@ const SyncEngine = {
 
         function triggerPhilosophyDialog() {
             const panel = document.getElementById('ai-panel');
-            if (panel) panel.classList.add('show');
+            if (panel) { panel.classList.add('show'); window.scrollChatToBottom(); }
             document.querySelector('.negative-emotion-alert')?.remove();
             window.showMsg("已进入他我推演环境");
         }
