@@ -125,7 +125,17 @@
         main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; width: 100%; }
         header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
-        .brand-mark { font-size: 7px; letter-spacing: 3px; color: var(--text-dim); opacity: 0.45; margin-top: 6px; font-family: var(--font-sans); text-transform: uppercase; }
+        .brand-mark { font-size: 7px; letter-spacing: 3px; color: var(--text-dim); opacity: 0.45; margin-top: 6px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        #streak-mark { letter-spacing: 2px; opacity: 0.85; }
+        #streak-mark::before { content: ''; display: inline-block; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+
+        /* --- 首页速记条 --- */
+        .quick-capture { flex-shrink: 0; display: none; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding: 0 2px 14px; margin-bottom: 26px; }
+        .quick-capture span { font-size: 8px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; flex-shrink: 0; }
+        .quick-capture input { flex: 1; background: transparent; border: none; outline: none; font-family: var(--font-main); font-size: 15px; font-weight: var(--text-weight); color: var(--text-main); padding: 2px 0; }
+        .quick-capture input::placeholder { font-style: italic; opacity: 0.3; }
+        .quick-capture button { background: transparent; border: 1px solid var(--border); color: var(--text-dim); font-size: 8px; letter-spacing: 2px; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: 0.3s; text-transform: uppercase; flex-shrink: 0; }
+        .quick-capture button:hover { border-color: var(--accent); color: var(--accent); }
         .view-subtitle-meta { font-size: 8px; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; font-family: var(--font-sans); }
         
         .vault-tabs { display: flex; gap: 15px; margin-top: 15px; }
@@ -248,21 +258,20 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
-        /* --- 首页固定一屏：不产生上下滚动 --- */
-        @media (min-width: 700px) {
-            main.view-home { overflow: hidden; padding-top: 34px; padding-bottom: 24px; }
-            main.view-home header { margin-bottom: 26px; flex-shrink: 0; }
-            main.view-home #dash-view-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-            main.view-home .quick-row { flex: 1 1 auto; min-height: 0; margin-bottom: 22px; }
-            main.view-home .quick-panel { overflow: hidden; min-height: 0; }
-            main.view-home #review-container { margin-top: 0 !important; flex-shrink: 0; min-height: 0; }
-            main.view-home #review-box { max-height: 190px; overflow: hidden; }
-        }
+        /* --- 首页：等宽三栏，桌面端固定一屏不滚动 --- */
+        .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+        @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
+        .quick-panel { padding: 26px 28px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); display: flex; flex-direction: column; min-height: 240px; overflow: hidden; }
+        .quick-body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+
+        main.view-home { overflow: hidden; }
+        main.view-home .quick-capture { display: flex; }
+        main.view-home > header { flex-shrink: 0; margin-bottom: 26px; }
+        main.view-home #dash-view-container { flex: 1 1 auto; min-height: 0; }
+        main.view-home .home-grid { height: 100%; }
+        main.view-home .quick-panel { height: 100%; min-height: 0; }
 
         /* --- 首页速记面板：日程 / 便签 --- */
-        .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 60px; }
-        @media (max-width: 700px) { .quick-row { grid-template-columns: 1fr; } }
-        .quick-panel { padding: 28px 30px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); display: flex; flex-direction: column; min-height: 210px; }
         .quick-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
         .quick-head h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin: 0; }
         .quick-en { font-size: 7px; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
@@ -279,6 +288,10 @@
         .quick-item:hover .quick-kill { opacity: 0.5; }
         .quick-kill:hover { opacity: 1 !important; color: var(--accent); }
         .quick-empty { font-size: 10px; opacity: 0.22; letter-spacing: 1px; padding: 14px 0; }
+        .recall-item { cursor: pointer; padding: 4px 0; }
+        .recall-meta { font-size: 8px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; }
+        .recall-text { font-family: var(--font-main); font-size: 13px; line-height: 1.9; font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 168px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%); mask-image: linear-gradient(to bottom, black 55%, transparent 100%); }
+        .recall-item:hover .recall-text { color: var(--accent); }
         .quick-add { display: flex; gap: 6px; margin-top: auto; padding-top: 16px; }
         .quick-add input { background: transparent; border: none; border-bottom: 1px solid var(--border); font-size: 11px; padding: 5px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
         .quick-add input.q-text { flex: 1; min-width: 0; }
@@ -369,6 +382,7 @@
         <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
         <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
+        <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i></div>
         <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
     </nav>
 
@@ -377,7 +391,7 @@
             <div>
                 <h1 id="view-title">他我笔记</h1>
                 <p class="view-subtitle-meta" id="view-subtitle">DASHBOARD / 概览</p>
-                <p class="brand-mark">象库 · ONTO LAB</p>
+                <p class="brand-mark">象库 · ONTO LAB<span id="streak-mark"></span></p>
                 <div class="vault-tabs" id="vault-tabs" style="display:none;">
                     <span class="v-tab active" id="tab-soul" onclick="window.switchVaultMode('soul')">心灵碎片 (Soul)</span>
                     <span class="v-tab" id="tab-memory" onclick="window.switchVaultMode('memory')">记忆碎片 (Memory)</span>
@@ -395,11 +409,16 @@
             </div>
         </header>
 
-        <div id="dash-view-container">
-            <div class="quick-row">
+        <div class="quick-capture">
+            <span>速记</span>
+            <input type="text" id="qc-input" placeholder="此刻的念头，回车即封存..." onkeydown="if(event.key==='Enter')window.quickCapture()">
+            <button onclick="window.quickCapture()">封存</button>
+        </div>
+        <div id="dash-view-container" style="display:flex; flex-direction:column;">
+            <div class="home-grid">
                 <div class="quick-panel">
                     <div class="quick-head"><h4>日程</h4><span class="quick-en">Schedule</span></div>
-                    <div id="schedule-list"></div>
+                    <div class="quick-body" id="schedule-list"></div>
                     <div class="quick-add">
                         <input type="text" id="schedule-text" class="q-text" placeholder="安排一件事..." onkeydown="if(event.key==='Enter')addSchedule()">
                         <input type="date" id="schedule-date">
@@ -408,16 +427,16 @@
                 </div>
                 <div class="quick-panel">
                     <div class="quick-head"><h4>便签</h4><span class="quick-en">Sticky</span></div>
-                    <div id="sticky-list"></div>
+                    <div class="quick-body" id="sticky-list"></div>
                     <div class="quick-add">
                         <input type="text" id="sticky-text" class="q-text" placeholder="还没日子，但得记得..." onkeydown="if(event.key==='Enter')addSticky()">
                         <button onclick="addSticky()">+</button>
                     </div>
                 </div>
-            </div>
-            <div id="review-container" style="margin-top: 40px;">
-                <h3 style="font-size: 10px; letter-spacing: 3px; margin-bottom: 30px; opacity:0.5;">DAILY RECALL / 每日回顾</h3>
-                <div id="review-box" style="max-width: 600px;"></div>
+                <div class="quick-panel">
+                    <div class="quick-head"><h4>每日回想</h4><span class="quick-en">Daily Recall</span></div>
+                    <div class="quick-body" id="review-box"></div>
+                </div>
             </div>
         </div>
 
@@ -439,6 +458,12 @@
                     <button onclick="window.runInquiry('mind')" style="background:var(--accent); color:var(--bg); border:none; padding:30px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
                         <h3 style="color:var(--bg); border:none; padding:0; font-size:14px;">心灵模式 (Psychology)</h3>
                         <p style="margin-top:8px; font-size:11px; opacity:0.8;">挖掘日常独白中的潜意识阴影</p>
+                    </button>
+                </div>
+                <div class="ctrl-row mobile-stack">
+                    <button onclick="window.runInquiry('week')" style="background:transparent; color:var(--text-main); border:1px solid var(--border); padding:22px 30px; text-align:left; cursor:pointer; flex:1; border-radius:2px; transition:0.3s;">
+                        <h3 style="color:var(--text-main); border:none; padding:0; font-size:14px;">本周回声 (Weekly Echo)</h3>
+                        <p style="margin-top:8px; font-size:11px; opacity:0.55;">以他我第一人称，回看这七天的你</p>
                     </button>
                 </div>
             </div>
@@ -598,6 +623,21 @@ const SyncEngine = {
 // window.addEventListener('load', () => { setTimeout(() => SyncEngine.pull(), 1500); });
       
         /* --- 0. 基础全局工具 --- */
+        // 主题：先于渲染应用，避免刷新时白闪
+        if (localStorage.getItem('alter_theme') === 'dark') document.body.classList.add('dark-mode');
+
+        window.updateThemeIcon = function(isDark) {
+            const el = document.getElementById('nav-theme');
+            if (el) { el.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '"></i>'; if (window.lucide) window.lucide.createIcons(); }
+        };
+
+        window.toggleTheme = function() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('alter_theme', isDark ? 'dark' : 'light');
+            window.updateThemeIcon(isDark);
+            window.showMsg(isDark ? '夜幕已落下' : '回到白昼');
+        };
+        window.updateThemeIcon(document.body.classList.contains('dark-mode'));
         window.showMsg = function(m) { 
             const t = document.getElementById('toast'); 
             if(!t) return;
@@ -660,6 +700,42 @@ const SyncEngine = {
             if (kind === 'schedule') schedule = schedule.filter(x => x.id !== id);
             else stickies = stickies.filter(x => x.id !== id);
             saveQuick(); renderQuick();
+        };
+
+        // 连续记录天数：从今天（或昨天，若今天未写）往前数
+        function currentStreak() {
+            const days = new Set(notes.filter(n => !n.isVault && !n.deleteAt).map(n => n.time));
+            if (!days.size) return 0;
+            let d = new Date();
+            if (!days.has(d.toLocaleDateString())) d.setDate(d.getDate() - 1);
+            let s = 0;
+            while (days.has(d.toLocaleDateString()) && s < 3650) { s++; d.setDate(d.getDate() - 1); }
+            return s;
+        }
+
+        function renderStreak() {
+            const el = document.getElementById('streak-mark');
+            if (!el) return;
+            const s = currentStreak();
+            el.innerText = s > 0 ? ('已连续记录 ' + s + ' 天') : '今日尚未落笔';
+        }
+
+        // 首页速记：一行即成一条回响，不开编辑器
+        window.quickCapture = async function() {
+            const inp = document.getElementById('qc-input');
+            if (!inp) return;
+            const text = inp.value.trim();
+            if (!text) return;
+            const newNote = {
+                id: Date.now(), content: text, author: user, images: [], files: [],
+                isVault: false, persona: activeP.n, i: activeP.i,
+                time: new Date().toLocaleDateString(), replies: [], zs: 0, tmpl: 'quote'
+            };
+            inp.value = '';
+            await dbAction("put", newNote);
+            notes.unshift(newNote);
+            await renderAll();
+            window.showMsg('回响已封存');
         };
 
         function renderQuick() {
@@ -998,7 +1074,7 @@ const SyncEngine = {
         window.switchView = function(m, el) {
             viewMode = m; const mainEl = document.getElementById('main'); if (mainEl) mainEl.classList.toggle('view-home', m === 'home'); document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             
-            const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'block' : 'none';
+            const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'flex' : 'none';
             const tv = document.getElementById('timeline-container'); if (tv) tv.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
             const vt = document.getElementById('vault-tabs'); if (vt) vt.style.display = m === 'vault' ? 'flex' : 'none';
             const pf = document.getElementById('persona-filter'); if (pf) pf.style.display = m === 'timeline' ? 'block' : 'none';
@@ -1042,14 +1118,30 @@ const SyncEngine = {
         };
 
         window.runInquiry = async function(type) {
-            const area = document.getElementById('reflect-report'); 
-            if (notes.length < 1) return window.showMsg("缺乏样本");
-            if (area) {
-                area.innerHTML = '<p style="font-size:11px; opacity:0.5;">模式感应中...</p>';
-                const contentSum = notes.slice(0, 5).map(n => n.content).join("\n");
-                await callAI(`分析模式模式 [${type}]：\n${contentSum}`, [], type === 'phi' ? "哲学分析" : "心理洞察");
-                area.innerHTML = `分析回响已同步至侧边。`;
+            const area = document.getElementById('reflect-report');
+            const pool = notes.filter(n => !n.isVault && !n.deleteAt);
+            if (!pool.length) return window.showMsg("缺乏样本");
+
+            const weekAgo = Date.now() - 7 * 86400000;
+            const isWeek = type === 'week';
+            const source = isWeek ? pool.filter(n => n.id >= weekAgo) : pool;
+            if (!source.length) return window.showMsg("这七天没有落笔，无从回声");
+
+            const titles = { phi: '哲思感应中...', mind: '心灵感应中...', week: '正在回收这七天的回声...' };
+            const samples = source.slice(0, isWeek ? 20 : 8).map(n => n.content).join("\n---\n");
+
+            let system, prompt;
+            if (isWeek) {
+                system = "你是用户的『他我』——同一个意识里更清醒的那个观察者。用第一人称『我们』来描述这一周，不要写成分析报告。";
+                prompt = `这是我们这一周的 ${source.length} 条独白。请写一段不超过 300 字的回声：说清我们这周反复在转的那个念头是什么、状态朝哪个方向移动了、以及有一个变化是我们自己大概没察觉到的。语气克制，不要罗列条目，要提炼。\n\n${samples}`;
+            } else {
+                system = type === 'phi' ? "你是哲学分析者，用本体论视角解析文字的存在状态，冷静而精确。" : "你是心理洞察者，挖掘日常独白中的潜意识阴影，温和但不回避。";
+                prompt = `请基于以下独白进行${type === 'phi' ? '哲思' : '心灵'}解析：\n\n${samples}`;
             }
+
+            if (area) { area.innerHTML = `<p style="font-size:11px; opacity:0.5;">${titles[type] || '感应中...'}</p>`; }
+            await callAI(prompt, [], system);
+            if (area) { area.innerHTML = `感应回响已同步至右下角推演面板。`; }
         };
 
         window.renameLogin = function() {
@@ -1217,8 +1309,23 @@ const SyncEngine = {
             if (vt) vt.style.color='var(--text-dim)'; 
         };
         window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
-        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); renderQuick(); }
-        function renderDailyReview() { const box = document.getElementById('review-box'); if(!box) return; const eligible = notes.filter(n => !n.isVault); if(!eligible.length) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; } const r = eligible[Math.floor(Math.random()*eligible.length)]; box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`; }
+        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); renderQuick(); renderStreak(); }
+        // 按当天日期确定性抽取，同一天永远同一篇，避免每次操作后首页内容跳动
+        function dailySeedPick(len) {
+            if (len <= 0) return -1;
+            const d = new Date();
+            const key = String(d.getFullYear()) + '-' + (d.getMonth() + 1) + '-' + d.getDate() + '-alter-recall';
+            let h = 2166136261;
+            for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+            return h % len;
+        }
+        function renderDailyReview() {
+            const box = document.getElementById('review-box'); if(!box) return;
+            const eligible = notes.filter(n => !n.isVault && !n.deleteAt).sort((a,b) => a.id - b.id);
+            if(!eligible.length) { box.innerHTML = '<div class="quick-empty">此刻虚无</div>'; return; }
+            const r = eligible[dailySeedPick(eligible.length)];
+            box.innerHTML = `<div class="recall-item" onclick="window.showNoteById(${r.id})"><div class="recall-meta">${r.i||'👤'} ${escQuick(r.persona||'')} · ${r.time}</div><div class="recall-text">${r.content}</div></div>`;
+        }
         window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; const box = document.getElementById('p-sel-box'); if (box) { box.innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); } }
         function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
         function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); } }
