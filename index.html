@@ -248,6 +248,17 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
+        /* --- 首页固定一屏：不产生上下滚动 --- */
+        @media (min-width: 700px) {
+            main.view-home { overflow: hidden; padding-top: 34px; padding-bottom: 24px; }
+            main.view-home header { margin-bottom: 26px; flex-shrink: 0; }
+            main.view-home #dash-view-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+            main.view-home .quick-row { flex: 1 1 auto; min-height: 0; margin-bottom: 22px; }
+            main.view-home .quick-panel { overflow: hidden; min-height: 0; }
+            main.view-home #review-container { margin-top: 0 !important; flex-shrink: 0; min-height: 0; }
+            main.view-home #review-box { max-height: 190px; overflow: hidden; }
+        }
+
         /* --- 首页速记面板：日程 / 便签 --- */
         .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 60px; }
         @media (max-width: 700px) { .quick-row { grid-template-columns: 1fr; } }
@@ -385,11 +396,6 @@
         </header>
 
         <div id="dash-view-container">
-            <div class="dash-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 60px;">
-                <div class="dash-card"><h4>今日独白</h4><p id="count-today">0</p></div>
-                <div class="dash-card"><h4>当前登录</h4><p id="current-user-tag">UNSET</p></div>
-                <div class="dash-card"><h4>化身状态</h4><p>活跃</p></div>
-            </div>
             <div class="quick-row">
                 <div class="quick-panel">
                     <div class="quick-head"><h4>日程</h4><span class="quick-en">Schedule</span></div>
@@ -984,14 +990,13 @@ const SyncEngine = {
             const authScreen = document.getElementById('auth-screen');
             if (authScreen) authScreen.style.display='none';
             
-            const currentUserTag = document.getElementById('current-user-tag'); if (currentUserTag) currentUserTag.innerText = user;
             const curLoginName = document.getElementById('cur-login-name'); if (curLoginName) curLoginName.innerText = user;
             
             renderAll();
         };
 
         window.switchView = function(m, el) {
-            viewMode = m; document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
+            viewMode = m; const mainEl = document.getElementById('main'); if (mainEl) mainEl.classList.toggle('view-home', m === 'home'); document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             
             const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'block' : 'none';
             const tv = document.getElementById('timeline-container'); if (tv) tv.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
@@ -1219,7 +1224,9 @@ const SyncEngine = {
         function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); } }
         function updateStats() { 
             const countEl = document.getElementById('count-today');
-            if (countEl) countEl.innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length; 
+            if (countEl) countEl.innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length;
+            const navName = document.getElementById('cur-login-name');
+            if (navName) navName.innerText = user; 
         }
         window.showNoteById = function(id) { const n = notes.find(x=>x.id===id); if(n) showNote(n); };
         
@@ -1498,7 +1505,7 @@ const SyncEngine = {
             }
         };
 
-        window.addEventListener('load', init);
+        window.addEventListener('load', () => { init(); const m0 = document.getElementById('main'); if (m0) m0.classList.add('view-home'); });
     </script>
 </body>
 </html>
