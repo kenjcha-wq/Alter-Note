@@ -650,6 +650,14 @@ const SyncEngine = {
         let schedule = JSON.parse(localStorage.getItem('alter_schedule') || '[]');
         let stickies = JSON.parse(localStorage.getItem('alter_sticky') || '[]');
 
+        // 同一毫秒内连续新增会撞 Date.now()，导致按 id 删除/切换时误伤多条
+        function uniqueId(arr) {
+            let id = Date.now();
+            const taken = new Set((arr || []).map(x => x && x.id));
+            while (taken.has(id)) id++;
+            return id;
+        }
+
         function saveQuick() {
             localStorage.setItem('alter_schedule', JSON.stringify(schedule));
             localStorage.setItem('alter_sticky', JSON.stringify(stickies));
@@ -677,7 +685,7 @@ const SyncEngine = {
             const text = ti.value.trim();
             if (!text) return;
             if (!di.value) { window.showMsg('先给它挑个日子'); di.focus(); return; }
-            schedule.push({ id: Date.now(), text: text, date: di.value, done: false });
+            schedule.push({ id: uniqueId(schedule), text: text, date: di.value, done: false });
             ti.value = ''; di.value = '';
             saveQuick(); renderQuick();
         };
@@ -685,7 +693,7 @@ const SyncEngine = {
         window.addSticky = function() {
             const ti = document.getElementById('sticky-text');
             if (!ti || !ti.value.trim()) return;
-            stickies.push({ id: Date.now(), text: ti.value.trim(), done: false });
+            stickies.push({ id: uniqueId(stickies), text: ti.value.trim(), done: false });
             ti.value = '';
             saveQuick(); renderQuick();
         };
@@ -727,7 +735,7 @@ const SyncEngine = {
             const text = inp.value.trim();
             if (!text) return;
             const newNote = {
-                id: Date.now(), content: text, author: user, images: [], files: [],
+                id: uniqueId(notes), content: text, author: user, images: [], files: [],
                 isVault: false, persona: activeP.n, i: activeP.i,
                 time: new Date().toLocaleDateString(), replies: [], zs: 0, tmpl: 'quote'
             };
@@ -1204,7 +1212,7 @@ const SyncEngine = {
                 }
             } else {
                 const newNote = { 
-                    id:Date.now(), content:t, author: user, images:[...b64s], files:[...files], 
+                    id:uniqueId(notes), content:t, author: user, images:[...b64s], files:[...files], 
                     isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
                     tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
                 };
