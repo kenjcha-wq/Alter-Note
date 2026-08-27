@@ -304,6 +304,9 @@
         }
         .mood-dot:hover { transform: scale(1.2); }
 
+        /* 情绪球与氛围提示仅在写笔记时出现，其他页面隐藏以免遮挡标题 */
+        body:not(.editor-open) .philosophy-emotion-indicator,
+        body:not(.editor-open) #observer-vibe-widget { opacity: 0 !important; pointer-events: none !important; }
         .philosophy-emotion-indicator {
           position: fixed; top: 20px; left: 20px; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.06); user-select: none;
         }
@@ -774,11 +777,13 @@ const SyncEngine = {
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
             const target = document.getElementById(id); 
             if(target) target.style.display = 'flex'; 
+            document.body.classList.toggle('editor-open', id === 'editor-overlay');
         };
 
         window.closeOverlay = function(id) { 
             const target = document.getElementById(id); 
             if(target) target.style.display = 'none'; 
+            document.body.classList.remove('editor-open');
         };
 
         window.tabTo = function(id, el) { 
