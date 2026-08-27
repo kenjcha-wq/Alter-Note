@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alter - 自省的空间</title>
+    <title>他我笔记 · 象库 ONTO Lab</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style id="custom-styles">
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@200;400;700&display=swap');
@@ -125,6 +125,7 @@
         main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 60px; width: 100%; }
         header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
+        .brand-mark { font-size: 7px; letter-spacing: 3px; color: var(--text-dim); opacity: 0.45; margin-top: 6px; font-family: var(--font-sans); text-transform: uppercase; }
         .view-subtitle-meta { font-size: 8px; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; font-family: var(--font-sans); }
         
         .vault-tabs { display: flex; gap: 15px; margin-top: 15px; }
@@ -247,6 +248,32 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
+        /* --- 首页速记面板：日程 / 便签 --- */
+        .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 60px; }
+        @media (max-width: 700px) { .quick-row { grid-template-columns: 1fr; } }
+        .quick-panel { padding: 28px 30px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); display: flex; flex-direction: column; min-height: 210px; }
+        .quick-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+        .quick-head h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin: 0; }
+        .quick-en { font-size: 7px; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
+        .quick-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.6; }
+        .quick-item:last-child { border-bottom: none; }
+        .quick-check { width: 12px; height: 12px; border: 1px solid var(--text-dim); border-radius: 50%; cursor: pointer; flex-shrink: 0; margin-top: 4px; transition: 0.25s; }
+        .quick-item.done .quick-check { background: var(--accent); border-color: var(--accent); }
+        .quick-item.done .quick-text { text-decoration: line-through; opacity: 0.35; }
+        .quick-text { flex: 1; word-break: break-word; }
+        .quick-date { font-size: 8px; letter-spacing: 1px; color: var(--text-dim); flex-shrink: 0; margin-top: 3px; text-transform: uppercase; }
+        .quick-date.overdue { color: #b4530f; opacity: 1; }
+        .quick-date.today { color: var(--accent); font-weight: 700; }
+        .quick-kill { font-size: 12px; color: var(--text-dim); cursor: pointer; opacity: 0; transition: 0.2s; flex-shrink: 0; margin-top: 1px; }
+        .quick-item:hover .quick-kill { opacity: 0.5; }
+        .quick-kill:hover { opacity: 1 !important; color: var(--accent); }
+        .quick-empty { font-size: 10px; opacity: 0.22; letter-spacing: 1px; padding: 14px 0; }
+        .quick-add { display: flex; gap: 6px; margin-top: auto; padding-top: 16px; }
+        .quick-add input { background: transparent; border: none; border-bottom: 1px solid var(--border); font-size: 11px; padding: 5px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
+        .quick-add input.q-text { flex: 1; min-width: 0; }
+        .quick-add input[type=date] { width: 105px; flex-shrink: 0; font-size: 10px; }
+        .quick-add button { background: var(--accent); color: var(--bg); border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 1; flex-shrink: 0; }
+
         .mood-dot {
             width: 12px; height: 12px; border-radius: 50%; 
             cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
@@ -314,8 +341,8 @@
 
     <div id="auth-screen">
         <div class="auth-box">
-            <div class="auth-logo">Alter.</div>
-            <p style="font-size:8px; letter-spacing:5px; opacity:0.5; margin-bottom:40px;">PERSONAL ARCHIVE SYSTEM</p>
+            <div class="auth-logo">他我</div>
+            <p style="font-size:8px; letter-spacing:5px; opacity:0.5; margin-bottom:40px;">象库 ONTO LAB</p>
             <input type="text" id="user-name-in" class="input-line" style="color:#fff; border-color:#444; text-align:center; margin-bottom:25px; font-size: 11px;" placeholder="在此输入登录名...">
             <button class="btn-black" style="background:#fff; color:#000; width:100%; border-radius:20px; padding: 10px 0;" onclick="enterApp()">连接灵魂</button>
         </div>
@@ -339,6 +366,7 @@
             <div>
                 <h1 id="view-title">他我笔记</h1>
                 <p class="view-subtitle-meta" id="view-subtitle">DASHBOARD / 概览</p>
+                <p class="brand-mark">象库 · ONTO LAB</p>
                 <div class="vault-tabs" id="vault-tabs" style="display:none;">
                     <span class="v-tab active" id="tab-soul" onclick="window.switchVaultMode('soul')">心灵碎片 (Soul)</span>
                     <span class="v-tab" id="tab-memory" onclick="window.switchVaultMode('memory')">记忆碎片 (Memory)</span>
@@ -361,6 +389,25 @@
                 <div class="dash-card"><h4>今日独白</h4><p id="count-today">0</p></div>
                 <div class="dash-card"><h4>当前登录</h4><p id="current-user-tag">UNSET</p></div>
                 <div class="dash-card"><h4>化身状态</h4><p>活跃</p></div>
+            </div>
+            <div class="quick-row">
+                <div class="quick-panel">
+                    <div class="quick-head"><h4>日程</h4><span class="quick-en">Schedule</span></div>
+                    <div id="schedule-list"></div>
+                    <div class="quick-add">
+                        <input type="text" id="schedule-text" class="q-text" placeholder="安排一件事..." onkeydown="if(event.key==='Enter')addSchedule()">
+                        <input type="date" id="schedule-date">
+                        <button onclick="addSchedule()">+</button>
+                    </div>
+                </div>
+                <div class="quick-panel">
+                    <div class="quick-head"><h4>便签</h4><span class="quick-en">Sticky</span></div>
+                    <div id="sticky-list"></div>
+                    <div class="quick-add">
+                        <input type="text" id="sticky-text" class="q-text" placeholder="还没日子，但得记得..." onkeydown="if(event.key==='Enter')addSticky()">
+                        <button onclick="addSticky()">+</button>
+                    </div>
+                </div>
             </div>
             <div id="review-container" style="margin-top: 40px;">
                 <h3 style="font-size: 10px; letter-spacing: 3px; margin-bottom: 30px; opacity:0.5;">DAILY RECALL / 每日回顾</h3>
@@ -538,10 +585,11 @@ const SyncEngine = {
     }
 };
 
-// 页面加载 1.5 秒后自动同步一次
-window.addEventListener('load', () => {
-    setTimeout(() => SyncEngine.pull(), 1500); 
-});
+// 云同步已停用：/api/sync 返回 500（Cloudflare KV 绑定未配置），
+// 且 push 从未被调用、pull 会无条件用云端空数据覆盖本地笔记数组。
+// 在真正配好 KV 并实现按 id 合并之前，不再自动 pull，避免笔记被清空。
+// 如需恢复：配置 KV 绑定后改为 merge 策略再启用下面这行。
+// window.addEventListener('load', () => { setTimeout(() => SyncEngine.pull(), 1500); });
       
         /* --- 0. 基础全局工具 --- */
         window.showMsg = function(m) { 
@@ -550,6 +598,87 @@ window.addEventListener('load', () => {
             t.innerText = m; t.style.display = 'block'; 
             setTimeout(() => t.style.display = 'none', 2000); 
         };
+
+
+        // --- 首页速记：日程(带日期) 与 便签(无日期短提醒) ---
+        let schedule = JSON.parse(localStorage.getItem('alter_schedule') || '[]');
+        let stickies = JSON.parse(localStorage.getItem('alter_sticky') || '[]');
+
+        function saveQuick() {
+            localStorage.setItem('alter_schedule', JSON.stringify(schedule));
+            localStorage.setItem('alter_sticky', JSON.stringify(stickies));
+        }
+
+        function escQuick(s) {
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function todayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+
+        function dateLabel(ds) {
+            const t = todayStr();
+            if (ds === t) return { text: '今天', cls: 'today' };
+            const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+            const tmrStr = tmr.getFullYear() + '-' + String(tmr.getMonth()+1).padStart(2,'0') + '-' + String(tmr.getDate()).padStart(2,'0');
+            if (ds === tmrStr) return { text: '明天', cls: '' };
+            if (ds < t) return { text: ds.slice(5).replace('-','/') + ' 逾期', cls: 'overdue' };
+            return { text: ds.slice(5).replace('-','/'), cls: '' };
+        }
+
+        window.addSchedule = function() {
+            const ti = document.getElementById('schedule-text'), di = document.getElementById('schedule-date');
+            if (!ti || !di) return;
+            const text = ti.value.trim();
+            if (!text) return;
+            if (!di.value) { window.showMsg('先给它挑个日子'); di.focus(); return; }
+            schedule.push({ id: Date.now(), text: text, date: di.value, done: false });
+            ti.value = ''; di.value = '';
+            saveQuick(); renderQuick();
+        };
+
+        window.addSticky = function() {
+            const ti = document.getElementById('sticky-text');
+            if (!ti || !ti.value.trim()) return;
+            stickies.push({ id: Date.now(), text: ti.value.trim(), done: false });
+            ti.value = '';
+            saveQuick(); renderQuick();
+        };
+
+        window.toggleQuick = function(kind, id) {
+            const arr = kind === 'schedule' ? schedule : stickies;
+            const it = arr.find(x => x.id === id);
+            if (it) { it.done = !it.done; saveQuick(); renderQuick(); }
+        };
+
+        window.delQuick = function(kind, id) {
+            if (kind === 'schedule') schedule = schedule.filter(x => x.id !== id);
+            else stickies = stickies.filter(x => x.id !== id);
+            saveQuick(); renderQuick();
+        };
+
+        function renderQuick() {
+            const sBox = document.getElementById('schedule-list');
+            if (sBox) {
+                const t = todayStr();
+                const undone = schedule.filter(x => !x.done);
+                const upcoming = undone.filter(x => x.date >= t).sort((a,b) => a.date.localeCompare(b.date));
+                const overdue = undone.filter(x => x.date < t).sort((a,b) => b.date.localeCompare(a.date));
+                const shown = overdue.slice(-1).concat(upcoming).slice(0, 3);
+                sBox.innerHTML = shown.length ? shown.map(x => {
+                    const lb = dateLabel(x.date);
+                    return `<div class="quick-item"><div class="quick-check" onclick="toggleQuick('schedule',${x.id})"></div><div class="quick-text">${escQuick(x.text)}</div><span class="quick-date ${lb.cls}">${lb.text}</span><span class="quick-kill" onclick="delQuick('schedule',${x.id})">×</span></div>`;
+                }).join('') : '<div class="quick-empty">尚无安排</div>';
+            }
+            const kBox = document.getElementById('sticky-list');
+            if (kBox) {
+                const kUndone = stickies.filter(x => !x.done);
+                const kDone = stickies.filter(x => x.done);
+                const kShown = kUndone.slice(-3).concat(kDone.slice(0, Math.max(0, 3 - Math.min(kUndone.length, 3)))).slice(0, 3);
+                kBox.innerHTML = kShown.length ? kShown.map(x =>
+                    `<div class="quick-item ${x.done ? 'done' : ''}"><div class="quick-check" onclick="toggleQuick('sticky',${x.id})"></div><div class="quick-text">${escQuick(x.text)}</div><span class="quick-kill" onclick="delQuick('sticky',${x.id})">×</span></div>`
+                ).join('') : '<div class="quick-empty">尚无便签</div>';
+            }
+        }
 
         window.togglePanel = function(id) { 
             document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
@@ -655,7 +784,7 @@ window.addEventListener('load', () => {
 
         // --- 2. 核心数据与状态 ---
         const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
-        let db = null, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alter_v52_sec')) || { v: "", n: "" };
+        let db = null, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alt_v52_sec') || localStorage.getItem('alter_v52_sec') || '{"v":"","n":""}') || { v: "", n: "" };
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
         let activeP = FIXED_P[0], commP = FIXED_P[0], b64s = [], files = [], inV = false, stream = null, viewMode = 'home', vaultSubMode = 'soul', rTo = null;
         let editingId = null;
@@ -742,19 +871,27 @@ window.addEventListener('load', () => {
             window.showMsg("文章已导出为文件");
         };
 
+        // 端点归一化：兼容用户填 /v1、不填 /v1、甚至直接填完整 chat/completions 三种写法
+        function buildChatCandidates(rawUrl) {
+            let u = (rawUrl || '').trim().replace(/\/+$/, '');
+            if (/\/chat\/completions$/i.test(u)) return [u];
+            if (/\/v1$/i.test(u)) return [u + '/chat/completions', u.replace(/\/v1$/i, '') + '/v1/chat/completions'];
+            return [u + '/v1/chat/completions', u + '/chat/completions'];
+        }
+
         async function callAI(prompt, images = [], systemOverride = null) {
             const rawUrl = localStorage.getItem('alt_api_url') || "";
             const apiKey = localStorage.getItem('alt_api_key') || "";
             const apiModel = localStorage.getItem('alt_api_model') || "";
             const chatBox = document.getElementById('ai-chat-box');
-            if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。'); return; }
-            
+            if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。点右上角 ⚙️ 填写 API 地址、Key 与模型名。'); return; }
+
             let system = systemOverride || "你是一个深思熟虑的自省空间伙伴。";
             if (aiPersonaMode === 'rational') {
                 system = "你是一个冷静、中立、客观的观察者。回复时直接切中要害，不使用讨好性语言，保持客观公正且不吹毛求疵。";
             }
 
-            const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
+            const apiBase = buildChatCandidates(rawUrl)[0];
             const loadingMsg = appendMsg('bot', '正在推演...', false); 
             try {
                 const isVision = /vision|gpt-4o|vl|gemini|claude/i.test(apiModel);
@@ -763,15 +900,28 @@ window.addEventListener('load', () => {
                     payload = [{ type: "text", text: prompt }];
                     images.forEach(img => payload.push({ type: "image_url", image_url: { url: img } }));
                 } else { payload = prompt; }
-                const res = await fetch(apiBase, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                    body: JSON.stringify({ model: apiModel, messages: [{ role: "system", content: system }, { role: "user", content: payload }] })
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const reqBody = JSON.stringify({ model: apiModel, messages: [{ role: "system", content: system }, { role: "user", content: payload }] });
+                const candidates = buildChatCandidates(rawUrl);
+                let res = null, used = '', lastErr = '';
+                for (const url of candidates) {
+                    try {
+                        const r = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                            body: reqBody
+                        });
+                        if (r.ok) { res = r; used = url; break; }
+                        const bodyText = await r.text().catch(() => '');
+                        lastErr = `HTTP ${r.status} ${bodyText.slice(0, 160)}`;
+                    } catch (e2) { lastErr = e2.message; }
+                }
+                if (!res) throw new Error(lastErr || '所有端点均不可用');
+                if (used && used !== apiBase) localStorage.setItem('alt_api_url_used', used);
                 const data = await res.json();
                 if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
                 if (data.choices) appendMsg('bot', data.choices[0].message.content);
+                else if (data.error) appendMsg('bot', `❌ 接口返回错误：${data.error.message || JSON.stringify(data.error)}`);
+                else appendMsg('bot', '❌ 接口返回格式异常：' + JSON.stringify(data).slice(0, 200));
             } catch (e) { if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg); appendMsg('bot', `❌ 推演中断：${e.message}`); }
         }
 
@@ -780,6 +930,11 @@ window.addEventListener('load', () => {
             try {
                 notes = await dbAction("getAll");
             } catch(e) { notes = []; }
+            // 清理已过 3 天保留期的回收笔记
+            const nowTs = Date.now();
+            const purged = notes.filter(n => n.deleteAt && n.deleteAt <= nowTs);
+            for (const p of purged) { await dbAction("delete", p.id); }
+            if (purged.length) notes = notes.filter(n => !(n.deleteAt && n.deleteAt <= nowTs));
             notes.sort((a,b) => b.id - a.id);
 
             // 恢复 UI 状态
@@ -1057,7 +1212,7 @@ window.addEventListener('load', () => {
             if (vt) vt.style.color='var(--text-dim)'; 
         };
         window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
-        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); }
+        async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); renderQuick(); }
         function renderDailyReview() { const box = document.getElementById('review-box'); if(!box) return; const eligible = notes.filter(n => !n.isVault); if(!eligible.length) { box.innerHTML = '<p style="opacity:0.2; font-size:11px;">此刻虚无。</p>'; return; } const r = eligible[Math.floor(Math.random()*eligible.length)]; box.innerHTML = `<div class="card tmpl-quote" style="width:100%; margin:0;" onclick="window.showNoteById(${r.id})"><div class="card-meta"><span>RECALL</span><span>${r.time}</span></div><div class="card-content">${r.content}</div></div>`; }
         window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; const box = document.getElementById('p-sel-box'); if (box) { box.innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); } }
         function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
@@ -1083,7 +1238,7 @@ window.addEventListener('load', () => {
             }
 
             const context = notes.slice(0, 15).map(n => n.content).join("\n").slice(0, 1500);
-            const apiBase = rawUrl.replace(/\/+$/, '') + '/chat/completions';
+            const apiBase = buildChatCandidates(rawUrl)[0];
             
             try {
                 const res = await fetch(apiBase, {
@@ -1306,24 +1461,25 @@ window.addEventListener('load', () => {
         }
 
         const AlterRuleEngine = {
+            // 规则内置，不再依赖 raw.githubusercontent.com（国内常拉取失败导致观察者静默失效）
+            LOCAL_RULES: [{"trigger":"分清了","action":"msg","value":"认知边界正在扩张，观察者已记录。"},{"trigger":"原来如此","action":"msg","value":"顿悟的瞬间，比记忆本身更珍贵。"},{"trigger":"本质","action":"vibe","value":"💎"},{"trigger":"相声","action":"msg","value":"探测到日常享乐，系统保持静默。"},{"trigger":"郭德纲","action":"msg","value":"屏蔽平庸记录，保持思维纯净。"},{"trigger":"减肥","action":"msg","value":"身体是灵魂的圣殿，请温柔对待。"},{"trigger":"焦虑","action":"msg","value":"觉察到焦虑，试着深呼吸，把这种感觉写下来。"},{"trigger":"意义","action":"vibe","value":"🔮"},{"trigger":"想通了","action":"msg","value":"逻辑闭环已达成，思想完成了一次跳跃。"},{"trigger":"拖延","action":"vibe","value":"⏳"},{"trigger":"无聊","action":"msg","value":"无聊是伟大的留白，在这里，日常才显现出它的形状。"},{"trigger":"无辜","action":"vibe","value":"🛡️"},{"trigger":"存在主义","action":"msg","value":"在无意义的荒原中，你此刻的记录就是唯一的意义。"},{"trigger":"村上春树","action":"vibe","value":"🎷"},{"trigger":"乌鸦","action":"vibe","value":"🐦‍⬛"},{"trigger":"哲学","action":"vibe","value":"🏛️"}],
             rules: [],
-            // 注意：GitHub 原始数据需要使用 raw.githubusercontent.com 链接
-            CLOUD_RULES_URL: "https://raw.githubusercontent.com/kenjcha-wq/Alter-Note/main/rules.json", 
+            // 云端规则作为可选增强：拉到就覆盖本地，拉不到用本地
+            CLOUD_RULES_URL: "https://raw.githubusercontent.com/kenjcha-wq/Alter-Note/main/rules.json",
 
             init: async function() {
+                this.rules = this.LOCAL_RULES;
                 try {
-                    const response = await fetch(this.CLOUD_RULES_URL);
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), 3000);
+                    const response = await fetch(this.CLOUD_RULES_URL, { signal: controller.signal });
+                    clearTimeout(timer);
                     if (response.ok) {
                         const text = await response.text();
-                        try {
-                            this.rules = JSON.parse(text);
-                            console.log("✅ 规则已同步");
-                        } catch(e) { console.warn("Rules format error"); }
+                        const parsed = JSON.parse(text);
+                        if (Array.isArray(parsed) && parsed.length) { this.rules = parsed; console.log("✅ 规则已同步云端"); }
                     }
-                } catch (e) {
-                    this.rules = [{ "trigger": "减肥", "action": "msg", "value": "身体是灵魂的圣殿，慢慢来。" }];
-                    console.log("⚠️ 使用本地默认规则");
-                }
+                } catch (e) { console.log("ℹ️ 使用内置规则"); }
 
                 const editor = document.getElementById('note-in');
                 if (editor) editor.addEventListener('input', (e) => this.check(e.target.value));
