@@ -62,7 +62,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; }
 
-        .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs {
+        .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs, .content-body, #note-in, .day-text {
             font-family: var(--font-main) !important;
         }
 
@@ -126,7 +126,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局与收缩侧边栏 --- */
+        /* --- 核心布局与全页面统一侧边栏 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-sans); font-weight: 200; font-size: 40px; margin-bottom: 8px; letter-spacing: 8px; color: #fff; text-transform: uppercase; }
@@ -139,10 +139,10 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            padding: 15px 0 40px 0; 
+            padding: 15px 0 35px 0; 
             z-index: 2000; 
             flex-shrink: 0; 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body.sidebar-collapsed nav {
@@ -192,8 +192,8 @@
         .sidebar-collapse-trigger:hover { opacity: 1; color: var(--accent); }
 
         #cur-login-name { font-size: 8px !important; color: var(--text-dim); cursor: default; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; opacity: 0.5; }
-        .logo { width: 22px; height: 22px; margin-bottom: 40px; cursor: pointer; color: var(--accent); }
-        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; position: relative; }
+        .logo { width: 22px; height: 22px; margin-bottom: 35px; cursor: pointer; color: var(--accent); }
+        .nav-link { color: var(--text-dim); margin-bottom: 26px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; position: relative; }
         .nav-link:hover, .nav-link.active { color: var(--accent); }
         .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
 
@@ -201,7 +201,7 @@
             flex: 1; 
             height: 100%; 
             overflow-y: auto; 
-            padding: 60px 5%; 
+            padding: 50px 6%; 
             scroll-behavior: smooth; 
             position: relative; 
             max-width: 1200px; 
@@ -220,7 +220,6 @@
             background-repeat: no-repeat;
         }
 
-        /* 统一大写淡化标题体系 */
         .app-title-main {
             font-family: var(--font-sans) !important;
             font-size: 24px !important;
@@ -277,7 +276,7 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
-        header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 35px; width: 100%; }
+        header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 30px; width: 100%; flex-shrink: 0; }
         .version-mark { margin-top: 40px; text-align: center; font-size: 8px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.35; text-transform: uppercase; }
         .brand-mark { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.55; margin-top: 6px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
         #streak-mark { opacity: 0.85; }
@@ -349,12 +348,6 @@
         .prev-item img { width: 100%; height: 100%; object-fit: cover; }
         .prev-kill { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: #fff; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
 
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; backdrop-filter: var(--panel-blur); overflow-y: auto; }
-        #cam-overlay { left: 0; width: 100%; }
-        .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; padding-bottom: 120px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; position: sticky; top: 0; background: inherit; z-index: 10; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .close-btn { font-size: 9px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 600; text-transform: uppercase; }
-
         .paper-selector-wrap {
             display: inline-flex; align-items: center; gap: 6px; font-size: 8px; color: var(--text-dim); margin-left: auto; margin-right: 15px;
         }
@@ -362,12 +355,6 @@
             background: none; border: 1px solid var(--border); padding: 2px 8px; border-radius: 10px; font-size: 8px; cursor: pointer; color: var(--text-dim); transition: 0.2s;
         }
         .paper-opt-btn.active, .paper-opt-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-        #reader-target .content-body {
-            max-height: none !important;
-            mask-image: none !important;
-            -webkit-mask-image: none !important;
-        }
 
         .tabs-nav { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
         .tab-btn { font-size: 9px; font-weight: 600; color: var(--text-dim); cursor: pointer; padding-bottom: 12px; position: relative; text-transform: uppercase; letter-spacing: 2px; }
@@ -422,7 +409,7 @@
         .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
         @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
         
-        /* 首页核心毛玻璃卡片 */
+        /* 首页毛玻璃卡片 */
         .quick-panel { 
             padding: 24px 26px; 
             border: 1px solid rgba(255, 255, 255, 0.45); 
@@ -498,6 +485,9 @@
         .emotion-awakening { background: linear-gradient(135deg, rgba(255, 183, 197, 0.15), rgba(255, 192, 203, 0.1)); border-color: rgba(255, 183, 197, 0.2); }
         .emotion-serenity { background: linear-gradient(135deg, rgba(232, 245, 233, 0.2), rgba(200, 230, 201, 0.15)); border-color: rgba(232, 245, 233, 0.3); }
         .negative-emotion-alert { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.95); padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); z-index: 10000; font-size: 14px; color: #555; max-width: 320px; backdrop-filter: blur(10px); }
+
+        .view-section { width: 100%; display: none; }
+        .view-section.active-view { display: block; animation: fadeIn 0.3s ease; }
     </style>
 </head>
 <body class="theme-default">
@@ -560,27 +550,26 @@
         </div>
     </div>
 
-    <nav>
+    <!-- 全页面常驻且可收缩的侧边栏 -->
+    <nav id="app-sidebar">
         <button class="sidebar-collapse-trigger" onclick="window.toggleSidebar(false)" title="收起侧栏"><i data-lucide="panel-left-close" size="16"></i></button>
         <div id="cur-login-name">NIK</div>
         <div class="logo" onclick="switchView('home', this)"><svg viewBox="0 0 100 100" fill="none"><path d="M50 20L80 80H20L50 20Z" stroke="currentColor" stroke-width="4"/><path d="M50 85L65 55H35L50 85Z" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/></svg></div>
         <div class="nav-link active" onclick="switchView('home', this)" title="主页"><i data-lucide="home"></i></div>
         <div class="nav-link" onclick="switchView('timeline', this)" title="时间轴"><i data-lucide="layout"></i></div>
         <div class="nav-link" onclick="handleVaultAccess(this)" id="nav-vault" title="灵感碎片"><i data-lucide="sparkles"></i></div>
-        <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i></div>
-        <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
+        <div class="nav-link" onclick="switchView('reflect', this)" title="心灵回想"><i data-lucide="scan-eye"></i></div>
+        <div class="nav-link" onclick="switchView('lab', this)" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
         <div class="nav-link" onclick="window.syncWebDAV()" title="云端同步"><i data-lucide="refresh-cw"></i></div>
-        <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
         <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical"></i></div>
         <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i></div>
-        <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
+        <div class="nav-link" onclick="switchView('settings', this)" title="个人中心"><i data-lucide="settings"></i></div>
     </nav>
 
     <main id="main">
         <header>
             <div>
-                <!-- 首页时间、日期、节气系统 -->
                 <div class="home-epoch-bar" id="epoch-bar" style="display:none;">
                     <span id="epoch-datetime">2026.08.30 SUN 19:51</span>
                     <span class="solar-term-badge" id="epoch-term">处暑</span>
@@ -605,7 +594,8 @@
             </div>
         </header>
 
-        <div id="dash-view-container" style="display:flex; flex-direction:column;">
+        <!-- 1. 首页卡片视图 -->
+        <div id="view-home-container" class="view-section active-view" style="height: 100%;">
             <div class="home-grid">
                 <div class="quick-panel">
                     <div class="quick-head"><h4>每日回想</h4><span class="quick-en">DAILY RECALL</span></div>
@@ -631,20 +621,13 @@
             </div>
         </div>
 
-        <div id="timeline-container" style="display:none; width: 100%;">
+        <!-- 2. 时间轴/灵感碎片列表视图 -->
+        <div id="view-timeline-container" class="view-section">
             <div class="grid" id="note-grid"></div>
         </div>
-    </main>
 
-    <div id="reflect-overlay" class="overlay">
-        <div class="overlay-content">
-            <div class="panel-header">
-                <div>
-                    <h2 class="app-title-main" style="font-size:28px !important;">SOUL REFLECTION</h2>
-                    <p class="view-subtitle-meta">他我笔记 · 心灵回想</p>
-                </div>
-                <span class="close-btn" onclick="closeOverlay('reflect-overlay')">CLOSE</span>
-            </div>
+        <!-- 3. 心灵回想平铺视图 -->
+        <div id="view-reflect-container" class="view-section">
             <div class="section-block">
                 <h3>INQUIRY MODES / 模式感应</h3>
                 <div class="ctrl-row mobile-stack">
@@ -666,17 +649,9 @@
             </div>
             <div id="reflect-report" style="font-size:16px; line-height:2.6; border-left:1px solid var(--accent); padding-left:30px; text-align:justify;">在此感应意识的频率。</div>
         </div>
-    </div>
 
-    <div id="lab-overlay" class="overlay">
-        <div class="overlay-content">
-            <div class="panel-header">
-                <div>
-                    <h2 class="app-title-main" style="font-size:28px !important;">LABORATORY</h2>
-                    <p class="view-subtitle-meta">他我笔记 · 实验室</p>
-                </div>
-                <span class="close-btn" onclick="closeOverlay('lab-overlay')">CLOSE</span>
-            </div>
+        <!-- 4. 实验室平铺视图 -->
+        <div id="view-lab-container" class="view-section">
             <div class="tabs-nav">
                 <div class="tab-btn active" onclick="tabTo('lab-style', this)">STYLE / 外观调节</div>
                 <div class="tab-btn" onclick="tabTo('tab-day', this)">ARCHIVE / 日期回看</div>
@@ -723,23 +698,13 @@
                     <p style="font-size:10px; opacity:0.5; margin-bottom:15px;">支持持久化载入。代码将安全存储于本地。</p>
                     <pre class="pre-docs" style="background:rgba(0,0,0,0.05); padding:15px; font-size:10px; overflow-x:auto;">
 const data = AlterAPI.getNotes();
-AlterAPI.showMsg("SYNCING...");
-AlterAPI.openPanel("reflect-overlay");</pre>
+AlterAPI.showMsg("SYNCING...");</pre>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="settings-overlay" class="overlay">
-        <div class="overlay-content">
-            <div class="panel-header">
-                <div>
-                    <h2 class="app-title-main" style="font-size:28px !important;">IDENTITY</h2>
-                    <p class="view-subtitle-meta">他我笔记 · 个人设置</p>
-                </div>
-                <span class="close-btn" onclick="closeOverlay('settings-overlay')">CLOSE</span>
-            </div>
-            
+        <!-- 5. 个人设置平铺视图 -->
+        <div id="view-settings-container" class="view-section">
             <div class="section-block">
                 <h3>HOME WALLPAPER / 首页空间墙纸 (仅主页生效)</h3>
                 <div class="ctrl-row">
@@ -794,35 +759,28 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
             <p class="version-mark" id="version-mark">ALTER · 他我笔记 v2.5</p>
         </div>
-    </div>
 
-    <div id="editor-overlay" class="overlay">
-        <div class="overlay-content">
-            <div class="panel-header">
-                <div>
-                    <h2 class="app-title-main" id="editor-title" style="font-size:28px !important;">FRAGMENTS</h2>
-                    <p id="editor-subtitle" class="view-subtitle-meta">他我笔记 · 封存碎语</p>
-                </div>
-                <div class="paper-selector-wrap">
+        <!-- 6. 笔记创作平铺视图 (取代原弹出层，统一保留侧边栏) -->
+        <div id="view-editor-container" class="view-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div id="p-sel-box" style="display:flex; gap:12px;"></div>
+                <div class="paper-selector-wrap" style="margin:0;">
                     <button class="paper-opt-btn active" onclick="window.changePaperPattern('none')">PLAIN</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('grid')">GRID</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('dots')">DOTS</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('lined')">LINED</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('kraft')">KRAFT</button>
                 </div>
-                <span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span>
             </div>
-            <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:10px;"></div>
-            
             <div id="mood-picker" style="display:flex; gap:8px; margin-bottom:15px; opacity:0.6;">
                 <div class="mood-dot" style="background:#e0f7fa;" title="发现" onclick="window.setVibe('insight','🌱')"></div>
                 <div class="mood-dot" style="background:#fff9c4;" title="行动" onclick="window.setVibe('stagnant','⏳')"></div>
                 <div class="mood-dot" style="background:#cfd8dc;" title="状态" onclick="window.setVibe('tired','🌧️')"></div>
             </div>
 
-            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none; padding:12px; border-radius:4px;" placeholder="在此刻寻找回声..."></textarea>
+            <textarea id="note-in" class="input-line" style="height:320px; font-size:20px; line-height:2.2; border:none; resize:none; padding:15px; border-radius:4px;" placeholder="在此刻寻找回声..."></textarea>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
-            <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:30px;">
+            <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:25px;">
                 <div style="display:flex; gap:20px; align-items:center;">
                     <i data-lucide="camera" style="cursor:pointer; color:var(--text-dim)" onclick="window.camOn()"></i>
                     <i data-lucide="image" style="cursor:pointer; color:var(--text-dim)" onclick="document.getElementById('f-in').click()"></i>
@@ -831,19 +789,23 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     <input type="file" id="doc-in" hidden accept=".pdf,.txt" onchange="window.upGenericFile(event)">
                     <i data-lucide="shield" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="window.toggleVault()"></i>
                 </div>
-                <button class="btn-black" onclick="window.save()">SEAL ECHO / 封存</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.switchView('timeline')">CANCEL</button>
+                    <button class="btn-black" onclick="window.save()">SEAL ECHO / 封存</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="reader-overlay" class="overlay">
-        <div class="overlay-content">
-            <div class="reader-close" onclick="closeOverlay('reader-overlay')" style="position:fixed; top:40px; right:40px; cursor:pointer; z-index:100;"><i data-lucide="x" size="24"></i></div>
+        <!-- 7. 阅读详情平铺视图 -->
+        <div id="view-reader-container" class="view-section">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <button class="btn-black" style="padding:6px 14px; font-size:8px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.switchView('timeline')">← BACK</button>
+            </div>
             <div id="reader-target" style="line-height: 2.2; padding: 15px; border-radius: 4px;"></div>
         </div>
-    </div>
+    </main>
 
-    <div id="cam-overlay" class="overlay" style="background:#000;">
+    <div id="cam-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10000; display:none;">
         <div id="flash-effect" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; opacity:0; pointer-events:none; z-index:10005;"></div>
         <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
         <div style="position:absolute; bottom:50px; left:50%; transform:translateX(-50%); text-align:center; z-index:10006;">
@@ -857,7 +819,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         /* --- 0. 基础全局工具与二十四节气系统 --- */
         if (localStorage.getItem('alter_theme') === 'dark') document.body.classList.add('dark-mode');
 
-        // 二十四节气核心算法
         function getSolarTerm(date) {
             const solarTermInfo = [
                 0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 
@@ -874,14 +835,12 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const month = date.getMonth();
             const day = date.getDate();
             
-            // 计算当前年份的各节气公历日期
             for (let i = 0; i < 24; i++) {
                 const termDate = new Date((31556925974.7 * (year - 1900) + solarTermInfo[i] * 60000) + Date.UTC(1900, 0, 6, 2, 5));
                 if (termDate.getMonth() === month && Math.abs(termDate.getDate() - day) <= 7) {
                     return solarTermNames[i];
                 }
             }
-            // 默认月度近似节气
             const defaultIndex = month * 2 + (day > 15 ? 1 : 0);
             return solarTermNames[defaultIndex % 24];
         }
@@ -1223,19 +1182,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             }
         }
 
-        window.togglePanel = function(id) { 
-            document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); 
-            const target = document.getElementById(id); 
-            if(target) target.style.display = 'flex'; 
-            document.body.classList.toggle('editor-open', id === 'editor-overlay');
-        };
-
-        window.closeOverlay = function(id) { 
-            const target = document.getElementById(id); 
-            if(target) target.style.display = 'none'; 
-            document.body.classList.remove('editor-open');
-        };
-
         window.tabTo = function(id, el) { 
             document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active')); 
@@ -1246,8 +1192,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         window.AlterAPI = {
             getNotes: () => JSON.parse(JSON.stringify(notes)),
-            showMsg: (text) => window.showMsg(text),
-            openPanel: (id) => window.togglePanel(id)
+            showMsg: (text) => window.showMsg(text)
         };
 
         window.AlterPlugins = {
@@ -1522,7 +1467,6 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const dp = document.getElementById('lab-date-pick'); if (dp) dp.value = todayStr();
             TextAnalyzer.init();
 
-            // 启动首页刻度时钟
             updateEpochClock();
             setInterval(updateEpochClock, 10000);
 
@@ -1550,6 +1494,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             renderAll();
         };
 
+        /* 统一平铺视图切换调度 */
         window.switchView = function(m, el) {
             viewMode = m; 
             const mainEl = document.getElementById('main'); 
@@ -1561,33 +1506,74 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     if (saved) window.setHomeWallpaper(saved);
                 }
             }
-            document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             
-            const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'flex' : 'none';
-            const tv = document.getElementById('timeline-container'); if (tv) tv.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
-            const vt = document.getElementById('vault-tabs'); if (vt) vt.style.display = m === 'vault' ? 'flex' : 'none';
-            const pf = document.getElementById('persona-filter'); if (pf) pf.style.display = m === 'timeline' ? 'block' : 'none';
-            const sb = document.getElementById('synth-btn'); if (sb) sb.style.display = m === 'vault' ? 'block' : 'none';
+            document.querySelectorAll('#app-sidebar .nav-link').forEach(l => l.classList.remove('active')); 
+            if (el) el.classList.add('active');
+
+            // 隐藏所有内容工作区
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             
             const vt2 = document.getElementById('view-title'); 
             const vs = document.getElementById('view-subtitle');
             const ep = document.getElementById('epoch-bar');
             const bm = document.getElementById('view-brand-mark');
+            const vt = document.getElementById('vault-tabs');
+            const pf = document.getElementById('persona-filter');
+            const sb = document.getElementById('synth-btn');
+            const sw = document.getElementById('search-wrap');
+
+            if (vt) vt.style.display = m === 'vault' ? 'flex' : 'none';
+            if (pf) pf.style.display = m === 'timeline' ? 'block' : 'none';
+            if (sb) sb.style.display = m === 'vault' ? 'block' : 'none';
+            if (sw) sw.classList.remove('active');
 
             if (m === 'home') {
+                document.getElementById('view-home-container').classList.add('active-view');
                 if (vt2) vt2.innerText = "ALTER";
                 if (vs) vs.innerText = "他我笔记";
                 if (ep) ep.style.display = 'inline-flex';
                 if (bm) bm.style.display = 'flex';
                 renderDailyReview();
             } else if (m === 'timeline') {
+                document.getElementById('view-timeline-container').classList.add('active-view');
                 if (vt2) vt2.innerText = "TIMELINE";
                 if (vs) vs.innerText = "他我笔记 · 时间流";
                 if (ep) ep.style.display = 'none';
                 if (bm) bm.style.display = 'none';
             } else if (m === 'vault') {
+                document.getElementById('view-timeline-container').classList.add('active-view');
                 if (vt2) vt2.innerText = "INSPIRATION";
                 if (vs) vs.innerText = "他我笔记 · 灵感碎片";
+                if (ep) ep.style.display = 'none';
+                if (bm) bm.style.display = 'none';
+            } else if (m === 'reflect') {
+                document.getElementById('view-reflect-container').classList.add('active-view');
+                if (vt2) vt2.innerText = "SOUL REFLECTION";
+                if (vs) vs.innerText = "他我笔记 · 心灵回想";
+                if (ep) ep.style.display = 'none';
+                if (bm) bm.style.display = 'none';
+            } else if (m === 'lab') {
+                document.getElementById('view-lab-container').classList.add('active-view');
+                if (vt2) vt2.innerText = "LABORATORY";
+                if (vs) vs.innerText = "他我笔记 · 实验室";
+                if (ep) ep.style.display = 'none';
+                if (bm) bm.style.display = 'none';
+            } else if (m === 'settings') {
+                document.getElementById('view-settings-container').classList.add('active-view');
+                if (vt2) vt2.innerText = "IDENTITY";
+                if (vs) vs.innerText = "他我笔记 · 个人设置";
+                if (ep) ep.style.display = 'none';
+                if (bm) bm.style.display = 'none';
+            } else if (m === 'editor') {
+                document.getElementById('view-editor-container').classList.add('active-view');
+                if (vt2) vt2.innerText = editingId ? "EDIT ECHO" : "FRAGMENTS";
+                if (vs) vs.innerText = editingId ? `他我笔记 · #${editingId}` : "他我笔记 · 封存碎语";
+                if (ep) ep.style.display = 'none';
+                if (bm) bm.style.display = 'none';
+            } else if (m === 'reader') {
+                document.getElementById('view-reader-container').classList.add('active-view');
+                if (vt2) vt2.innerText = "READER";
+                if (vs) vs.innerText = "他我笔记 · 回声阅读";
                 if (ep) ep.style.display = 'none';
                 if (bm) bm.style.display = 'none';
             }
@@ -1672,11 +1658,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const n = notes.find(x => x.id === id);
             if (!n) return;
             editingId = n.id;
-            const te = document.getElementById('editor-title');
-            const se = document.getElementById('editor-subtitle');
             const ni = document.getElementById('note-in');
-            if (te) te.innerText = "EDIT ECHO";
-            if (se) se.innerText = `他我笔记 · #${n.id}`;
             if (ni) ni.value = n.content;
             b64s = [...(n.images || [])]; files = [...(n.files || [])]; inV = n.isVault;
             activeP = [...FIXED_P, {n: user, i: "👤"}].find(p => p.n === n.persona) || FIXED_P[0];
@@ -1684,23 +1666,19 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             window.renderPrev(); window.renderSwitcher();
             const vt = document.getElementById('vaultToggle');
             if (vt) vt.style.color = inV ? 'var(--accent)' : 'var(--text-dim)';
-            window.togglePanel('editor-overlay');
+            window.switchView('editor');
         };
 
         window.openNewEditor = function() {
             editingId = null;
-            const te = document.getElementById('editor-title');
-            const se = document.getElementById('editor-subtitle');
-            if (te) te.innerText = "FRAGMENTS";
-            if (se) se.innerText = "他我笔记 · 封存碎语";
             window.resetEditor();
-            window.togglePanel('editor-overlay');
+            window.switchView('editor');
         };
 
         window.save = async function() { 
             const ni = document.getElementById('note-in');
             if (!ni) return;
-            const t = ni.value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
+            const t = ni.value.trim(); if(!t && !b64s.length) return window.switchView('timeline'); 
             
             const now = Date.now();
             if (editingId) {
@@ -1725,7 +1703,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             }
             window.resetEditor(); 
             await renderAll(); 
-            window.closeOverlay('editor-overlay'); 
+            window.switchView('timeline'); 
 
             if (localStorage.getItem('alt_webdav_auto') === 'true') {
                 WebDAVSync.push(notes);
@@ -1734,7 +1712,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
 
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
-            grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.2; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:3px;">+ NEW FRAGMENT</div>` : "";
+            grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.25; border:1px dashed var(--accent); height:100px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:3px;">+ NEW FRAGMENT</div>` : "";
             const fe = document.getElementById('persona-filter');
             const pf = fe ? fe.value : 'all';
             let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pf === 'all' || n.persona === pf); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
@@ -1761,7 +1739,8 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; notes[i].updatedAt = Date.now(); await dbAction("put", notes[i]); await renderAll(); } };
 
         function showNote(n) {
-            const el = document.getElementById('reader-target'); window.togglePanel('reader-overlay');
+            const el = document.getElementById('reader-target'); 
+            window.switchView('reader');
             if (!el) return;
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
             const filesHtml = (n.files || []).map(f => `<a href="${f.data}" download="${f.name}" class="file-tag"><i data-lucide="file-text" style="width:8px; height:8px;"></i> ${f.name}</a>`).join('');
