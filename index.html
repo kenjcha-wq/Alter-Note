@@ -127,7 +127,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局与极致微缩侧边栏 --- */
+        /* --- 核心布局与收缩侧边栏 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
@@ -146,7 +146,6 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 侧边栏完全收回状态：留极简小图标 */
         body.sidebar-collapsed nav {
             margin-left: -56px;
         }
@@ -156,25 +155,27 @@
             top: 15px;
             left: 15px;
             z-index: 2001;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: none;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: var(--text-dim);
+            color: var(--text-main);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             transition: 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .dark-mode #sidebar-floating-toggle {
+            background: rgba(20, 20, 20, 0.65);
+            border-color: rgba(255, 255, 255, 0.1);
         }
         body.sidebar-collapsed #sidebar-floating-toggle {
             display: flex;
-        }
-        #sidebar-floating-toggle:hover {
-            color: var(--accent);
-            border-color: var(--accent);
         }
 
         .sidebar-collapse-trigger {
@@ -212,12 +213,33 @@
             transition: 0.3s ease;
         }
 
-        /* 首页专用壁纸容器 (仅作用于首页) */
+        /* 首页专用壁纸背景 */
         main.view-home { 
             overflow: hidden; 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        /* 首页顶部文字柔光 */
+        main.view-home header h1 {
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+        .dark-mode main.view-home header h1 {
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        main.view-home .brand-mark {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-flex;
+            width: fit-content;
+        }
+        .dark-mode main.view-home .brand-mark {
+            background: rgba(0, 0, 0, 0.45);
         }
         
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; width: 100%; }
@@ -368,7 +390,28 @@
 
         .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
         @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
-        .quick-panel { padding: 26px 28px; border: 1px solid var(--border); border-radius: 2px; background: var(--card-bg); display: flex; flex-direction: column; min-height: 240px; overflow: hidden; }
+        
+        /* 首页核心毛玻璃卡片 */
+        .quick-panel { 
+            padding: 24px 26px; 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            border-radius: 12px; 
+            background: rgba(255, 255, 255, 0.5) !important; 
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+            display: flex; 
+            flex-direction: column; 
+            min-height: 240px; 
+            overflow: hidden; 
+            transition: all 0.3s ease;
+        }
+        .dark-mode .quick-panel {
+            border-color: rgba(255, 255, 255, 0.08);
+            background: rgba(18, 18, 18, 0.55) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
         .quick-body { flex: 1 1 auto; min-height: 60px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
         main.view-home > header { flex-shrink: 0; margin-bottom: 26px; }
@@ -380,9 +423,10 @@
         .quick-head h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin: 0; }
         .quick-en { font-size: 7px; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
         .quick-head-right { display: flex; align-items: center; gap: 10px; }
-        .quick-plus { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-size: 13px; line-height: 1; cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; padding: 0; }
+        .quick-plus { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); background: transparent; color: var(--text-dim); font-size: 13px; line-height: 1; cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; padding: 0; }
         .quick-plus:hover, .quick-plus.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-        .quick-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 12px; line-height: 1.6; }
+        .quick-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 12px; line-height: 1.6; }
+        .dark-mode .quick-item { border-bottom-color: rgba(255,255,255,0.06); }
         .quick-item:last-child { border-bottom: none; }
         .quick-check { width: 12px; height: 12px; border: 1px solid var(--text-dim); border-radius: 50%; cursor: pointer; flex-shrink: 0; margin-top: 4px; transition: 0.25s; }
         .quick-item.done .quick-check { background: var(--accent); border-color: var(--accent); }
@@ -394,13 +438,13 @@
         .quick-kill { font-size: 12px; color: var(--text-dim); cursor: pointer; opacity: 0; transition: 0.2s; flex-shrink: 0; margin-top: 1px; }
         .quick-item:hover .quick-kill { opacity: 0.5; }
         .quick-kill:hover { opacity: 1 !important; color: var(--accent); }
-        .quick-empty { font-size: 10px; opacity: 0.22; letter-spacing: 1px; padding: 14px 0; }
+        .quick-empty { font-size: 10px; opacity: 0.3; letter-spacing: 1px; padding: 14px 0; }
         .recall-item { cursor: pointer; padding: 4px 0; }
         .recall-meta { font-size: 8px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; }
         .recall-text { font-family: var(--font-main); font-size: 13px; line-height: 1.9; font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 168px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%); mask-image: linear-gradient(to bottom, black 55%, transparent 100%); }
         .recall-item:hover .recall-text { color: var(--accent); }
         .quick-add { display: flex; gap: 6px; margin-top: auto; padding-top: 16px; }
-        .quick-add input { background: transparent; border: none; border-bottom: 1px solid var(--border); font-size: 11px; padding: 5px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
+        .quick-add input { background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.15); font-size: 11px; padding: 5px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
         .quick-add input.q-text { flex: 1; min-width: 0; }
         .quick-add input[type=date] { width: 105px; flex-shrink: 0; font-size: 10px; }
         .quick-add button { background: var(--accent); color: var(--bg); border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 14px; line-height: 1; flex-shrink: 0; }
@@ -427,9 +471,9 @@
 </head>
 <body class="theme-default">
 
-    <!-- 侧栏收回后留在左上角的极小悬浮图标 -->
+    <!-- 侧栏收回后留在左上角的悬浮小图标 -->
     <div id="sidebar-floating-toggle" onclick="window.toggleSidebar(true)" title="展开菜单">
-        <i data-lucide="menu" size="14"></i>
+        <i data-lucide="menu" size="16"></i>
     </div>
 
     <div id="observer-vibe-widget">
@@ -519,7 +563,7 @@
                 <div class="search-input-wrap" id="search-wrap">
                     <input type="text" id="searchInput" placeholder="搜索..." oninput="handleSearch()">
                 </div>
-                <div class="search-trigger" onclick="toggleSearch()"><i data-lucide="search" size="16"></i></div>
+                <div class="search-trigger" onclick="toggleSearch()" style="cursor:pointer;"><i data-lucide="search" size="16"></i></div>
                 <button id="synth-btn" class="btn-black" style="display:none; padding:6px 12px; font-size:8px;" onclick="window.synthesize()">重构心灵文章</button>
             </div>
         </header>
@@ -641,11 +685,11 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">IDENTITY / 个人中心</p></div><span class="close-btn" onclick="closeOverlay('settings-overlay')">CLOSE</span></div>
             
-            <!-- 仅在首页生效的壁纸配置 -->
+            <!-- 仅在首页生效的壁纸设置 -->
             <div class="section-block">
-                <h3>首页墙纸设置 (仅主页生效)</h3>
+                <h3>首页空间墙纸 (仅主页生效)</h3>
                 <div class="ctrl-row">
-                    <span class="ctrl-label">预设风格</span>
+                    <span class="ctrl-label">墙纸预设</span>
                     <div class="ctrl-input-wrap" style="gap:6px; display:flex; flex-wrap:wrap;">
                         <button class="paper-opt-btn" onclick="window.setHomeWallpaper('default')">默认留白</button>
                         <button class="paper-opt-btn" onclick="window.setHomeWallpaper('kraft')">素墨纸纹</button>
@@ -655,7 +699,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                     </div>
                 </div>
                 <div class="ctrl-row">
-                    <span class="ctrl-label">图片 URL 链接</span>
+                    <span class="ctrl-label">网络图片 URL</span>
                     <div class="ctrl-input-wrap"><input type="text" id="wall-url-in" class="input-line" style="margin:0; text-align:right;" placeholder="https://..." onchange="window.setHomeWallpaper(this.value)"></div>
                 </div>
             </div>
@@ -702,7 +746,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         <div class="overlay-content">
             <div class="panel-header">
                 <div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div>
-                <!-- 仅笔记专属的稿纸选择器 -->
+                <!-- 仅笔记专属稿纸选择器 -->
                 <div class="paper-selector-wrap">
                     <button class="paper-opt-btn active" onclick="window.changePaperPattern('none')">白底</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('grid')">方格</button>
