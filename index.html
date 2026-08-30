@@ -11,7 +11,6 @@
         :root {
             --bg: #fdfdfd;
             --sidebar-bg: #f8f8f8;
-            --sidebar-w: 56px;
             --text-main: #1a1a1a;
             --text-dim: #a0a0a0;
             --border: #eeeeee;
@@ -27,7 +26,6 @@
             --ai-panel-bg: #ffffff;
             --ai-msg-user: #f4f4f4;
             --ai-msg-bot: #000000;
-            --paper-pattern: none;
         }
 
         .dark-mode {
@@ -43,7 +41,7 @@
             --ai-msg-bot: #222222;
         }
 
-        /* 稿纸纹理模式 */
+        /* 稿纸纹理模式 (仅作用于笔记编辑与阅读) */
         .paper-grid {
             background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px) !important;
             background-size: 24px 24px !important;
@@ -63,7 +61,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: background-color 0.4s ease; background-size: cover; background-position: center; background-repeat: no-repeat; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: var(--font-sans); display: flex; height: 100vh; overflow: hidden; transition: 0.5s ease; }
 
         .overlay, .overlay input, .overlay textarea, .dash-card p, #ai-panel, .reply-box p, .plugin-card, .pre-docs {
             font-family: var(--font-main) !important;
@@ -129,52 +127,103 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 8px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局与可伸缩侧边栏 --- */
+        /* --- 核心布局与极致微缩侧边栏 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-title); font-size: 72px; margin-bottom: 20px; letter-spacing: 6px; color: #fff; }
 
         nav { 
-            width: var(--sidebar-w); 
+            width: 56px; 
             height: 100%; 
             background: var(--sidebar-bg); 
             border-right: 1px solid var(--border); 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            padding: 20px 0 30px 0; 
+            padding: 15px 0 40px 0; 
             z-index: 2000; 
             flex-shrink: 0; 
-            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-        }
-        body.sidebar-expanded nav {
-            --sidebar-w: 160px;
-            align-items: flex-start;
-            padding-left: 18px;
-            padding-right: 18px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .sidebar-toggle-btn {
-            background: none; border: none; color: var(--text-dim); cursor: pointer; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; transition: 0.2s;
+        /* 侧边栏完全收回状态：留极简小图标 */
+        body.sidebar-collapsed nav {
+            margin-left: -56px;
         }
-        .sidebar-toggle-btn:hover { color: var(--accent); background: rgba(0,0,0,0.03); }
 
-        #cur-login-name { font-size: 8px !important; color: var(--text-dim); cursor: default; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; opacity: 0.5; white-space: nowrap; }
-        .logo { width: 22px; height: 22px; margin-bottom: 30px; cursor: pointer; color: var(--accent); flex-shrink: 0; }
-        
-        .nav-link { color: var(--text-dim); margin-bottom: 24px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 14px; position: relative; width: 100%; white-space: nowrap; }
-        .nav-link span.nav-text { font-size: 11px; letter-spacing: 1px; display: none; opacity: 0.8; }
-        body.sidebar-expanded .nav-link span.nav-text { display: inline-block; }
+        #sidebar-floating-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2001;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        body.sidebar-collapsed #sidebar-floating-toggle {
+            display: flex;
+        }
+        #sidebar-floating-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .sidebar-collapse-trigger {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            margin-bottom: 15px;
+            opacity: 0.4;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-collapse-trigger:hover { opacity: 1; color: var(--accent); }
+
+        #cur-login-name { font-size: 8px !important; color: var(--text-dim); cursor: default; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; opacity: 0.5; }
+        .logo { width: 22px; height: 22px; margin-bottom: 40px; cursor: pointer; color: var(--accent); }
+        .nav-link { color: var(--text-dim); margin-bottom: 30px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; position: relative; }
         .nav-link:hover, .nav-link.active { color: var(--accent); }
-        .nav-link.active::after { content: ''; position: absolute; right: 0; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
+        .nav-link.active::after { content: ''; position: absolute; right: -28px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
 
-        main { flex: 1; height: 100%; overflow-y: auto; padding: 60px 5%; scroll-behavior: smooth; position: relative; max-width: 1200px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; transition: 0.3s ease; }
+        main { 
+            flex: 1; 
+            height: 100%; 
+            overflow-y: auto; 
+            padding: 60px 5%; 
+            scroll-behavior: smooth; 
+            position: relative; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.3s ease;
+        }
+
+        /* 首页专用壁纸容器 (仅作用于首页) */
+        main.view-home { 
+            overflow: hidden; 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
         header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; width: 100%; }
         header h1 { font-family: var(--font-title) !important; font-size: 40px; font-weight: 400; color: var(--accent); }
         .version-mark { margin-top: 40px; text-align: center; font-size: 8px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.35; text-transform: uppercase; }
-        .brand-mark { font-size: 7px; letter-spacing: 3px; color: var(--text-dim); opacity: 0.45; margin-top: 6px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .brand-mark { font-size: 7px; letter-spacing: 3px; color: var(--text-dim); opacity: 0.45; margin-top: 8px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
         #streak-mark { letter-spacing: 2px; opacity: 0.85; }
         #streak-mark::before { content: ''; display: inline-block; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
 
@@ -201,7 +250,7 @@
         .card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 20px; filter: grayscale(100%); transition: 0.6s; border-radius: 2px; }
         .card:hover .card-img { filter: grayscale(0%) !important; }
         .card-meta { font-size: 8px; color: var(--text-dim); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; display: flex; justify-content: space-between; }
-        .card-content { font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+        .card-content { font-size: 15px; line-height: var(--line-height); font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 180px; overflow: hidden; mask-image: linear-gradient(to bottom, black 60%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
         .card-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
         .footer-tools { display: flex; gap: 6px; align-items: center; }
@@ -246,7 +295,7 @@
         .prev-item img { width: 100%; height: 100%; object-fit: cover; }
         .prev-kill { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: #fff; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
 
-        .overlay { position: fixed; top: 0; left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; backdrop-filter: var(--panel-blur); overflow-y: auto; transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; backdrop-filter: var(--panel-blur); overflow-y: auto; }
         #cam-overlay { left: 0; width: 100%; }
         .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; padding-bottom: 120px; }
         .panel-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; position: sticky; top: 0; background: inherit; z-index: 10; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
@@ -254,10 +303,10 @@
         .close-btn { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); cursor: pointer; font-weight: 700; text-transform: uppercase; }
 
         .paper-selector-wrap {
-            display: inline-flex; align-items: center; gap: 6px; font-size: 9px; color: var(--text-dim); margin-left: 15px;
+            display: inline-flex; align-items: center; gap: 6px; font-size: 8px; color: var(--text-dim); margin-left: auto; margin-right: 15px;
         }
         .paper-opt-btn {
-            background: none; border: 1px solid var(--border); padding: 2px 8px; border-radius: 12px; font-size: 8px; cursor: pointer; color: var(--text-dim); transition: 0.2s;
+            background: none; border: 1px solid var(--border); padding: 2px 8px; border-radius: 10px; font-size: 8px; cursor: pointer; color: var(--text-dim); transition: 0.2s;
         }
         .paper-opt-btn.active, .paper-opt-btn:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -319,10 +368,9 @@
 
         .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
         @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
-        .quick-panel { padding: 26px 28px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); display: flex; flex-direction: column; min-height: 240px; overflow: hidden; }
+        .quick-panel { padding: 26px 28px; border: 1px solid var(--border); border-radius: 2px; background: var(--card-bg); display: flex; flex-direction: column; min-height: 240px; overflow: hidden; }
         .quick-body { flex: 1 1 auto; min-height: 60px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        main.view-home { overflow: hidden; }
         main.view-home > header { flex-shrink: 0; margin-bottom: 26px; }
         main.view-home #dash-view-container { flex: 1 1 auto; min-height: 0; }
         main.view-home .home-grid { height: 100%; }
@@ -379,6 +427,11 @@
 </head>
 <body class="theme-default">
 
+    <!-- 侧栏收回后留在左上角的极小悬浮图标 -->
+    <div id="sidebar-floating-toggle" onclick="window.toggleSidebar(true)" title="展开菜单">
+        <i data-lucide="menu" size="14"></i>
+    </div>
+
     <div id="observer-vibe-widget">
         <div id="vibe-container">
             <span id="vibe-icon"></span>
@@ -433,29 +486,27 @@
     </div>
 
     <nav>
-        <button class="sidebar-toggle-btn" onclick="window.toggleSidebar()" title="伸缩侧栏"><i data-lucide="panel-left"></i></button>
+        <button class="sidebar-collapse-trigger" onclick="window.toggleSidebar(false)" title="收起侧栏"><i data-lucide="panel-left-close" size="16"></i></button>
         <div id="cur-login-name">NIK</div>
         <div class="logo" onclick="switchView('home', this)"><svg viewBox="0 0 100 100" fill="none"><path d="M50 20L80 80H20L50 20Z" stroke="currentColor" stroke-width="4"/><path d="M50 85L65 55H35L50 85Z" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/></svg></div>
-        
-        <div class="nav-link active" onclick="switchView('home', this)" title="概览"><i data-lucide="home"></i><span class="nav-text">主页</span></div>
-        <div class="nav-link" onclick="switchView('timeline', this)" title="时间轴"><i data-lucide="layout"></i><span class="nav-text">时间轴</span></div>
-        <div class="nav-link" onclick="handleVaultAccess(this)" id="nav-vault" title="灵感碎片"><i data-lucide="sparkles"></i><span class="nav-text">灵感碎片</span></div>
-        <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i><span class="nav-text">心灵回想</span></div>
-        <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i><span class="nav-text">实验室</span></div>
+        <div class="nav-link active" onclick="switchView('home', this)" title="概览"><i data-lucide="home"></i></div>
+        <div class="nav-link" onclick="switchView('timeline', this)" title="时间轴"><i data-lucide="layout"></i></div>
+        <div class="nav-link" onclick="handleVaultAccess(this)" id="nav-vault" title="灵感碎片"><i data-lucide="sparkles"></i></div>
+        <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i></div>
+        <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
-        <div class="nav-link" onclick="window.syncWebDAV()" title="云端同步"><i data-lucide="refresh-cw"></i><span class="nav-text">云端同步</span></div>
-        <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i><span class="nav-text">封存笔记</span></div>
-        <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical"></i><span class="nav-text">他我推演</span></div>
-        <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i><span class="nav-text">明暗模式</span></div>
-        <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i><span class="nav-text">个人设置</span></div>
+        <div class="nav-link" onclick="window.syncWebDAV()" title="云端同步"><i data-lucide="refresh-cw"></i></div>
+        <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
+        <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical"></i></div>
+        <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i></div>
+        <div class="nav-link" onclick="togglePanel('settings-overlay')" title="个人中心"><i data-lucide="settings"></i></div>
     </nav>
 
     <main id="main">
         <header>
             <div>
                 <h1 id="view-title">他我笔记</h1>
-                <!-- 删除了原本的概览副标题 -->
-                <p class="brand-mark" style="margin-top: 10px;">象库 · ONTO LAB<span id="streak-mark"></span><span id="count-today-wrap" style="opacity:0.6; margin-left:8px;">(今日已记录 <span id="count-today">0</span> 条)</span></p>
+                <p class="brand-mark">象库 · ONTO LAB<span id="streak-mark"></span><span id="count-today-wrap" style="opacity:0.6; margin-left:8px;">(今日已记录 <span id="count-today">0</span> 条)</span></p>
                 <div class="vault-tabs" id="vault-tabs" style="display:none;">
                     <span class="v-tab active" id="tab-soul" onclick="window.switchVaultMode('soul')">心灵碎片 (Soul)</span>
                     <span class="v-tab" id="tab-memory" onclick="window.switchVaultMode('memory')">记忆碎片 (Memory)</span>
@@ -590,22 +641,22 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         <div class="overlay-content">
             <div class="panel-header"><div><h2>他我笔记</h2><p class="view-subtitle-meta">IDENTITY / 个人中心</p></div><span class="close-btn" onclick="closeOverlay('settings-overlay')">CLOSE</span></div>
             
-            <!-- 增加：首页墙纸设置 -->
+            <!-- 仅在首页生效的壁纸配置 -->
             <div class="section-block">
-                <h3>首页空间墙纸</h3>
+                <h3>首页墙纸设置 (仅主页生效)</h3>
                 <div class="ctrl-row">
-                    <span class="ctrl-label">墙纸预设</span>
-                    <div class="ctrl-input-wrap" style="gap:8px; display:flex; flex-wrap:wrap;">
-                        <button class="paper-opt-btn" onclick="window.setWallpaper('default')">纯粹留白</button>
-                        <button class="paper-opt-btn" onclick="window.setWallpaper('kraft')">素墨纸质</button>
-                        <button class="paper-opt-btn" onclick="window.setWallpaper('dark')">深邃暗夜</button>
-                        <button class="paper-opt-btn" onclick="document.getElementById('custom-bg-file').click()">上传自定义</button>
+                    <span class="ctrl-label">预设风格</span>
+                    <div class="ctrl-input-wrap" style="gap:6px; display:flex; flex-wrap:wrap;">
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('default')">默认留白</button>
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('kraft')">素墨纸纹</button>
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('dark')">深邃暗夜</button>
+                        <button class="paper-opt-btn" onclick="document.getElementById('custom-bg-file').click()">自定义上传</button>
                         <input type="file" id="custom-bg-file" hidden accept="image/*" onchange="window.handleCustomWallpaper(event)">
                     </div>
                 </div>
                 <div class="ctrl-row">
-                    <span class="ctrl-label">网络图片 URL</span>
-                    <div class="ctrl-input-wrap"><input type="text" id="wall-url-in" class="input-line" style="margin:0; text-align:right;" placeholder="https://..." onchange="window.setWallpaper(this.value)"></div>
+                    <span class="ctrl-label">图片 URL 链接</span>
+                    <div class="ctrl-input-wrap"><input type="text" id="wall-url-in" class="input-line" style="margin:0; text-align:right;" placeholder="https://..." onchange="window.setHomeWallpaper(this.value)"></div>
                 </div>
             </div>
 
@@ -650,20 +701,16 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     <div id="editor-overlay" class="overlay">
         <div class="overlay-content">
             <div class="panel-header">
-                <div>
-                    <h2 id="editor-title">他我笔记</h2>
-                    <p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p>
-                </div>
-                <!-- 增加：稿纸切换选项 -->
+                <div><h2 id="editor-title">他我笔记</h2><p id="editor-subtitle" class="view-subtitle-meta">FRAGMENTS / 封存碎语</p></div>
+                <!-- 仅笔记专属的稿纸选择器 -->
                 <div class="paper-selector-wrap">
-                    <span>稿纸:</span>
                     <button class="paper-opt-btn active" onclick="window.changePaperPattern('none')">白底</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('grid')">方格</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('dots')">点阵</button>
                     <button class="paper-opt-btn" onclick="window.changePaperPattern('lined')">横线</button>
-                    <button class="paper-opt-btn" onclick="window.changePaperPattern('kraft')">牛皮</button>
-                    <span class="close-btn" style="margin-left: 15px;" onclick="closeOverlay('editor-overlay')">CLOSE</span>
+                    <button class="paper-opt-btn" onclick="window.changePaperPattern('kraft')">牛皮纸</button>
                 </div>
+                <span class="close-btn" onclick="closeOverlay('editor-overlay')">CLOSE</span>
             </div>
             <div id="p-sel-box" style="display:flex; gap:12px; margin-bottom:10px;"></div>
             
@@ -673,7 +720,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <div class="mood-dot" style="background:#cfd8dc;" title="状态" onclick="window.setVibe('tired','🌧️')"></div>
             </div>
 
-            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none; padding:15px; border-radius:4px; transition:0.3s;" placeholder="在此刻寻找回声..."></textarea>
+            <textarea id="note-in" class="input-line" style="height:300px; font-size:20px; line-height:2.2; border:none; resize:none; padding:12px; border-radius:4px;" placeholder="在此刻寻找回声..."></textarea>
             <div id="prevBox" style="display:none; margin-bottom: 20px;"></div>
             <div style="display:flex; justify-content: space-between; border-top:1px solid var(--border); padding-top:30px;">
                 <div style="display:flex; gap:20px; align-items:center;">
@@ -692,7 +739,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     <div id="reader-overlay" class="overlay">
         <div class="overlay-content">
             <div class="reader-close" onclick="closeOverlay('reader-overlay')" style="position:fixed; top:40px; right:40px; cursor:pointer; z-index:100;"><i data-lucide="x" size="24"></i></div>
-            <div id="reader-target" style="line-height: 2.2; padding: 20px; border-radius: 4px;"></div>
+            <div id="reader-target" style="line-height: 2.2; padding: 15px; border-radius: 4px;"></div>
         </div>
     </div>
 
@@ -707,53 +754,43 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     </div>
 
     <script id="alter-core-script">
-        /* --- 0. 基础全局工具与伸缩/墙纸管理 --- */
+        /* --- 0. 基础全局工具与伸缩控制 --- */
         if (localStorage.getItem('alter_theme') === 'dark') document.body.classList.add('dark-mode');
 
-        window.toggleSidebar = function() {
-            document.body.classList.toggle('sidebar-expanded');
-            const isExp = document.body.classList.contains('sidebar-expanded');
-            localStorage.setItem('alt_sidebar_exp', isExp ? 'true' : 'false');
+        window.toggleSidebar = function(expand = null) {
+            const isCollapsed = document.body.classList.toggle('sidebar-collapsed', expand === null ? undefined : !expand);
+            localStorage.setItem('alt_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            if (window.lucide) window.lucide.createIcons();
         };
-        if (localStorage.getItem('alt_sidebar_exp') === 'true') {
-            document.body.classList.add('sidebar-expanded');
+        if (localStorage.getItem('alt_sidebar_collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
         }
 
-        // 首页墙纸控制
-        window.setWallpaper = function(typeOrUrl) {
-            if (typeOrUrl === 'default') {
-                document.body.style.backgroundImage = 'none';
-                localStorage.removeItem('alt_wallpaper');
-                window.showMsg("恢复默认留白");
-            } else if (typeOrUrl === 'kraft') {
-                document.body.style.backgroundImage = 'linear-gradient(135deg, #f5efe6 0%, #e8dfd5 100%)';
-                localStorage.setItem('alt_wallpaper', 'kraft');
-                window.showMsg("已切换素墨纸质墙纸");
-            } else if (typeOrUrl === 'dark') {
-                document.body.style.backgroundImage = 'radial-gradient(circle at center, #1a1a1a 0%, #050505 100%)';
-                localStorage.setItem('alt_wallpaper', 'dark');
-                window.showMsg("已切换暗夜墙纸");
-            } else if (typeOrUrl && typeOrUrl.startsWith('http')) {
-                document.body.style.backgroundImage = `url("${typeOrUrl}")`;
-                localStorage.setItem('alt_wallpaper', typeOrUrl);
-                window.showMsg("已应用网络墙纸");
-            }
+        // 首页专属壁纸挂载 (只作用于 #main.view-home)
+        window.setHomeWallpaper = function(typeOrUrl) {
+            const homeMain = document.querySelector('main.view-home');
+            let bgVal = 'none';
+            if (typeOrUrl === 'kraft') bgVal = 'linear-gradient(135deg, #f5efe6 0%, #e8dfd5 100%)';
+            else if (typeOrUrl === 'dark') bgVal = 'radial-gradient(circle at center, #1a1a1a 0%, #050505 100%)';
+            else if (typeOrUrl && typeOrUrl.startsWith('http')) bgVal = `url("${typeOrUrl}")`;
+            else if (typeOrUrl && typeOrUrl.startsWith('data:image')) bgVal = `url("${typeOrUrl}")`;
+
+            if (typeOrUrl === 'default') localStorage.removeItem('alt_home_wallpaper');
+            else localStorage.setItem('alt_home_wallpaper', typeOrUrl);
+
+            if (homeMain) homeMain.style.backgroundImage = bgVal;
+            window.showMsg("首页墙纸已更新");
         };
 
         window.handleCustomWallpaper = function(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = ev => {
-                const b64 = ev.target.result;
-                document.body.style.backgroundImage = `url("${b64}")`;
-                localStorage.setItem('alt_wallpaper', b64);
-                window.showMsg("自定义墙纸已载入");
-            };
+            reader.onload = ev => window.setHomeWallpaper(ev.target.result);
             reader.readAsDataURL(file);
         };
 
-        // 笔记稿纸控制
+        // 笔记专属稿纸切换
         window.changePaperPattern = function(type) {
             const editor = document.getElementById('note-in');
             const reader = document.getElementById('reader-target');
@@ -762,19 +799,14 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 el.classList.remove('paper-grid', 'paper-dots', 'paper-lined', 'paper-kraft');
                 if (type !== 'none') el.classList.add(`paper-${type}`);
             });
-            document.querySelectorAll('.paper-opt-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.paper-opt-btn').forEach(b => b.classList.remove('active'));
             event?.target?.classList?.add('active');
-            localStorage.setItem('alt_paper_type', type);
-            window.showMsg(`已切换稿纸: ${type}`);
+            localStorage.setItem('alt_note_paper', type);
         };
 
         window.updateThemeIcon = function(isDark) {
             const el = document.getElementById('nav-theme');
-            if (el) { 
-                const textSpan = '<span class="nav-text">明暗模式</span>';
-                el.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '"></i>' + textSpan; 
-                if (window.lucide) window.lucide.createIcons(); 
-            }
+            if (el) { el.innerHTML = '<i data-lucide="' + (isDark ? 'sun' : 'moon') + '"></i>'; if (window.lucide) window.lucide.createIcons(); }
         };
 
         window.toggleTheme = function() {
@@ -1321,11 +1353,11 @@ AlterAPI.openPanel("reflect-overlay");</pre>
             const wp = document.getElementById('webdav-pass'); if(wp) wp.value = localStorage.getItem('alt_webdav_pass') || "";
             const wa = document.getElementById('webdav-auto'); if(wa) wa.checked = localStorage.getItem('alt_webdav_auto') === 'true';
 
-            // 恢复墙纸与稿纸
-            const savedWall = localStorage.getItem('alt_wallpaper');
-            if (savedWall) window.setWallpaper(savedWall);
-            const savedPaper = localStorage.getItem('alt_paper_type');
-            if (savedPaper) window.changePaperPattern(savedPaper);
+            // 恢复首页壁纸与笔记稿纸
+            const savedHomeWall = localStorage.getItem('alt_home_wallpaper');
+            if (savedHomeWall) window.setHomeWallpaper(savedHomeWall);
+            const savedNotePaper = localStorage.getItem('alt_note_paper');
+            if (savedNotePaper) window.changePaperPattern(savedNotePaper);
 
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
@@ -1374,7 +1406,18 @@ AlterAPI.openPanel("reflect-overlay");</pre>
         };
 
         window.switchView = function(m, el) {
-            viewMode = m; const mainEl = document.getElementById('main'); if (mainEl) mainEl.classList.toggle('view-home', m === 'home'); document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
+            viewMode = m; 
+            const mainEl = document.getElementById('main'); 
+            if (mainEl) {
+                mainEl.classList.toggle('view-home', m === 'home');
+                // 仅主页生效壁纸，其他视图重置背景
+                if (m !== 'home') mainEl.style.backgroundImage = 'none';
+                else {
+                    const saved = localStorage.getItem('alt_home_wallpaper');
+                    if (saved) window.setHomeWallpaper(saved);
+                }
+            }
+            document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); if(el) el.classList.add('active');
             
             const dv = document.getElementById('dash-view-container'); if (dv) dv.style.display = m === 'home' ? 'flex' : 'none';
             const tv = document.getElementById('timeline-container'); if (tv) tv.style.display = (m === 'timeline' || m === 'vault') ? 'block' : 'none';
