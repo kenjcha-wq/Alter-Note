@@ -128,7 +128,6 @@
         #streak-mark { letter-spacing: 2px; opacity: 0.85; }
         #streak-mark::before { content: ''; display: inline-block; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
 
-        /* --- 首页速记条 --- */
         .view-subtitle-meta { font-size: 8px; color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; font-family: var(--font-sans); }
         
         .vault-tabs { display: flex; gap: 15px; margin-top: 15px; }
@@ -197,7 +196,6 @@
         .prev-item img { width: 100%; height: 100%; object-fit: cover; }
         .prev-kill { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: #fff; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
 
-        /* 覆盖层从侧边栏右侧开始，导航常驻可见，与其他页面格式统一 */
         .overlay { position: fixed; top: 0; left: 56px; width: calc(100% - 56px); height: 100%; background: var(--bg); z-index: 3000; display: none; flex-direction: column; padding: 60px 0; backdrop-filter: var(--panel-blur); overflow-y: auto; }
         #cam-overlay { left: 0; width: 100%; }
         .overlay-content { max-width: 800px; margin: 0 auto; width: 90%; padding-bottom: 120px; }
@@ -249,7 +247,7 @@
 
         #observer-vibe-widget {
             position: fixed; top: 20px; left: 70px; z-index: 9999; 
-            opacity: 0; transition: 2s ease; pointer-events: none;
+            opacity: 0; transition: 1s ease; pointer-events: none;
         }
         #vibe-container {
             padding: 8px 15px; border-radius: 4px; display: flex; 
@@ -261,7 +259,6 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
-        /* --- 首页：等宽三栏，桌面端固定一屏不滚动 --- */
         .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
         @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
         .quick-panel { padding: 26px 28px; border: 1px solid var(--border); border-radius: 2px; background: rgba(0,0,0,0.005); display: flex; flex-direction: column; min-height: 240px; overflow: hidden; }
@@ -273,7 +270,6 @@
         main.view-home .home-grid { height: 100%; }
         main.view-home .quick-panel { height: 100%; min-height: 0; }
 
-        /* --- 首页速记面板：日程 / 便签 --- */
         .quick-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
         .quick-head h4 { font-size: 10px; letter-spacing: 2px; color: var(--text-dim); margin: 0; }
         .quick-en { font-size: 7px; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
@@ -309,18 +305,17 @@
         }
         .mood-dot:hover { transform: scale(1.2); }
 
-        /* 情绪球与氛围提示仅在写笔记时出现，其他页面隐藏以免遮挡标题 */
         body:not(.editor-open) .philosophy-emotion-indicator,
         body:not(.editor-open) #observer-vibe-widget { opacity: 0 !important; pointer-events: none !important; }
         .philosophy-emotion-indicator {
-          position: fixed; top: 20px; left: 20px; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.06); user-select: none;
+          position: fixed; top: 20px; left: 20px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.06); user-select: none;
         }
-        .emotion-clarity { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.2); color: #B8860B; }
-        .emotion-contemplation { background: linear-gradient(135deg, rgba(135, 206, 235, 0.12), rgba(70, 130, 180, 0.08)); border-color: rgba(135, 206, 235, 0.15); color: #5F9EA0; }
-        .emotion-melancholy { background: linear-gradient(135deg, rgba(112, 128, 144, 0.12), rgba(70, 80, 90, 0.08)); border-color: rgba(112, 128, 144, 0.15); color: #6B7B8C; }
-        .emotion-crisis { background: linear-gradient(135deg, rgba(75, 0, 130, 0.15), rgba(47, 79, 79, 0.1)); border-color: rgba(75, 0, 130, 0.2); color: #4B0082; }
-        .emotion-awakening { background: linear-gradient(135deg, rgba(255, 183, 197, 0.15), rgba(255, 192, 203, 0.1)); border-color: rgba(255, 183, 197, 0.2); color: #DB7093; }
-        .emotion-serenity { background: linear-gradient(135deg, rgba(232, 245, 233, 0.2), rgba(200, 230, 201, 0.15)); border-color: rgba(232, 245, 233, 0.3); color: #6B8E23; }
+        .emotion-clarity { background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.2); }
+        .emotion-contemplation { background: linear-gradient(135deg, rgba(135, 206, 235, 0.12), rgba(70, 130, 180, 0.08)); border-color: rgba(135, 206, 235, 0.15); }
+        .emotion-melancholy { background: linear-gradient(135deg, rgba(112, 128, 144, 0.12), rgba(70, 80, 90, 0.08)); border-color: rgba(112, 128, 144, 0.15); }
+        .emotion-crisis { background: linear-gradient(135deg, rgba(75, 0, 130, 0.15), rgba(47, 79, 79, 0.1)); border-color: rgba(75, 0, 130, 0.2); }
+        .emotion-awakening { background: linear-gradient(135deg, rgba(255, 183, 197, 0.15), rgba(255, 192, 203, 0.1)); border-color: rgba(255, 183, 197, 0.2); }
+        .emotion-serenity { background: linear-gradient(135deg, rgba(232, 245, 233, 0.2), rgba(200, 230, 201, 0.15)); border-color: rgba(232, 245, 233, 0.3); }
         .negative-emotion-alert { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.95); padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); z-index: 10000; font-size: 14px; color: #555; max-width: 320px; backdrop-filter: blur(10px); }
     </style>
 </head>
@@ -388,6 +383,7 @@
         <div class="nav-link" onclick="togglePanel('reflect-overlay')" title="心灵回想"><i data-lucide="scan-eye"></i></div>
         <div class="nav-link" onclick="togglePanel('lab-overlay')" title="实验室"><i data-lucide="beaker"></i></div>
         <div style="flex:1"></div>
+        <div class="nav-link" onclick="window.syncWebDAV()" title="云端同步"><i data-lucide="refresh-cw"></i></div>
         <div class="nav-link" onclick="window.openNewEditor()" title="封存"><i data-lucide="feather"></i></div>
         <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical"></i></div>
         <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon"></i></div>
@@ -398,7 +394,8 @@
         <header>
             <div>
                 <h1 id="view-title">他我笔记</h1>
-                                <p class="brand-mark">象库 · ONTO LAB<span id="streak-mark"></span></p>
+                <p id="view-subtitle" class="view-subtitle-meta">DASHBOARD / 概览</p>
+                <p class="brand-mark">象库 · ONTO LAB<span id="streak-mark"></span><span id="count-today-wrap" style="opacity:0.6; margin-left:8px;">(今日已记录 <span id="count-today">0</span> 条)</span></p>
                 <div class="vault-tabs" id="vault-tabs" style="display:none;">
                     <span class="v-tab active" id="tab-soul" onclick="window.switchVaultMode('soul')">心灵碎片 (Soul)</span>
                     <span class="v-tab" id="tab-memory" onclick="window.switchVaultMode('memory')">记忆碎片 (Memory)</span>
@@ -507,7 +504,7 @@
             <div id="tab-market" class="tab-pane">
                 <div class="section-block">
                     <h3>动态功能扩展</h3>
-                    <textarea id="plugin-code-in" class="input-line" style="height:150px; font-family:monospace; font-size:11px; padding:15px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// 粘贴 JS 代码或输入以 http 开头的插件链接..."></textarea>
+                    <textarea id="plugin-code-in" class="input-line" style="height:150px; font-family:monospace; font-size:11px; padding:15px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// 粘贴 JS 代码..."></textarea>
                     <button class="btn-black" style="width:100%; margin-top:15px;" onclick="installPluginFromInput()">载入功能</button>
                 </div>
                 <div class="section-block">
@@ -519,7 +516,7 @@
                 <div class="section-block">
                     <h3>开发者规则</h3>
                     <p style="font-size:12px; margin-bottom:10px;">通过 <code>AlterPlugins.register({ name, author, run })</code> 挂载功能。</p>
-                    <p style="font-size:10px; opacity:0.5; margin-bottom:15px;">支持持久化 eval 载入。代码将存储于本地。</p>
+                    <p style="font-size:10px; opacity:0.5; margin-bottom:15px;">支持持久化载入。代码将安全存储于本地。</p>
                     <pre class="pre-docs" style="background:rgba(0,0,0,0.05); padding:15px; font-size:10px; overflow-x:auto;">
 const data = AlterAPI.getNotes();
 AlterAPI.showMsg("同步中...");
@@ -540,6 +537,21 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 </div>
             </div>
             <div class="section-block">
+                <h3>坚果云 / WebDAV 云端同步</h3>
+                <p style="font-size:10px; color:var(--text-dim); margin-bottom:15px; line-height:1.6;">
+                    坚果云配置路径：账号信息 ➔ 安全设置 ➔ 第三方应用管理 ➔ 添加应用密码。<br>
+                    服务器地址通常填：<code>https://dav.jianguoyun.com/dav/</code>
+                </p>
+                <div class="ctrl-row"><span class="ctrl-label">服务器地址</span><div class="ctrl-input-wrap"><input type="text" id="webdav-url" class="input-line" style="margin:0; text-align:right;" placeholder="https://dav.jianguoyun.com/dav/"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">账户 (邮箱)</span><div class="ctrl-input-wrap"><input type="text" id="webdav-user" class="input-line" style="margin:0; text-align:right;" placeholder="user@example.com"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">应用授权密码</span><div class="ctrl-input-wrap"><input type="password" id="webdav-pass" class="input-line" style="margin:0; text-align:right;" placeholder="生成专属应用密码"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">自动云端增量同步</span><div class="ctrl-input-wrap"><input type="checkbox" id="webdav-auto" onchange="window.saveWebDAVConfig()"></div></div>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button class="btn-black" style="flex:1;" onclick="window.saveWebDAVConfig(true)">保存并立即同步</button>
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.syncWebDAV()">手动同步</button>
+                </div>
+            </div>
+            <div class="section-block">
                 <h3>分身状态 (固定)</h3>
                 <div id="persona-list-fixed"></div>
             </div>
@@ -549,9 +561,9 @@ AlterAPI.openPanel("reflect-overlay");</pre>
                 <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
             </div>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出备份 (.JSON)</button>
-            <button class="btn-black" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">导入备份 (.JSON)</button>
+            <button class="btn-black" style="width:100%; margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">增量导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
-            <p class="version-mark" id="version-mark">v1.7 · 他我笔记</p>
+            <p class="version-mark" id="version-mark">v2.0 · 他我笔记 坚果云增量同步版</p>
         </div>
     </div>
 
@@ -600,44 +612,7 @@ AlterAPI.openPanel("reflect-overlay");</pre>
     </div>
 
     <script id="alter-core-script">
-        // --- 全设备同步核心：Cloudflare KV 适配层 ---
-const SyncEngine = {
-    async pull() {
-        try {
-            const res = await fetch('/api/sync');
-            const data = await res.json();
-            if (data && Array.isArray(data)) {
-                // 1. 先更新内存里的笔记数组
-                notes = data; 
-                // 2. 更新本地存储
-                localStorage.setItem('alter_notes_data', JSON.stringify(data));
-                console.log("已从云端同步最新回响");
-                // 3. 刷新界面渲染
-                if(typeof renderGrid === 'function') renderGrid(); 
-                updateStats(); 
-            }
-        } catch (e) { console.error("同步拉取失败:", e); }
-    },
-    async push(data) {
-        try {
-            await fetch('/api/sync', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            console.log("回响已同步至云端");
-        } catch (e) { console.error("同步推送失败:", e); }
-    }
-};
-
-// 云同步已停用：/api/sync 返回 500（Cloudflare KV 绑定未配置），
-// 且 push 从未被调用、pull 会无条件用云端空数据覆盖本地笔记数组。
-// 在真正配好 KV 并实现按 id 合并之前，不再自动 pull，避免笔记被清空。
-// 如需恢复：配置 KV 绑定后改为 merge 策略再启用下面这行。
-// window.addEventListener('load', () => { setTimeout(() => SyncEngine.pull(), 1500); });
-      
         /* --- 0. 基础全局工具 --- */
-        // 主题：先于渲染应用，避免刷新时白闪
         if (localStorage.getItem('alter_theme') === 'dark') document.body.classList.add('dark-mode');
 
         window.updateThemeIcon = function(isDark) {
@@ -652,19 +627,141 @@ const SyncEngine = {
             window.showMsg(isDark ? '夜幕已落下' : '回到白昼');
         };
         window.updateThemeIcon(document.body.classList.contains('dark-mode'));
+        
         window.showMsg = function(m) { 
             const t = document.getElementById('toast'); 
             if(!t) return;
             t.innerText = m; t.style.display = 'block'; 
-            setTimeout(() => t.style.display = 'none', 2000); 
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => t.style.display = 'none', 2200); 
         };
 
+        /* --- 1. WebDAV 坚果云增量同步引擎 --- */
+        const WebDAVSync = {
+            getConfig() {
+                return {
+                    url: (localStorage.getItem('alt_webdav_url') || '').trim().replace(/\/+$/, ''),
+                    user: (localStorage.getItem('alt_webdav_user') || '').trim(),
+                    pass: (localStorage.getItem('alt_webdav_pass') || '').trim(),
+                    auto: localStorage.getItem('alt_webdav_auto') === 'true'
+                };
+            },
+            getAuthHeader(cfg) {
+                return 'Basic ' + btoa(unescape(encodeURIComponent(cfg.user + ':' + cfg.pass)));
+            },
+            getRemotePath(cfg) {
+                return `${cfg.url}/alter_notes_sync.json`;
+            },
+            async pull() {
+                const cfg = this.getConfig();
+                if (!cfg.url || !cfg.user || !cfg.pass) return null;
+                try {
+                    const res = await fetch(this.getRemotePath(cfg), {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': this.getAuthHeader(cfg),
+                            'Cache-Control': 'no-cache'
+                        }
+                    });
+                    if (res.status === 404) return []; // 云端尚无备份
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const data = await res.json();
+                    return Array.isArray(data) ? data : null;
+                } catch (e) {
+                    console.warn("WebDAV Pull Failed:", e);
+                    throw e;
+                }
+            },
+            async push(allNotes) {
+                const cfg = this.getConfig();
+                if (!cfg.url || !cfg.user || !cfg.pass) return false;
+                try {
+                    const res = await fetch(this.getRemotePath(cfg), {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': this.getAuthHeader(cfg),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(allNotes)
+                    });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return true;
+                } catch (e) {
+                    console.warn("WebDAV Push Failed:", e);
+                    throw e;
+                }
+            },
+            async sync() {
+                const cfg = this.getConfig();
+                if (!cfg.url || !cfg.user || !cfg.pass) {
+                    window.showMsg("请先在个人中心配置 WebDAV / 坚果云信息");
+                    return;
+                }
+                window.showMsg("正在与云端增量对齐...");
+                try {
+                    const remoteNotes = await this.pull();
+                    if (remoteNotes === null) throw new Error("获取云端数据异常");
+                    
+                    const localNotes = await dbAction("getAll");
+                    const merged = mergeNotesById(localNotes, remoteNotes);
+                    
+                    // 将合并后的完整数据全量写回 IndexedDB 与 云端
+                    for (const n of merged) {
+                        await dbAction("put", n);
+                    }
+                    notes = merged.sort((a,b) => b.id - a.id);
+                    await this.push(notes);
+                    
+                    await renderAll();
+                    window.showMsg("☁️ 坚果云增量同步完成");
+                } catch (e) {
+                    window.showMsg(`❌ 同步失败: ${e.message}`);
+                }
+            }
+        };
 
-        // --- 首页速记：日程(带日期) 与 便签(无日期短提醒) ---
+        // 按 ID 增量合并双边数据，绝不丢失任何一方的新增和修缮
+        function mergeNotesById(listA, listB) {
+            const map = new Map();
+            (listA || []).forEach(item => { if (item && item.id) map.set(item.id, item); });
+            (listB || []).forEach(item => {
+                if (!item || !item.id) return;
+                if (!map.has(item.id)) {
+                    map.set(item.id, item);
+                } else {
+                    const exist = map.get(item.id);
+                    const existTime = exist.updatedAt || exist.id;
+                    const itemTime = item.updatedAt || item.id;
+                    // 保留更新时间更近的一方
+                    if (itemTime > existTime) {
+                        map.set(item.id, item);
+                    }
+                }
+            });
+            return Array.from(map.values());
+        }
+
+        window.saveWebDAVConfig = function(triggerSync = false) {
+            const u = document.getElementById('webdav-url');
+            const usr = document.getElementById('webdav-user');
+            const p = document.getElementById('webdav-pass');
+            const a = document.getElementById('webdav-auto');
+            if (u && usr && p) {
+                localStorage.setItem('alt_webdav_url', u.value.trim());
+                localStorage.setItem('alt_webdav_user', usr.value.trim());
+                localStorage.setItem('alt_webdav_pass', p.value.trim());
+                if (a) localStorage.setItem('alt_webdav_auto', a.checked ? 'true' : 'false');
+                window.showMsg("云同步配置已保存");
+                if (triggerSync) WebDAVSync.sync();
+            }
+        };
+
+        window.syncWebDAV = () => WebDAVSync.sync();
+
+        /* --- 2. 首页速记：日程与便签 --- */
         let schedule = JSON.parse(localStorage.getItem('alter_schedule') || '[]');
         let stickies = JSON.parse(localStorage.getItem('alter_sticky') || '[]');
 
-        // 同一毫秒内连续新增会撞 Date.now()，导致按 id 删除/切换时误伤多条
         function uniqueId(arr) {
             let id = Date.now();
             const taken = new Set((arr || []).map(x => x && x.id));
@@ -678,8 +775,7 @@ const SyncEngine = {
                 localStorage.setItem('alter_sticky', JSON.stringify(stickies));
                 return true;
             } catch (e) {
-                // 无痕模式或站点存储被禁用时，内存仍然可用，明确告知而非静默失败
-                window.showMsg('⚠️ 本机存储不可用（无痕模式？），内容仅在本次打开期间保留');
+                window.showMsg('⚠️ 本机存储不可用，请注意备份');
                 return false;
             }
         }
@@ -705,7 +801,6 @@ const SyncEngine = {
             const box = document.getElementById(kind === 'schedule' ? 'schedule-add' : 'sticky-add');
             if (!box) return;
             const opening = box.style.display === 'none' || !box.style.display;
-            // 同时只展开一个输入区，保持版面整洁
             ['schedule-add', 'sticky-add'].forEach(id => { const el = document.getElementById(id); if (el && id !== box.id) el.style.display = 'none'; });
             document.querySelectorAll('.quick-plus').forEach(b => b.classList.remove('active'));
             box.style.display = opening ? 'flex' : 'none';
@@ -730,9 +825,7 @@ const SyncEngine = {
             if (!text) return;
             if (!di.value) {
                 window.showMsg('先给它挑个日子');
-                di.style.borderColor = '#b4530f';
                 di.focus();
-                setTimeout(() => { di.style.borderColor = ''; }, 1800);
                 return;
             }
             schedule.push({ id: uniqueId(schedule), text: text, date: di.value, done: false });
@@ -760,7 +853,6 @@ const SyncEngine = {
             saveQuick(); renderQuick();
         };
 
-        // 连续记录天数：从今天（或昨天，若今天未写）往前数
         function currentStreak() {
             const days = new Set(notes.filter(n => !n.isVault && !n.deleteAt).map(n => n.time));
             if (!days.size) return 0;
@@ -777,7 +869,6 @@ const SyncEngine = {
             const s = currentStreak();
             el.innerText = s > 0 ? ('已连续记录 ' + s + ' 天') : '今日尚未落笔';
         }
-
 
         function renderQuick() {
             const sBox = document.getElementById('schedule-list');
@@ -841,17 +932,12 @@ const SyncEngine = {
                 const code = input.trim();
                 if (!code) return;
                 try {
-                    if (code.startsWith('http')) {
-                        const script = document.createElement('script'); script.src = code; document.head.appendChild(script);
-                        if(!isAuto) window.showMsg("URL 载入中...");
-                    } else { 
-                        eval(code); 
-                        if(!isAuto) {
-                            const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
-                            saved.push({ id: Date.now(), name: "自定义插件", code: code });
-                            localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
-                            window.showMsg("代码已封存"); 
-                        }
+                    eval(code); 
+                    if(!isAuto) {
+                        const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
+                        saved.push({ id: Date.now(), name: "自定义插件", code: code });
+                        localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
+                        window.showMsg("代码已封存"); 
                     }
                 } catch (e) { window.showMsg("ERR: " + e.message); }
             },
@@ -907,7 +993,7 @@ const SyncEngine = {
             }
         };
 
-        // --- 2. 核心数据与状态 ---
+        /* --- 3. 核心数据与状态 --- */
         const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
         let db = null, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alt_v52_sec') || localStorage.getItem('alter_v52_sec') || '{"v":"","n":""}') || { v: "", n: "" };
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
@@ -944,7 +1030,6 @@ const SyncEngine = {
             });
         }
 
-        // 打开推演面板：滚到最新一条，不用手动往下翻
         window.scrollChatToBottom = function() {
             const box = document.getElementById('ai-chat-box');
             if (!box) return;
@@ -993,13 +1078,7 @@ const SyncEngine = {
         };
 
         window.copyMsg = function(text) {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-            window.showMsg("已复制到剪贴板");
+            navigator.clipboard.writeText(text).then(() => window.showMsg("已复制到剪贴板"));
         };
 
         window.downloadMsg = function(text) {
@@ -1011,7 +1090,6 @@ const SyncEngine = {
             window.showMsg("文章已导出为文件");
         };
 
-        // 端点归一化：兼容用户填 /v1、不填 /v1、甚至直接填完整 chat/completions 三种写法
         function buildChatCandidates(rawUrl) {
             let u = (rawUrl || '').trim().replace(/\/+$/, '');
             if (/\/chat\/completions$/i.test(u)) return [u];
@@ -1031,7 +1109,6 @@ const SyncEngine = {
                 system = "你是一个冷静、中立、客观的观察者。回复时直接切中要害，不使用讨好性语言，保持客观公正且不吹毛求疵。";
             }
 
-            const apiBase = buildChatCandidates(rawUrl)[0];
             const loadingMsg = appendMsg('bot', '正在推演...', false); 
             try {
                 const isVision = /vision|gpt-4o|vl|gemini|claude/i.test(apiModel);
@@ -1056,12 +1133,11 @@ const SyncEngine = {
                     } catch (e2) { lastErr = e2.message; }
                 }
                 if (!res) throw new Error(lastErr || '所有端点均不可用');
-                if (used && used !== apiBase) localStorage.setItem('alt_api_url_used', used);
                 const data = await res.json();
                 if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
                 if (data.choices) appendMsg('bot', data.choices[0].message.content);
                 else if (data.error) appendMsg('bot', `❌ 接口返回错误：${data.error.message || JSON.stringify(data.error)}`);
-                else appendMsg('bot', '❌ 接口返回格式异常：' + JSON.stringify(data).slice(0, 200));
+                else appendMsg('bot', '❌ 接口返回格式异常');
             } catch (e) { if (loadingMsg && chatBox && chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg); appendMsg('bot', `❌ 推演中断：${e.message}`); }
         }
 
@@ -1070,14 +1146,14 @@ const SyncEngine = {
             try {
                 notes = await dbAction("getAll");
             } catch(e) { notes = []; }
-            // 清理已过 3 天保留期的回收笔记
+            
             const nowTs = Date.now();
             const purged = notes.filter(n => n.deleteAt && n.deleteAt <= nowTs);
             for (const p of purged) { await dbAction("delete", p.id); }
             if (purged.length) notes = notes.filter(n => !(n.deleteAt && n.deleteAt <= nowTs));
             notes.sort((a,b) => b.id - a.id);
 
-            // 恢复 UI 状态
+            // 恢复配置
             const rn = document.getElementById('rename-user-in'); if(rn) rn.value = user;
             const pv = document.getElementById('pass-vault'); if(pv) pv.value = sec.v || "";
             const pn = document.getElementById('pass-note'); if(pn) pn.value = sec.n || "";
@@ -1085,6 +1161,11 @@ const SyncEngine = {
             const lu = document.getElementById('lab-url-in'); if(lu) lu.value = localStorage.getItem('alt_api_url') || "";
             const lk = document.getElementById('lab-key-in'); if(lk) lk.value = localStorage.getItem('alt_api_key') || "";
             const lm = document.getElementById('lab-model-in'); if(lm) lm.value = localStorage.getItem('alt_api_model') || "";
+
+            const wu = document.getElementById('webdav-url'); if(wu) wu.value = localStorage.getItem('alt_webdav_url') || "";
+            const wusr = document.getElementById('webdav-user'); if(wusr) wusr.value = localStorage.getItem('alt_webdav_user') || "";
+            const wp = document.getElementById('webdav-pass'); if(wp) wp.value = localStorage.getItem('alt_webdav_pass') || "";
+            const wa = document.getElementById('webdav-auto'); if(wa) wa.checked = localStorage.getItem('alt_webdav_auto') === 'true';
 
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
             const chatBox = document.getElementById('ai-chat-box');
@@ -1106,8 +1187,12 @@ const SyncEngine = {
             AlterPlugins.updateUI();
 
             const dp = document.getElementById('lab-date-pick'); if (dp) dp.value = todayStr();
-            if (typeof initPhilosophyEmotionSystem === 'function') initPhilosophyEmotionSystem();
-            if (typeof AlterRuleEngine !== 'undefined') AlterRuleEngine.init();
+            TextAnalyzer.init();
+
+            // 若开启了自动同步，启动时自动做一次增量拉取
+            if (localStorage.getItem('alt_webdav_auto') === 'true') {
+                setTimeout(() => WebDAVSync.sync(), 2000);
+            }
         }
 
         window.enterApp = function(name) {
@@ -1126,7 +1211,6 @@ const SyncEngine = {
             if (authScreen) authScreen.style.display='none';
             
             const curLoginName = document.getElementById('cur-login-name'); if (curLoginName) curLoginName.innerText = user;
-            
             renderAll();
         };
 
@@ -1139,7 +1223,9 @@ const SyncEngine = {
             const pf = document.getElementById('persona-filter'); if (pf) pf.style.display = m === 'timeline' ? 'block' : 'none';
             const sb = document.getElementById('synth-btn'); if (sb) sb.style.display = m === 'vault' ? 'block' : 'none';
             const vt2 = document.getElementById('view-title'); if (vt2) vt2.innerText = "他我笔记";
-            const vs = document.getElementById('view-subtitle'); if (vs) vs.innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
+            
+            const vs = document.getElementById('view-subtitle'); 
+            if (vs) vs.innerText = m === 'vault' ? "INSPIRATION / 灵感碎片" : (m === 'home' ? "DASHBOARD / 概览" : "FRAGMENTS / 时间流");
             
             if(m==='home') renderDailyReview();
             renderGrid();
@@ -1212,9 +1298,9 @@ const SyncEngine = {
         };
 
         window.dlData = function() {
-            const b = new Blob([JSON.stringify(notes)],{type:'application/json'});
+            const b = new Blob([JSON.stringify(notes, null, 2)],{type:'application/json'});
             const a = document.createElement('a'); a.href=URL.createObjectURL(b);
-            a.download='alter_backup.json'; a.click();
+            a.download=`alter_backup_${Date.now()}.json`; a.click();
         };
 
         window.editNote = function(e, id) {
@@ -1252,25 +1338,35 @@ const SyncEngine = {
             if (!ni) return;
             const t = ni.value.trim(); if(!t && !b64s.length) return window.closeOverlay('editor-overlay'); 
             
+            const now = Date.now();
             if (editingId) {
                 const idx = notes.findIndex(n => n.id === editingId);
                 if (idx !== -1) {
                     notes[idx].content = t; notes[idx].images = [...b64s];
                     notes[idx].files = [...files]; notes[idx].isVault = inV;
                     notes[idx].persona = activeP.n; notes[idx].i = activeP.i;
+                    notes[idx].updatedAt = now;
                     await dbAction("put", notes[idx]);
                     window.showMsg("回响已修缮");
                 }
             } else {
                 const newNote = { 
-                    id:uniqueId(notes), content:t, author: user, images:[...b64s], files:[...files], 
-                    isVault:inV, persona:activeP.n, i:activeP.i, time:new Date().toLocaleDateString(), replies:[], zs:0, 
-                    tmpl: b64s.length?'none':['quote','dark','serif'][Math.floor(Math.random()*3)] 
+                    id: uniqueId(notes), content: t, author: user, images: [...b64s], files: [...files], 
+                    isVault: inV, persona: activeP.n, i: activeP.i, time: new Date().toLocaleDateString(), replies: [], zs: 0, 
+                    updatedAt: now,
+                    tmpl: b64s.length ? 'none' : ['quote','dark','serif'][Math.floor(Math.random()*3)] 
                 };
                 await dbAction("put", newNote); notes.unshift(newNote);
                 window.showMsg("回响已封存");
             }
-            window.resetEditor(); await renderAll(); window.closeOverlay('editor-overlay'); 
+            window.resetEditor(); 
+            await renderAll(); 
+            window.closeOverlay('editor-overlay'); 
+
+            // 触发自动坚果云同步
+            if (localStorage.getItem('alt_webdav_auto') === 'true') {
+                WebDAVSync.push(notes);
+            }
         };
 
         async function renderGrid(q = "") {
@@ -1285,7 +1381,7 @@ const SyncEngine = {
                 const mainImg = (n.images && n.images.length) ? n.images[0] : null;
                 div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
                     <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
-                    <div class="card-content">${n.content}</div>
+                    <div class="card-content">${escQuick(n.content)}</div>
                     <div class="card-footer">
                         <div class="footer-tools">
                             <button class="footer-btn" onclick="window.doZ(event, ${n.id})"><i data-lucide="zap"></i> ${n.zs||0}</button>
@@ -1298,19 +1394,19 @@ const SyncEngine = {
             }); if (window.lucide) window.lucide.createIcons();
         }
 
-        window.doZ = async function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; await dbAction("put", n); renderGrid(); } };
-        window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; await dbAction("put", notes[i]); await renderAll(); } };
+        window.doZ = async function(e, id) { e.stopPropagation(); const n = notes.find(x=>x.id===id); if(n){ n.zs = (n.zs||0) + 1; n.updatedAt = Date.now(); await dbAction("put", n); renderGrid(); } };
+        window.deleteNote = async function(e, id) { e.stopPropagation(); const i = notes.findIndex(x=>x.id===id); if(i!==-1){ notes[i].isVault=true; notes[i].deleteAt=Date.now()+259200000; notes[i].updatedAt = Date.now(); await dbAction("put", notes[i]); await renderAll(); } };
 
         function showNote(n) {
             const el = document.getElementById('reader-target'); window.togglePanel('reader-overlay');
             if (!el) return;
             const imgsHtml = (n.images || []).map(img => `<img src="${img}" style="width:100%; border-radius:4px; margin-bottom:15px;">`).join('');
             const filesHtml = (n.files || []).map(f => `<a href="${f.data}" download="${f.name}" class="file-tag"><i data-lucide="file-text" style="width:8px; height:8px;"></i> ${f.name}</a>`).join('');
-            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${r.txt}</p></div>`).join('');
+            const rList = (n.replies || []).map(r => `<div class="reply-box"><div style="font-size:10px; margin-bottom:5px; color:var(--text-dim); display:flex; justify-content:space-between;"><span>${r.who}</span><span style="cursor:pointer; text-decoration:underline;" onclick="window.setRT('${r.who}')">回复</span></div><p style="font-size:14px;">${escQuick(r.txt)}</p></div>`).join('');
             const pChips = [...FIXED_P, {n: user, i: "👤"}].map(p => `<div class="p-chip ${commP.n===p.n?'active':''}" onclick="window.setCommAction('${p.n}', this)">${p.i} ${p.n}</div>`).join('');
             el.innerHTML = `
                 <div style="margin-bottom:40px;">${imgsHtml}</div>
-                <div class="content-body" style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:40px;">${n.content}</div>
+                <div class="content-body" style="font-size:20px; line-height:2.2; text-align:justify; margin-bottom:40px;">${escQuick(n.content)}</div>
                 <div style="margin-bottom:60px;">${filesHtml}</div>
                 <div style="border-top:1px solid var(--border); padding-top:60px;">
                     <h4 style="font-size:10px; letter-spacing:2px; margin-bottom:30px; opacity:0.4;">ECHOES / 回声</h4>
@@ -1336,6 +1432,7 @@ const SyncEngine = {
             const txt = inputEl.value.trim(); if(!txt) return;
             const n = notes.find(x=>x.id===id); if(n){
                 if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `@${rTo} ${txt}` : txt, who: commP.n });
+                n.updatedAt = Date.now();
                 await dbAction("put", n); showNote(n); rTo = null; window.showMsg("SYNCED");
             }
         };
@@ -1369,7 +1466,7 @@ const SyncEngine = {
         };
         window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); renderQuick(); renderStreak(); }
-        // 按当天日期确定性抽取，同一天永远同一篇，避免每次操作后首页内容跳动
+
         function dailySeedPick(len) {
             if (len <= 0) return -1;
             const d = new Date();
@@ -1383,11 +1480,12 @@ const SyncEngine = {
             const eligible = notes.filter(n => !n.isVault && !n.deleteAt).sort((a,b) => a.id - b.id);
             if(!eligible.length) { box.innerHTML = '<div class="quick-empty">此刻虚无</div>'; return; }
             const r = eligible[dailySeedPick(eligible.length)];
-            box.innerHTML = `<div class="recall-item" onclick="window.showNoteById(${r.id})"><div class="recall-meta">${r.i||'👤'} ${escQuick(r.persona||'')} · ${r.time}</div><div class="recall-text">${r.content}</div></div>`;
+            box.innerHTML = `<div class="recall-item" onclick="window.showNoteById(${r.id})"><div class="recall-meta">${r.i||'👤'} ${escQuick(r.persona||'')} · ${r.time}</div><div class="recall-text">${escQuick(r.content)}</div></div>`;
         }
         window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; const box = document.getElementById('p-sel-box'); if (box) { box.innerHTML = allP.map(p => `<div style="font-size:10px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); } }
         function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
         function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:15px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 11px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:8px;">IDENTITY LOCKED</span></div>`).join(''); } }
+        
         function updateStats() { 
             const countEl = document.getElementById('count-today');
             if (countEl) countEl.innerText = notes.filter(n => n.time === new Date().toLocaleDateString() && !n.isVault).length;
@@ -1421,7 +1519,7 @@ const SyncEngine = {
                         model: apiModel, 
                         messages: [{ 
                             role: "system", 
-                            content: "你是一个文本分析专家。请根据提供的笔记内容，提取5到8个最能代表用户意识状态的深刻关键词（如'孤独'、'本体'、'渴望'等）。只返回一个JSON数组，例如: [\"词1\", \"词2\"]。不要回复任何其他文本。" 
+                            content: "你是一个文本分析专家。请根据提供的笔记内容，提取5到8个最能代表用户意识状态的深刻关键词。只返回一个JSON数组，例如: [\"词1\", \"词2\"]。不要回复任何其他文本。" 
                         }, { 
                             role: "user", 
                             content: context || "用户尚未记录任何深度笔记。请提供默认的意识基准词。" 
@@ -1439,13 +1537,11 @@ const SyncEngine = {
                 if (!keywords.length) keywords = ["自我", "虚无", "共鸣", "影子", "回声"];
 
                 box.innerHTML = '';
-                // 绘制核心节点
                 const core = document.createElement('div');
                 core.innerText = "意识核心";
                 core.style.cssText = "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:700;color:var(--accent);z-index:5;background:var(--bg);padding:8px 15px;border:1px solid var(--accent);border-radius:20px;";
                 box.appendChild(core);
 
-                // 绘制分支节点
                 keywords.forEach((k, i) => {
                     const angle = (i / keywords.length) * Math.PI * 2;
                     const dist = 100;
@@ -1457,7 +1553,6 @@ const SyncEngine = {
                     node.style.cssText = `position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);font-size:11px;opacity:0.8;padding:4px 10px;border-bottom:1px solid var(--border);transition:0.5s ease;`;
                     box.appendChild(node);
 
-                    // 绘制连线
                     const line = document.createElement('div');
                     line.style.cssText = `position:absolute;left:50%;top:50%;width:1px;height:${dist}px;background:var(--border);transform:rotate(${angle + Math.PI/2}rad);transform-origin:0 0;z-index:1;opacity:0.3;`;
                     box.appendChild(line);
@@ -1468,7 +1563,6 @@ const SyncEngine = {
             }
         };
 
-        // 实验室·按日期回看：以笔记 id（毫秒时间戳）判定归属日，避免 locale 日期字符串歧义
         window.loadDayNotes = function() {
             const pick = document.getElementById('lab-date-pick');
             const box = document.getElementById('lab-day-list');
@@ -1514,8 +1608,8 @@ const SyncEngine = {
                 `;
                 msg.appendChild(tools);
             }
-            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight;
-            if (chatBox.scrollHeight > chatBox.clientHeight) requestAnimationFrame(() => { chatBox.scrollTop = chatBox.scrollHeight; }); 
+            chatBox.appendChild(msg);
+            requestAnimationFrame(() => { chatBox.scrollTop = chatBox.scrollHeight; }); 
             if(shouldSave) {
                 const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
                 history.push({ role, text });
@@ -1549,6 +1643,7 @@ const SyncEngine = {
             };
         })();
 
+        // 增量导入备份，合并已有条目
         window.importData = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1557,91 +1652,122 @@ const SyncEngine = {
                 try {
                     const importedNotes = JSON.parse(ev.target.result);
                     if (!Array.isArray(importedNotes)) throw new Error("INVALID_FORMAT");
-                    for (const n of importedNotes) { await dbAction("put", n); }
-                    window.showMsg("MEMORY CONNECTED");
-                    setTimeout(() => location.reload(), 1000); 
-                } catch (err) { window.showMsg("IMPORT ERROR"); }
+                    
+                    const localNotes = await dbAction("getAll");
+                    const merged = mergeNotesById(localNotes, importedNotes);
+                    
+                    for (const n of merged) { await dbAction("put", n); }
+                    notes = merged.sort((a,b) => b.id - a.id);
+                    await renderAll();
+                    window.showMsg(`增量导入完成：共 ${notes.length} 条回响`);
+                } catch (err) { window.showMsg("导入错误: " + err.message); }
             };
             reader.readAsText(file);
         };
 
         window.setVibe = function(mode, icon) {
             const widget = document.getElementById('observer-vibe-widget'), label = document.getElementById('vibe-text'), iconEl = document.getElementById('vibe-icon'), container = document.getElementById('vibe-container');
-            let config = { insight: { t: "COGNITIVE INSIGHT", bg: "linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%)" }, stagnant: { t: "ACTION STAGNANT", bg: "#fff9c4" }, tired: { t: "ENERGY DEFICIT", bg: "#f0f4f8" } };
+            let config = { 
+                insight: { t: "COGNITIVE INSIGHT", bg: "linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%)" }, 
+                stagnant: { t: "ACTION STAGNANT", bg: "#fff9c4" }, 
+                tired: { t: "ENERGY DEFICIT", bg: "#f0f4f8" } 
+            };
+            const current = config[mode] || config.insight;
             if (widget && label && iconEl && container) {
-                iconEl.innerText = icon; label.innerText = config[mode].t; container.style.background = config[mode].bg; widget.style.opacity = "1";
-                window.showMsg("VIBE SYNCED");
+                iconEl.innerText = icon; label.innerText = current.t; container.style.background = current.bg; widget.style.opacity = "1";
             }
         };
 
-        const noteEditor = document.getElementById('note-in');
-        if (noteEditor) {
-            noteEditor.addEventListener('input', (e) => {
-                const text = e.target.value;
-                const widget = document.getElementById('observer-vibe-widget'), icon = document.getElementById('vibe-icon'), label = document.getElementById('vibe-text'), container = document.getElementById('vibe-container');
-                if (!widget || !icon || !label || !container) return;
-                if (text.includes("郭德纲") || text.includes("相声")) { widget.style.opacity = "0"; return; }
-                if (text.includes("分清") || text.includes("区别") || text.includes("发现") || text.includes("原来")) {
-                    updateUI("🌱", "COGNITIVE INSIGHT", "linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%)");
-                } else if (text.includes("累") || text.includes("烦")) {
-                    updateUI("🌧️", "ENERGY DEFICIT", "#f0f4f8");
-                } else { widget.style.opacity = "0"; }
-                function updateUI(i, t, bg) { icon.innerText = i; label.innerText = t; container.style.background = bg; widget.style.opacity = "1"; }
-            });
-        }
+        /* --- 4. 统一文本分析调度中心 (防抖合并) --- */
+        const TextAnalyzer = {
+            timer: null,
+            init() {
+                const editor = document.getElementById('note-in');
+                if (!editor) return;
+                
+                let indicator = document.querySelector('.philosophy-emotion-indicator');
+                if(!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.className = 'philosophy-emotion-indicator emotion-serenity';
+                    indicator.innerHTML = '☁️';
+                    document.body.appendChild(indicator);
+                }
 
-        const PHILOSOPHY_EMOTIONS = {
-          clarity: { icon: '☀️', keywords: ['明白了', '懂了', '终于明白', '原来如此', '真相', '本质', '看清', '洞察', '领悟', '顿悟', '豁然开朗', '想通了', '理清了', '思路清晰', '分清了', '识别', '通透'] },
-          melancholy: { icon: '🌧️', keywords: ['沉重', '压抑', '窒息', '累', '疲惫', '无意义', '虚无', '孤独', '无助', '迷茫', '难受', '焦虑'] },
-          crisis: { icon: '⛈️', keywords: ['恨', '愤怒', '绝望', '崩溃', '完了', '没救', '想死', '毁灭', '撕裂'] },
-          awakening: { icon: '🌸', keywords: ['感悟', '发现', '珍惜', '感激', '生命力', '活力', '绽放', '美', '意识到', '感知'] },
-          serenity: { icon: '☁️', keywords: ['平静', '安静', '宁静', '祥和', '淡定', '从容', '看淡', '看开', '释怀', '顺其自然', '心安'] }
+                editor.addEventListener('input', (e) => {
+                    clearTimeout(this.timer);
+                    this.timer = setTimeout(() => this.analyze(e.target.value), 300);
+                });
+            },
+            analyze(text) {
+                if (!text) {
+                    const w = document.getElementById('observer-vibe-widget');
+                    if(w) w.style.opacity = "0";
+                    return;
+                }
+                // 1. 情绪分析与呼吸灯
+                this.updateEmotion(text);
+                // 2. 规则检测
+                this.checkRules(text);
+            },
+            updateEmotion(text) {
+                const EMOTIONS = {
+                  clarity: { icon: '☀️', keywords: ['明白了', '懂了', '终于明白', '原来如此', '真相', '本质', '看清', '洞察', '领悟', '顿悟', '豁然开朗', '想通了', '理清了', '思路清晰', '分清了', '识别', '通透'] },
+                  melancholy: { icon: '🌧️', keywords: ['沉重', '压抑', '窒息', '累', '疲惫', '无意义', '虚无', '孤独', '无助', '迷茫', '难受', '焦虑'] },
+                  crisis: { icon: '⛈️', keywords: ['恨', '愤怒', '绝望', '崩溃', '完了', '没救', '想死', '毁灭', '撕裂'] },
+                  awakening: { icon: '🌸', keywords: ['感悟', '发现', '珍惜', '感激', '生命力', '活力', '绽放', '美', '意识到', '感知'] },
+                  serenity: { icon: '☁️', keywords: ['平静', '安静', '宁静', '祥和', '淡定', '从容', '看淡', '看开', '释怀', '顺其自然', '心安'] }
+                };
+                const lower = text.toLowerCase();
+                let scores = {};
+                for (const [key, data] of Object.entries(EMOTIONS)) {
+                    let score = 0;
+                    data.keywords.forEach(kw => { if (lower.includes(kw)) score++; });
+                    scores[key] = score;
+                }
+                const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+                const indicator = document.querySelector('.philosophy-emotion-indicator');
+                if (indicator) {
+                    indicator.className = `philosophy-emotion-indicator emotion-${dominant}`;
+                    indicator.innerHTML = EMOTIONS[dominant].icon;
+                }
+
+                if (['melancholy', 'crisis'].includes(dominant) && scores[dominant] > 0) {
+                    if(!document.querySelector('.negative-emotion-alert')) {
+                        const alert = document.createElement('div');
+                        alert.className = 'negative-emotion-alert';
+                        alert.innerHTML = `<div><span>${EMOTIONS[dominant].icon}</span> <span>检测到情绪波动，需要聊聊吗？</span></div>
+                            <div style="margin-top:10px; text-align:right;">
+                              <button onclick="this.parentElement.parentElement.remove()" style="margin-right:10px; background:none; border:none; cursor:pointer; opacity:0.5;">暂不需要</button>
+                              <button onclick="triggerPhilosophyDialog()" style="background:#000; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">开启推演</button>
+                            </div>`;
+                        document.body.appendChild(alert);
+                    }
+                }
+            },
+            checkRules(text) {
+                const rules = [
+                    {"trigger":"分清了","action":"msg","value":"认知边界正在扩张，观察者已记录。"},
+                    {"trigger":"原来如此","action":"msg","value":"顿悟的瞬间，比记忆本身更珍贵。"},
+                    {"trigger":"本质","action":"vibe","value":"💎","mode":"insight"},
+                    {"trigger":"相声","action":"hide_vibe"},
+                    {"trigger":"郭德纲","action":"hide_vibe"},
+                    {"trigger":"拖延","action":"vibe","value":"⏳","mode":"stagnant"},
+                    {"trigger":"累","action":"vibe","value":"🌧️","mode":"tired"},
+                    {"trigger":"存在主义","action":"msg","value":"在无意义的荒原中，你此刻的记录就是唯一的意义。"}
+                ];
+                for (const r of rules) {
+                    if (text.includes(r.trigger)) {
+                        if (r.action === "msg") AlterAPI.showMsg(r.value);
+                        if (r.action === "vibe") window.setVibe(r.mode || 'insight', r.value);
+                        if (r.action === "hide_vibe") {
+                            const w = document.getElementById('observer-vibe-widget');
+                            if(w) w.style.opacity = "0";
+                        }
+                        break;
+                    }
+                }
+            }
         };
-
-        function analyzePhilosophyEmotion(text) {
-          if (!text) return { emotion: 'serenity', icon: '☁️' };
-          const lowerText = text.toLowerCase();
-          let scores = {};
-          for (const [key, data] of Object.entries(PHILOSOPHY_EMOTIONS)) {
-            let score = 0;
-            data.keywords.forEach(kw => { if (lowerText.includes(kw)) score++; });
-            scores[key] = score;
-          }
-          const dominant = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-          return { emotion: dominant, icon: PHILOSOPHY_EMOTIONS[dominant].icon };
-        }
-
-        function initPhilosophyEmotionSystem() {
-          let indicator = document.querySelector('.philosophy-emotion-indicator');
-          if(!indicator) {
-              indicator = document.createElement('div');
-              indicator.className = 'philosophy-emotion-indicator emotion-serenity';
-              indicator.innerHTML = '☁️';
-              document.body.appendChild(indicator);
-          }
-          
-          const editor = document.getElementById('note-in');
-          if (editor) {
-            editor.addEventListener('input', (e) => {
-              const res = analyzePhilosophyEmotion(e.target.value);
-              indicator.className = `philosophy-emotion-indicator emotion-${res.emotion}`;
-              indicator.innerHTML = res.icon;
-              
-              if(['melancholy', 'crisis'].includes(res.emotion)) {
-                  if(!document.querySelector('.negative-emotion-alert')) {
-                      const alert = document.createElement('div');
-                      alert.className = 'negative-emotion-alert';
-                      alert.innerHTML = `<div><span>${res.icon}</span> <span>检测到情绪波动，需要聊聊吗？</span></div>
-                        <div style="margin-top:10px; text-align:right;">
-                          <button onclick="this.parentElement.parentElement.remove()" style="margin-right:10px; background:none; border:none; cursor:pointer; opacity:0.5;">暂不需要</button>
-                          <button onclick="triggerPhilosophyDialog()" style="background:#000; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">开启推演</button>
-                        </div>`;
-                      document.body.appendChild(alert);
-                  }
-              }
-            });
-          }
-        }
 
         function triggerPhilosophyDialog() {
             const panel = document.getElementById('ai-panel');
@@ -1650,45 +1776,16 @@ const SyncEngine = {
             window.showMsg("已进入他我推演环境");
         }
 
-        const AlterRuleEngine = {
-            // 规则内置，不再依赖 raw.githubusercontent.com（国内常拉取失败导致观察者静默失效）
-            LOCAL_RULES: [{"trigger":"分清了","action":"msg","value":"认知边界正在扩张，观察者已记录。"},{"trigger":"原来如此","action":"msg","value":"顿悟的瞬间，比记忆本身更珍贵。"},{"trigger":"本质","action":"vibe","value":"💎"},{"trigger":"相声","action":"msg","value":"探测到日常享乐，系统保持静默。"},{"trigger":"郭德纲","action":"msg","value":"屏蔽平庸记录，保持思维纯净。"},{"trigger":"减肥","action":"msg","value":"身体是灵魂的圣殿，请温柔对待。"},{"trigger":"焦虑","action":"msg","value":"觉察到焦虑，试着深呼吸，把这种感觉写下来。"},{"trigger":"意义","action":"vibe","value":"🔮"},{"trigger":"想通了","action":"msg","value":"逻辑闭环已达成，思想完成了一次跳跃。"},{"trigger":"拖延","action":"vibe","value":"⏳"},{"trigger":"无聊","action":"msg","value":"无聊是伟大的留白，在这里，日常才显现出它的形状。"},{"trigger":"无辜","action":"vibe","value":"🛡️"},{"trigger":"存在主义","action":"msg","value":"在无意义的荒原中，你此刻的记录就是唯一的意义。"},{"trigger":"村上春树","action":"vibe","value":"🎷"},{"trigger":"乌鸦","action":"vibe","value":"🐦‍⬛"},{"trigger":"哲学","action":"vibe","value":"🏛️"}],
-            rules: [],
-            // 云端规则作为可选增强：拉到就覆盖本地，拉不到用本地
-            CLOUD_RULES_URL: "https://raw.githubusercontent.com/kenjcha-wq/Alter-Note/main/rules.json",
-
-            init: async function() {
-                this.rules = this.LOCAL_RULES;
-                try {
-                    const controller = new AbortController();
-                    const timer = setTimeout(() => controller.abort(), 3000);
-                    const response = await fetch(this.CLOUD_RULES_URL, { signal: controller.signal });
-                    clearTimeout(timer);
-                    if (response.ok) {
-                        const text = await response.text();
-                        const parsed = JSON.parse(text);
-                        if (Array.isArray(parsed) && parsed.length) { this.rules = parsed; console.log("✅ 规则已同步云端"); }
-                    }
-                } catch (e) { console.log("ℹ️ 使用内置规则"); }
-
-                const editor = document.getElementById('note-in');
-                if (editor) editor.addEventListener('input', (e) => this.check(e.target.value));
-            },
-
-            check: function(text) {
-                if (!text || text.length < 2) return;
-                this.rules.forEach(rule => {
-                    if (text.includes(rule.trigger)) this.execute(rule);
-                });
-            },
-
-            execute: function(rule) {
-                if(rule.action === "msg") AlterAPI.showMsg(rule.value);
-                if(rule.action === "vibe" && typeof window.setVibe === 'function') window.setVibe('insight', rule.value);
-            }
+        window.setTypo = function(type, val) {
+            if (type === 'weight') document.documentElement.style.setProperty('--text-weight', val);
+            if (type === 'line') document.documentElement.style.setProperty('--line-height', val);
         };
 
-        window.addEventListener('load', () => { init(); const m0 = document.getElementById('main'); if (m0) m0.classList.add('view-home'); });
+        window.addEventListener('load', () => { 
+            init(); 
+            const m0 = document.getElementById('main'); 
+            if (m0) m0.classList.add('view-home'); 
+        });
     </script>
 </body>
 </html>
