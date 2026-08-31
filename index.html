@@ -125,7 +125,7 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 6px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局与无晃动稳定侧栏 --- */
+        /* --- 核心布局与稳定侧栏 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-sans); font-weight: 200; font-size: 32px; margin-bottom: 8px; letter-spacing: 6px; color: #fff; text-transform: uppercase; }
@@ -197,7 +197,7 @@
             flex: 1; 
             height: 100%; 
             overflow-y: auto; 
-            padding: 40px 6%; 
+            padding: 30px 5%; 
             position: relative; 
             max-width: 1100px; 
             margin: 0 auto; 
@@ -206,9 +206,10 @@
             flex-direction: column; 
         }
 
-        /* 首页专用壁纸背景 */
+        /* 首页固定：不上下滑动 */
         main.view-home { 
-            overflow-y: auto; 
+            overflow: hidden !important; 
+            height: 100% !important;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -216,9 +217,9 @@
 
         .app-title-main {
             font-family: var(--font-sans) !important;
-            font-size: 20px !important;
+            font-size: 18px !important;
             font-weight: 300 !important;
-            letter-spacing: 5px !important;
+            letter-spacing: 4px !important;
             color: var(--text-main) !important;
             opacity: 0.5;
             text-transform: uppercase;
@@ -235,40 +236,44 @@
             opacity: 0.8;
         }
 
-        /* 首页时间/节气胶囊 */
+        /* 一体化时间与人生倒计时顶栏 */
         .home-epoch-bar {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-family: var(--font-sans);
             font-size: 10px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             color: var(--text-main);
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 4px 10px;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 4px 12px;
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             margin-bottom: 6px;
             width: fit-content;
         }
         .dark-mode .home-epoch-bar {
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.55);
             border-color: rgba(255, 255, 255, 0.1);
         }
-        .solar-term-badge {
-            font-family: var(--font-main);
-            font-size: 8px;
-            padding: 1px 5px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.06);
-            letter-spacing: 1px;
+        .life-inline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 9px;
+            opacity: 0.85;
+            border-left: 1px solid rgba(0,0,0,0.1);
+            padding-left: 10px;
+        }
+        .dark-mode .life-inline-badge {
+            border-left-color: rgba(255,255,255,0.15);
         }
 
-        header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 25px; width: 100%; flex-shrink: 0; }
+        header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; width: 100%; flex-shrink: 0; }
         .version-mark { margin-top: 35px; text-align: center; font-size: 8px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.35; text-transform: uppercase; }
-        .brand-mark { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.55; margin-top: 4px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .brand-mark { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); opacity: 0.55; margin-top: 3px; font-family: var(--font-sans); text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         #streak-mark { opacity: 0.85; }
         #streak-mark::before { content: ''; display: inline-block; width: 3px; height: 3px; background: var(--accent); border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
 
@@ -284,54 +289,6 @@
 
         .minimal-select { background: transparent; border: 1px solid var(--border); border-radius: 20px; font-size: 9px; padding: 4px 8px; color: var(--text-dim); cursor: pointer; text-transform: uppercase; }
 
-        /* 人生倒计时专用毛玻璃卡片 */
-        .life-countdown-card {
-            padding: 16px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.5) !important;
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .dark-mode .life-countdown-card {
-            border-color: rgba(255, 255, 255, 0.08);
-            background: rgba(18, 18, 18, 0.55) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        .life-metrics-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-        .life-num-big {
-            font-size: 18px;
-            font-weight: 300;
-            font-family: var(--font-sans);
-            letter-spacing: 1px;
-        }
-        .life-progress-track {
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 0, 0, 0.06);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .dark-mode .life-progress-track {
-            background: rgba(255, 255, 255, 0.08);
-        }
-        .life-progress-bar {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 2px;
-            width: 0%;
-        }
-
-        /* 笔记栅格流：告别拥挤与晃动 */
         .grid { 
             column-count: 3; 
             column-gap: 30px; 
@@ -444,11 +401,32 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
-        .home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
-        @media (max-width: 900px) { .home-grid { grid-template-columns: 1fr; } }
+        /* 首页三卡片高度充满视口，杜绝溢出滚动 */
+        #view-home-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .home-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, minmax(0, 1fr)); 
+            gap: 16px; 
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+        }
+        @media (max-width: 900px) { 
+            .home-grid { 
+                grid-template-columns: 1fr; 
+                grid-template-rows: repeat(3, minmax(0, 1fr));
+            } 
+        }
         
         .quick-panel { 
-            padding: 20px 22px; 
+            padding: 18px 20px; 
             border: 1px solid rgba(255, 255, 255, 0.45); 
             border-radius: 10px; 
             background: rgba(255, 255, 255, 0.5) !important; 
@@ -457,7 +435,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             display: flex; 
             flex-direction: column; 
-            min-height: 200px; 
+            height: 100%;
+            min-height: 0;
             overflow: hidden; 
         }
         .dark-mode .quick-panel {
@@ -466,36 +445,36 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
         }
 
-        .quick-body { flex: 1 1 auto; min-height: 50px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .quick-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        .quick-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+        .quick-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; flex-shrink: 0; }
         .quick-head h4 { font-size: 9px; letter-spacing: 1.5px; color: var(--text-dim); margin: 0; }
         .quick-en { font-size: 7px; letter-spacing: 1px; opacity: 0.4; text-transform: uppercase; }
         .quick-head-right { display: flex; align-items: center; gap: 8px; }
         .quick-plus { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); background: transparent; color: var(--text-dim); font-size: 11px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
         .quick-plus:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-        .quick-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 11px; line-height: 1.5; }
+        .quick-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 11px; line-height: 1.4; }
         .dark-mode .quick-item { border-bottom-color: rgba(255,255,255,0.06); }
         .quick-item:last-child { border-bottom: none; }
-        .quick-check { width: 10px; height: 10px; border: 1px solid var(--text-dim); border-radius: 50%; cursor: pointer; flex-shrink: 0; margin-top: 4px; }
+        .quick-check { width: 10px; height: 10px; border: 1px solid var(--text-dim); border-radius: 50%; cursor: pointer; flex-shrink: 0; margin-top: 3px; }
         .quick-item.done .quick-check { background: var(--accent); border-color: var(--accent); }
         .quick-item.done .quick-text { text-decoration: line-through; opacity: 0.35; }
         .quick-text { flex: 1; word-break: break-word; }
-        .quick-date { font-size: 8px; letter-spacing: 0.5px; color: var(--text-dim); flex-shrink: 0; margin-top: 3px; white-space: nowrap; }
+        .quick-date { font-size: 8px; letter-spacing: 0.5px; color: var(--text-dim); flex-shrink: 0; margin-top: 2px; white-space: nowrap; }
         .quick-date.overdue { color: #b4530f; opacity: 1; }
         .quick-date.today { color: var(--accent); font-weight: 600; }
-        .quick-kill { font-size: 11px; color: var(--text-dim); cursor: pointer; opacity: 0.3; flex-shrink: 0; margin-top: 1px; }
+        .quick-kill { font-size: 11px; color: var(--text-dim); cursor: pointer; opacity: 0.3; flex-shrink: 0; }
         .quick-kill:hover { opacity: 1 !important; color: var(--accent); }
         .quick-empty { font-size: 9px; opacity: 0.3; letter-spacing: 1px; padding: 10px 0; }
         .recall-item { cursor: pointer; }
-        .recall-meta { font-size: 8px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
-        .recall-text { font-family: var(--font-main); font-size: 12px; line-height: 1.8; font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 140px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%); mask-image: linear-gradient(to bottom, black 65%, transparent 100%); }
+        .recall-meta { font-size: 8px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px; }
+        .recall-text { font-family: var(--font-main); font-size: 12px; line-height: 1.7; font-weight: var(--text-weight); color: var(--text-main); white-space: pre-wrap; max-height: 120px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%); mask-image: linear-gradient(to bottom, black 65%, transparent 100%); }
         .recall-item:hover .recall-text { color: var(--accent); }
-        .quick-add { display: flex; gap: 5px; margin-top: auto; padding-top: 12px; }
-        .quick-add input { background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.15); font-size: 10px; padding: 4px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
+        .quick-add { display: flex; gap: 5px; margin-top: auto; padding-top: 8px; flex-shrink: 0; }
+        .quick-add input { background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.15); font-size: 10px; padding: 3px 0; color: var(--text-main); outline: none; font-family: var(--font-sans); }
         .quick-add input.q-text { flex: 1; min-width: 0; }
         .quick-add input[type=date] { width: 95px; flex-shrink: 0; font-size: 9px; }
-        .quick-add button { background: var(--accent); color: var(--bg); border: none; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 12px; line-height: 1; flex-shrink: 0; }
+        .quick-add button { background: var(--accent); color: var(--bg); border: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; font-size: 11px; line-height: 1; flex-shrink: 0; }
 
         .mood-dot {
             width: 10px; height: 10px; border-radius: 50%; 
@@ -592,9 +571,14 @@
     <main id="main">
         <header>
             <div>
+                <!-- 首页日期时间与人生余量并入一行 -->
                 <div class="home-epoch-bar" id="epoch-bar" style="display:none;">
-                    <span id="epoch-datetime">2026.08.30 SUN 19:51</span>
-                    <span class="solar-term-badge" id="epoch-term">处暑</span>
+                    <span id="epoch-datetime">2026.08.30 19:51</span>
+                    <span class="life-inline-badge">
+                        <span style="opacity:0.6;">余</span>
+                        <span id="life-inline-days" style="font-weight:600;">--</span>天
+                        <span id="life-inline-percent" style="opacity:0.6;">(--%)</span>
+                    </span>
                 </div>
                 <h1 id="view-title" class="app-title-main">ALTER</h1>
                 <p id="view-subtitle" class="view-subtitle-meta">他我笔记</p>
@@ -612,36 +596,12 @@
                     <input type="text" id="searchInput" placeholder="Search..." oninput="handleSearch()">
                 </div>
                 <div class="search-trigger" onclick="toggleSearch()" style="cursor:pointer;"><i data-lucide="search" size="14"></i></div>
-                <button id="synth-btn" class="btn-black" style="display:none; padding:5px 10px; font-size:7px;" onclick="window.synthesize()">SYNTHESIZE</button>
+                <button id="synth-btn" class="btn-black" style="display:none; padding:5px 10px; font-size:7px;" onclick="window.synthesize()">重构文章</button>
             </div>
         </header>
 
-        <!-- 1. 首页卡片视图 (集成人生倒计时) -->
+        <!-- 1. 首页卡片视图 (无外部滚动条，贴合屏幕) -->
         <div id="view-home-container" class="view-section active-view">
-            <!-- 人生倒计时卡片 -->
-            <div class="life-countdown-card" id="life-card">
-                <div class="life-metrics-row">
-                    <div>
-                        <span style="font-size: 8px; letter-spacing: 1.5px; opacity: 0.5; text-transform: uppercase;">MEMENTO MORI / 人生余量</span>
-                        <div style="display:flex; align-items:baseline; gap:6px; margin-top:2px;">
-                            <span class="life-num-big" id="life-days-left">--</span>
-                            <span style="font-size: 9px; opacity: 0.6;">天剩余</span>
-                        </div>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="font-size: 8px; opacity: 0.5; letter-spacing: 1px;">PROGRESS</span>
-                        <div style="font-size: 13px; font-weight: 300;" id="life-percent">0.00%</div>
-                    </div>
-                </div>
-                <div class="life-progress-track">
-                    <div class="life-progress-bar" id="life-progress-bar"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:7px; opacity:0.4; letter-spacing:1px;">
-                    <span id="life-birth-label">BORN: --</span>
-                    <span id="life-expect-label">HORIZON: -- YRS</span>
-                </div>
-            </div>
-
             <div class="home-grid">
                 <div class="quick-panel">
                     <div class="quick-head"><h4>每日回想</h4><span class="quick-en">DAILY RECALL</span></div>
@@ -675,20 +635,20 @@
         <!-- 3. 心灵回想平铺视图 -->
         <div id="view-reflect-container" class="view-section">
             <div class="section-block">
-                <h3>INQUIRY MODES / 模式感应</h3>
+                <h3>模式感应</h3>
                 <div class="ctrl-row mobile-stack">
                     <button onclick="window.runInquiry('phi')" style="background:var(--accent); color:var(--bg); border:none; padding:24px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
-                        <h3 style="color:var(--bg); border:none; padding:0; font-size:12px; letter-spacing:1px; text-transform:uppercase;">PHILOSOPHY / 哲思模式</h3>
+                        <h3 style="color:var(--bg); border:none; padding:0; font-size:12px; letter-spacing:1px;">哲思模式 (Philosophy)</h3>
                         <p style="margin-top:6px; font-size:10px; opacity:0.8;">本体论视角解析文字的存在状态</p>
                     </button>
                     <button onclick="window.runInquiry('mind')" style="background:var(--accent); color:var(--bg); border:none; padding:24px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
-                        <h3 style="color:var(--bg); border:none; padding:0; font-size:12px; letter-spacing:1px; text-transform:uppercase;">PSYCHOLOGY / 心灵模式</h3>
+                        <h3 style="color:var(--bg); border:none; padding:0; font-size:12px; letter-spacing:1px;">心灵模式 (Psychology)</h3>
                         <p style="margin-top:6px; font-size:10px; opacity:0.8;">挖掘日常独白中的潜意识阴影</p>
                     </button>
                 </div>
                 <div class="ctrl-row mobile-stack">
                     <button onclick="window.runInquiry('week')" style="background:transparent; color:var(--text-main); border:1px solid var(--border); padding:20px 24px; text-align:left; cursor:pointer; flex:1; border-radius:2px;">
-                        <h3 style="color:var(--text-main); border:none; padding:0; font-size:12px; letter-spacing:1px; text-transform:uppercase;">WEEKLY ECHO / 本周回声</h3>
+                        <h3 style="color:var(--text-main); border:none; padding:0; font-size:12px; letter-spacing:1px;">本周回声 (Weekly Echo)</h3>
                         <p style="margin-top:6px; font-size:10px; opacity:0.55;">以他我第一人称，回看这七天的你</p>
                     </button>
                 </div>
@@ -699,60 +659,60 @@
         <!-- 4. 实验室平铺视图 -->
         <div id="view-lab-container" class="view-section">
             <div class="tabs-nav">
-                <div class="tab-btn active" onclick="tabTo('lab-style', this)">STYLE / 外观调节</div>
-                <div class="tab-btn" onclick="tabTo('tab-day', this)">ARCHIVE / 日期回看</div>
-                <div class="tab-btn" onclick="tabTo('tab-market', this)">PLUGINS / 扩展市场</div>
-                <div class="tab-btn" onclick="tabTo('tab-docs', this)">DEV RULES / 规则</div>
+                <div class="tab-btn active" onclick="tabTo('lab-style', this)">外观调节</div>
+                <div class="tab-btn" onclick="tabTo('tab-day', this)">日期回看</div>
+                <div class="tab-btn" onclick="tabTo('tab-market', this)">扩展市场</div>
+                <div class="tab-btn" onclick="tabTo('tab-docs', this)">开发者规则</div>
             </div>
             <div id="lab-style" class="tab-pane active">
                 <div class="section-block">
-                    <h3>TYPOGRAPHY / 排版微调</h3>
+                    <h3>排版微调</h3>
                     <div class="ctrl-row"><span class="ctrl-label">正文字重</span><div class="ctrl-input-wrap"><input type="range" min="100" max="700" step="100" value="300" oninput="setTypo('weight', this.value)" style="width:140px;"></div></div>
                     <div class="ctrl-row"><span class="ctrl-label">行间间距</span><div class="ctrl-input-wrap"><input type="range" min="1.2" max="2.6" step="0.1" value="1.8" oninput="setTypo('line', this.value)" style="width:140px;"></div></div>
                 </div>
                 <div class="section-block">
-                    <h3>MIND MAP / 意识地图</h3>
-                    <button class="btn-black" onclick="window.drawMap()">REMAP CONSCIOUSNESS</button>
+                    <h3>意识地图</h3>
+                    <button class="btn-black" onclick="window.drawMap()">重绘意识地图</button>
                     <div id="map-box" style="width:100%; height:280px; margin-top:16px; border:1px solid var(--border); position:relative; overflow:hidden;"></div>
                 </div>
             </div>
             <div id="tab-day" class="tab-pane">
                 <div class="section-block">
-                    <h3>CALENDAR ECHO / 按日期回看</h3>
+                    <h3>按日期回看</h3>
                     <div class="day-pick">
                         <input type="date" id="lab-date-pick" onchange="window.loadDayNotes()">
-                        <button class="btn-black" style="padding:8px 16px; font-size:8px;" onclick="window.loadDayNotes()">VIEW</button>
+                        <button class="btn-black" style="padding:8px 16px; font-size:8px;" onclick="window.loadDayNotes()">查看</button>
                     </div>
                     <div id="lab-day-list" style="margin-top:20px;"></div>
                 </div>
             </div>
             <div id="tab-market" class="tab-pane">
                 <div class="section-block">
-                    <h3>DYNAMIC EXTENSIONS / 功能扩展</h3>
+                    <h3>动态功能扩展</h3>
                     <textarea id="plugin-code-in" class="input-line" style="height:130px; font-family:monospace; font-size:10px; padding:12px; background:rgba(0,0,0,0.02); resize:none;" placeholder="// 粘贴 JS 代码..."></textarea>
-                    <button class="btn-black" style="width:100%; margin-top:10px;" onclick="installPluginFromInput()">LOAD PLUGIN</button>
+                    <button class="btn-black" style="width:100%; margin-top:10px;" onclick="installPluginFromInput()">载入功能</button>
                 </div>
                 <div class="section-block">
-                    <h3>ACTIVATED / 已激活功能</h3>
+                    <h3>已激活功能</h3>
                     <div id="plugin-list-view"></div>
                 </div>
             </div>
             <div id="tab-docs" class="tab-pane">
                 <div class="section-block">
-                    <h3>DEVELOPER SPEC / 开发者规则</h3>
+                    <h3>开发者规则</h3>
                     <p style="font-size:11px; margin-bottom:8px;">通过 <code>AlterPlugins.register({ name, author, run })</code> 挂载功能。</p>
                     <p style="font-size:9px; opacity:0.5; margin-bottom:12px;">支持持久化载入。代码将安全存储于本地。</p>
                     <pre class="pre-docs" style="background:rgba(0,0,0,0.05); padding:12px; font-size:9px; overflow-x:auto;">
 const data = AlterAPI.getNotes();
-AlterAPI.showMsg("SYNCING...");</pre>
+AlterAPI.showMsg("同步中...");</pre>
                 </div>
             </div>
         </div>
 
-        <!-- 5. 个人设置平铺视图 (包含人生倒计时设定) -->
+        <!-- 5. 个人设置平铺视图 -->
         <div id="view-settings-container" class="view-section">
             <div class="section-block">
-                <h3>LIFE HORIZON / 人生倒计时配置</h3>
+                <h3>人生倒计时配置</h3>
                 <div class="ctrl-row">
                     <span class="ctrl-label">出生日期</span>
                     <div class="ctrl-input-wrap"><input type="date" id="life-birth-in" class="input-line" style="margin:0; text-align:right;" onchange="window.saveLifeHorizon()"></div>
@@ -764,14 +724,14 @@ AlterAPI.showMsg("SYNCING...");</pre>
             </div>
 
             <div class="section-block">
-                <h3>HOME WALLPAPER / 首页空间墙纸 (仅主页生效)</h3>
+                <h3>首页空间墙纸 (仅主页生效)</h3>
                 <div class="ctrl-row">
                     <span class="ctrl-label">墙纸预设</span>
                     <div class="ctrl-input-wrap" style="gap:5px; display:flex; flex-wrap:wrap;">
-                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('default')">DEFAULT</button>
-                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('kraft')">KRAFT PAPER</button>
-                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('dark')">DEEP DARK</button>
-                        <button class="paper-opt-btn" onclick="document.getElementById('custom-bg-file').click()">UPLOAD</button>
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('default')">默认留白</button>
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('kraft')">素墨纸纹</button>
+                        <button class="paper-opt-btn" onclick="window.setHomeWallpaper('dark')">深邃暗夜</button>
+                        <button class="paper-opt-btn" onclick="document.getElementById('custom-bg-file').click()">自定义上传</button>
                         <input type="file" id="custom-bg-file" hidden accept="image/*" onchange="window.handleCustomWallpaper(event)">
                     </div>
                 </div>
@@ -782,14 +742,14 @@ AlterAPI.showMsg("SYNCING...");</pre>
             </div>
 
             <div class="section-block">
-                <h3>PROFILE / 基础信息</h3>
+                <h3>基础信息</h3>
                 <div class="ctrl-row">
                     <span class="ctrl-label">登录名修改</span>
                     <div class="ctrl-input-wrap"><input type="text" id="rename-user-in" class="input-line" style="margin:0; text-align:right;" onchange="window.renameLogin()"></div>
                 </div>
             </div>
             <div class="section-block">
-                <h3>CLOUD SYNC / 坚果云 WebDAV 同步</h3>
+                <h3>坚果云 / WebDAV 云端同步</h3>
                 <p style="font-size:9px; color:var(--text-dim); margin-bottom:12px; line-height:1.6;">
                     坚果云配置路径：账号信息 ➔ 安全设置 ➔ 第三方应用管理 ➔ 添加应用密码。<br>
                     服务器地址通常填：<code>https://dav.jianguoyun.com/dav/</code>
@@ -799,21 +759,21 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 <div class="ctrl-row"><span class="ctrl-label">应用授权密码</span><div class="ctrl-input-wrap"><input type="password" id="webdav-pass" class="input-line" style="margin:0; text-align:right;" placeholder="专属应用密码"></div></div>
                 <div class="ctrl-row"><span class="ctrl-label">自动增量同步</span><div class="ctrl-input-wrap"><input type="checkbox" id="webdav-auto" onchange="window.saveWebDAVConfig()"></div></div>
                 <div style="display:flex; gap:8px; margin-top:12px;">
-                    <button class="btn-black" style="flex:1;" onclick="window.saveWebDAVConfig(true)">SAVE & SYNC</button>
-                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.syncWebDAV()">MANUAL SYNC</button>
+                    <button class="btn-black" style="flex:1;" onclick="window.saveWebDAVConfig(true)">保存并立即同步</button>
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.syncWebDAV()">手动同步</button>
                 </div>
             </div>
             <div class="section-block">
-                <h3>PERSONA SLOTS / 分身状态 (固定)</h3>
+                <h3>分身状态 (固定)</h3>
                 <div id="persona-list-fixed"></div>
             </div>
             <div class="section-block">
-                <h3>SECURITY / 安全机制</h3>
+                <h3>安全机制</h3>
                 <div class="ctrl-row"><span class="ctrl-label">灵感碎片密码</span><div class="ctrl-input-wrap"><input type="password" id="pass-vault" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
                 <div class="ctrl-row"><span class="ctrl-label">笔记本访问 PIN</span><div class="ctrl-input-wrap"><input type="password" id="pass-note" class="input-line" style="margin:0; text-align:right;" onchange="window.saveSec()"></div></div>
             </div>
-            <button class="btn-black" style="width:100%;" onclick="window.dlData()">EXPORT BACKUP (.JSON)</button>
-            <button class="btn-black" style="width:100%; margin-top:8px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">IMPORT BACKUP (.JSON)</button>
+            <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出全量备份 (.JSON)</button>
+            <button class="btn-black" style="width:100%; margin-top:8px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">增量导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
             <p class="version-mark" id="version-mark">ALTER · 他我笔记 v2.6</p>
         </div>
@@ -823,11 +783,11 @@ AlterAPI.showMsg("SYNCING...");</pre>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div id="p-sel-box" style="display:flex; gap:10px;"></div>
                 <div class="paper-selector-wrap" style="margin:0;">
-                    <button class="paper-opt-btn active" onclick="window.changePaperPattern('none')">PLAIN</button>
-                    <button class="paper-opt-btn" onclick="window.changePaperPattern('grid')">GRID</button>
-                    <button class="paper-opt-btn" onclick="window.changePaperPattern('dots')">DOTS</button>
-                    <button class="paper-opt-btn" onclick="window.changePaperPattern('lined')">LINED</button>
-                    <button class="paper-opt-btn" onclick="window.changePaperPattern('kraft')">KRAFT</button>
+                    <button class="paper-opt-btn active" onclick="window.changePaperPattern('none')">白底</button>
+                    <button class="paper-opt-btn" onclick="window.changePaperPattern('grid')">方格</button>
+                    <button class="paper-opt-btn" onclick="window.changePaperPattern('dots')">点阵</button>
+                    <button class="paper-opt-btn" onclick="window.changePaperPattern('lined')">横线</button>
+                    <button class="paper-opt-btn" onclick="window.changePaperPattern('kraft')">牛皮纸</button>
                 </div>
             </div>
             <div id="mood-picker" style="display:flex; gap:6px; margin-bottom:12px; opacity:0.6;">
@@ -848,8 +808,8 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     <i data-lucide="shield" size="14" id="vaultToggle" style="cursor:pointer; color:var(--text-dim)" onclick="window.toggleVault()"></i>
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main); padding:8px 16px;" onclick="window.switchView('timeline')">CANCEL</button>
-                    <button class="btn-black" style="padding:8px 16px;" onclick="window.save()">SEAL ECHO / 封存</button>
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main); padding:8px 16px;" onclick="window.switchView('timeline')">取消</button>
+                    <button class="btn-black" style="padding:8px 16px;" onclick="window.save()">封存回响</button>
                 </div>
             </div>
         </div>
@@ -857,7 +817,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
         <!-- 7. 阅读详情平铺视图 -->
         <div id="view-reader-container" class="view-section">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <button class="btn-black" style="padding:5px 12px; font-size:7px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.switchView('timeline')">← BACK</button>
+                <button class="btn-black" style="padding:5px 12px; font-size:7px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.switchView('timeline')">← 返回</button>
             </div>
             <div id="reader-target" style="line-height: 2.2; padding: 12px; border-radius: 4px;"></div>
         </div>
@@ -868,59 +828,30 @@ AlterAPI.showMsg("SYNCING...");</pre>
         <video id="v-stream" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
         <div style="position:absolute; bottom:50px; left:50%; transform:translateX(-50%); text-align:center; z-index:10006;">
             <div onclick="window.snap()" style="width:60px; height:60px; border:3px solid #fff; border-radius:50%; margin:0 auto; cursor:pointer; display:flex; align-items:center; justify-content:center;"><div style="width:44px; height:44px; background:#fff; border-radius:50%;"></div></div>
-            <p onclick="window.camOff()" style="color:#fff; margin-top:16px; font-size:9px; letter-spacing:2px; cursor:pointer; opacity:0.6;">CANCEL</p>
+            <p onclick="window.camOff()" style="color:#fff; margin-top:16px; font-size:9px; letter-spacing:2px; cursor:pointer; opacity:0.6;">取消</p>
         </div>
         <canvas id="v-canvas" style="display:none;"></canvas>
     </div>
 
     <script id="alter-core-script">
-        /* --- 0. 基础全局工具与二十四节气 --- */
+        /* --- 0. 基础全局工具 --- */
         if (localStorage.getItem('alter_theme') === 'dark') document.body.classList.add('dark-mode');
-
-        function getSolarTerm(date) {
-            const solarTermInfo = [
-                0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 
-                173149, 195551, 218072, 240693, 263343, 285989, 308563, 
-                331033, 353350, 375494, 397447, 419210, 440795, 462224, 483532, 504758
-            ];
-            const solarTermNames = [
-                "小寒", "大寒", "立春", "雨水", "惊蛰", "春分",
-                "清明", "谷雨", "立夏", "小满", "芒种", "夏至",
-                "小暑", "大暑", "立秋", "处暑", "白露", "秋分",
-                "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"
-            ];
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            const day = date.getDate();
-            
-            for (let i = 0; i < 24; i++) {
-                const termDate = new Date((31556925974.7 * (year - 1900) + solarTermInfo[i] * 60000) + Date.UTC(1900, 0, 6, 2, 5));
-                if (termDate.getMonth() === month && Math.abs(termDate.getDate() - day) <= 7) {
-                    return solarTermNames[i];
-                }
-            }
-            const defaultIndex = month * 2 + (day > 15 ? 1 : 0);
-            return solarTermNames[defaultIndex % 24];
-        }
 
         function updateEpochClock() {
             const d = new Date();
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
-            const weeks = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-            const week = weeks[d.getDay()];
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
 
-            const dateStr = `${year}.${month}.${day} ${week} ${hours}:${minutes}`;
+            const dateStr = `${year}.${month}.${day} ${hours}:${minutes}`;
             const dtEl = document.getElementById('epoch-datetime');
-            const termEl = document.getElementById('epoch-term');
             if (dtEl) dtEl.innerText = dateStr;
-            if (termEl) termEl.innerText = getSolarTerm(d);
+            renderLifeCountdown();
         }
 
-        /* --- 人生倒计时计算核心 --- */
+        /* --- 人生倒计时计算核心 (单行集成) --- */
         function renderLifeCountdown() {
             const birthStr = localStorage.getItem('alt_life_birth') || "1984-01-01";
             const expectYears = parseInt(localStorage.getItem('alt_life_expect') || "80", 10);
@@ -934,19 +865,13 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const leftSpan = Math.max(0, endDate.getTime() - now.getTime());
 
             const daysLeft = Math.floor(leftSpan / 86400000);
-            const percent = Math.min(100, Math.max(0, (livedSpan / totalSpan) * 100)).toFixed(2);
+            const percent = Math.min(100, Math.max(0, (livedSpan / totalSpan) * 100)).toFixed(1);
 
-            const daysLeftEl = document.getElementById('life-days-left');
-            const percentEl = document.getElementById('life-percent');
-            const barEl = document.getElementById('life-progress-bar');
-            const birthLabel = document.getElementById('life-birth-label');
-            const expectLabel = document.getElementById('life-expect-label');
+            const daysEl = document.getElementById('life-inline-days');
+            const percentEl = document.getElementById('life-inline-percent');
 
-            if (daysLeftEl) daysLeftEl.innerText = daysLeft.toLocaleString();
-            if (percentEl) percentEl.innerText = `${percent}%`;
-            if (barEl) barEl.style.width = `${percent}%`;
-            if (birthLabel) birthLabel.innerText = `BORN: ${birthStr}`;
-            if (expectLabel) expectLabel.innerText = `HORIZON: ${expectYears} YRS`;
+            if (daysEl) daysEl.innerText = daysLeft.toLocaleString();
+            if (percentEl) percentEl.innerText = `(${percent}%)`;
         }
 
         window.saveLifeHorizon = function() {
@@ -955,7 +880,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             if (b && b.value) localStorage.setItem('alt_life_birth', b.value);
             if (e && e.value) localStorage.setItem('alt_life_expect', e.value);
             renderLifeCountdown();
-            window.showMsg("HORIZON SAVED");
+            window.showMsg("人生余量配置已保存");
         };
 
         window.toggleSidebar = function(expand = null) {
@@ -978,7 +903,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             else localStorage.setItem('alt_home_wallpaper', typeOrUrl);
 
             if (homeMain) homeMain.style.backgroundImage = bgVal;
-            window.showMsg("WALLPAPER UPDATED");
+            window.showMsg("首页墙纸已更新");
         };
 
         window.handleCustomWallpaper = function(e) {
@@ -1011,7 +936,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const isDark = document.body.classList.toggle('dark-mode');
             localStorage.setItem('alter_theme', isDark ? 'dark' : 'light');
             window.updateThemeIcon(isDark);
-            window.showMsg(isDark ? 'NIGHTFALL' : 'DAYBREAK');
+            window.showMsg(isDark ? '夜幕已降临' : '回到白昼');
         };
         window.updateThemeIcon(document.body.classList.contains('dark-mode'));
         
@@ -1081,13 +1006,13 @@ AlterAPI.showMsg("SYNCING...");</pre>
             async sync() {
                 const cfg = this.getConfig();
                 if (!cfg.url || !cfg.user || !cfg.pass) {
-                    window.showMsg("PLEASE CONFIGURE WEBDAV");
+                    window.showMsg("请先在个人中心配置 WebDAV 信息");
                     return;
                 }
-                window.showMsg("SYNCING WITH CLOUD...");
+                window.showMsg("正在与云端对齐...");
                 try {
                     const remoteNotes = await this.pull();
-                    if (remoteNotes === null) throw new Error("FETCH FAILED");
+                    if (remoteNotes === null) throw new Error("获取失败");
                     
                     const localNotes = await dbAction("getAll");
                     const merged = mergeNotesById(localNotes, remoteNotes);
@@ -1099,9 +1024,9 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     await this.push(notes);
                     
                     await renderAll();
-                    window.showMsg("CLOUD SYNC COMPLETE");
+                    window.showMsg("云端同步完成");
                 } catch (e) {
-                    window.showMsg(`SYNC ERROR: ${e.message}`);
+                    window.showMsg(`同步失败: ${e.message}`);
                 }
             }
         };
@@ -1135,7 +1060,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 localStorage.setItem('alt_webdav_user', usr.value.trim());
                 localStorage.setItem('alt_webdav_pass', p.value.trim());
                 if (a) localStorage.setItem('alt_webdav_auto', a.checked ? 'true' : 'false');
-                window.showMsg("CONFIG SAVED");
+                window.showMsg("配置已保存");
                 if (triggerSync) WebDAVSync.sync();
             }
         };
@@ -1159,7 +1084,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 localStorage.setItem('alter_sticky', JSON.stringify(stickies));
                 return true;
             } catch (e) {
-                window.showMsg('STORAGE LIMIT ERROR');
+                window.showMsg('存储空间超限');
                 return false;
             }
         }
@@ -1173,11 +1098,11 @@ AlterAPI.showMsg("SYNCING...");</pre>
         function dateLabel(ds) {
             const t = todayStr();
             const md = (ds || '').slice(5).replace('-', '/');
-            if (ds === t) return { text: md + ' TODAY', cls: 'today' };
+            if (ds === t) return { text: md + ' 今天', cls: 'today' };
             const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
             const tmrStr = tmr.getFullYear() + '-' + String(tmr.getMonth()+1).padStart(2,'0') + '-' + String(tmr.getDate()).padStart(2,'0');
-            if (ds === tmrStr) return { text: md + ' TMR', cls: '' };
-            if (ds < t) return { text: md + ' DUE', cls: 'overdue' };
+            if (ds === tmrStr) return { text: md + ' 明天', cls: '' };
+            if (ds < t) return { text: md + ' 逾期', cls: 'overdue' };
             return { text: md, cls: '' };
         }
 
@@ -1208,7 +1133,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const text = ti.value.trim();
             if (!text) return;
             if (!di.value) {
-                window.showMsg('PICK A DATE');
+                window.showMsg('请先选择日期');
                 di.focus();
                 return;
             }
@@ -1251,7 +1176,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const el = document.getElementById('streak-mark');
             if (!el) return;
             const s = currentStreak();
-            el.innerText = s > 0 ? (s + ' DAYS STREAK') : 'NO ENTRY TODAY';
+            el.innerText = s > 0 ? (`连续落笔 ${s} 天`) : '今日尚未记录';
         }
 
         function renderQuick() {
@@ -1265,7 +1190,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 sBox.innerHTML = shown.length ? shown.map(x => {
                     const lb = dateLabel(x.date);
                     return `<div class="quick-item"><div class="quick-check" onclick="toggleQuick('schedule',${x.id})"></div><div class="quick-text">${escQuick(x.text)}</div><span class="quick-date ${lb.cls}">${lb.text}</span><span class="quick-kill" onclick="delQuick('schedule',${x.id})">×</span></div>`;
-                }).join('') : '<div class="quick-empty">NO SCHEDULE</div>';
+                }).join('') : '<div class="quick-empty">尚无日程安排</div>';
             }
             const kBox = document.getElementById('sticky-list');
             if (kBox) {
@@ -1274,7 +1199,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 const kShown = kUndone.slice(-3).concat(kDone.slice(0, Math.max(0, 3 - Math.min(kUndone.length, 3)))).slice(0, 3);
                 kBox.innerHTML = kShown.length ? kShown.map(x =>
                     `<div class="quick-item ${x.done ? 'done' : ''}"><div class="quick-check" onclick="toggleQuick('sticky',${x.id})"></div><div class="quick-text">${escQuick(x.text)}</div><span class="quick-kill" onclick="delQuick('sticky',${x.id})">×</span></div>`
-                ).join('') : '<div class="quick-empty">NO STICKIES</div>';
+                ).join('') : '<div class="quick-empty">尚无便签内容</div>';
             }
         }
 
@@ -1305,34 +1230,34 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     eval(code); 
                     if(!isAuto) {
                         const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
-                        saved.push({ id: Date.now(), name: "Custom Plugin", code: code });
+                        saved.push({ id: Date.now(), name: "自定义功能", code: code });
                         localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
-                        window.showMsg("PLUGIN SEALED"); 
+                        window.showMsg("功能代码已封存"); 
                     }
-                } catch (e) { window.showMsg("ERR: " + e.message); }
+                } catch (e) { window.showMsg("错误: " + e.message); }
             },
             uninstall(id) {
                 let saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
                 saved = saved.filter(p => p.id !== id);
                 localStorage.setItem('alt_saved_plugins', JSON.stringify(saved));
-                window.showMsg("PLUGIN REMOVED");
+                window.showMsg("功能已卸载");
                 this.updateUI();
             },
-            run(i) { try { this.registry[i].run(); } catch (e) { window.showMsg("ERR: " + e.message); } },
+            run(i) { try { this.registry[i].run(); } catch (e) { window.showMsg("错误: " + e.message); } },
             updateUI() {
                 const list = document.getElementById('plugin-list-view'); if(!list) return;
                 const saved = JSON.parse(localStorage.getItem('alt_saved_plugins') || '[]');
                 
                 let html = this.registry.map((p, i) => `
                     <div class="plugin-card">
-                        <div class="plugin-info"><h4>${p.name}</h4><p>by ${p.author || 'Anon'}</p></div>
-                        <button class="btn-black" style="padding: 6px 12px; font-size: 8px;" onclick="AlterPlugins.run(${i})">RUN</button>
+                        <div class="plugin-info"><h4>${p.name}</h4><p>开发者: ${p.author || '匿名'}</p></div>
+                        <button class="btn-black" style="padding: 6px 12px; font-size: 8px;" onclick="AlterPlugins.run(${i})">运行</button>
                     </div>`).join('');
 
                 html += saved.map(p => `
                     <div class="plugin-card">
-                        <div class="plugin-info"><h4>${p.name}</h4><p>PERSISTENT · ID:${p.id}</p></div>
-                        <a href="javascript:;" style="font-size:8px; color:#ff5555; text-decoration:none;" onclick="AlterPlugins.uninstall(${p.id})">UNINSTALL</a>
+                        <div class="plugin-info"><h4>${p.name}</h4><p>持久化存储 · ID:${p.id}</p></div>
+                        <a href="javascript:;" style="font-size:8px; color:#ff5555; text-decoration:none;" onclick="AlterPlugins.uninstall(${p.id})">卸载</a>
                     </div>`).join('');
                 
                 list.innerHTML = html;
@@ -1344,13 +1269,19 @@ AlterAPI.showMsg("SYNCING...");</pre>
             saved.forEach(p => AlterPlugins.install(p.code, true));
 
             AlterPlugins.register({
-                name: "MARKDOWN EXPORT", author: "ALTER",
+                name: "Markdown 全量导出", author: "他我笔记",
                 run: () => {
                     const data = AlterAPI.getNotes();
-                    let md = "# ALTER NOTES EXPORT\n\n" + data.map(n => `## ${n.author || 'Guest'} · ${n.persona} (${n.time})\n\n${n.content}\n\n---\n`).join('\n');
-                    const blob = new Blob([md], { type: 'text/markdown' });
-                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Alter_Export.md"; a.click();
-                    AlterAPI.showMsg("DOWNLOADED");
+                    let md = "# 他我笔记全量导出\n\n" + data.map(n => `## ${n.author || '访客'} · ${n.persona} (${n.time})\n\n${n.content}\n\n---\n`).join('\n');
+                    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8;' });
+                    const a = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = `Alter_Markdown_Export_${Date.now()}.md`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+                    AlterAPI.showMsg("已下载 Markdown 导出文件");
                 }
             });
         }
@@ -1429,35 +1360,41 @@ AlterAPI.showMsg("SYNCING...");</pre>
 
         window.exportAIHistory = function() {
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
-            if(!history.length) return window.showMsg("EMPTY HISTORY");
+            if(!history.length) return window.showMsg("历史记录为空");
             let output = history.map(h => `${h.role === 'user' ? '「我」' : '「他我」'}: ${h.text}`).join('\n\n');
-            const blob = new Blob([output], { type: 'text/plain' });
+            const blob = new Blob([output], { type: 'text/plain;charset=utf-8;' });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Alter_Echo_All_${Date.now()}.txt`;
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = `Alter_对话记录_${Date.now()}.txt`;
+            document.body.appendChild(a);
             a.click();
-            window.showMsg("EXPORTED");
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+            window.showMsg("对话记录已导出");
         };
 
         window.organizeChatToArticle = async function() {
             const history = JSON.parse(localStorage.getItem('alt_ai_history') || '[]');
-            if (history.length < 2) return window.showMsg("TOO FEW ENTRIES");
-            window.showMsg("ORGANIZING...");
+            if (history.length < 2) return window.showMsg("对话记录过少");
+            window.showMsg("正在重构文章...");
             const context = history.map(h => `${h.role==='user'?'我':'他我'}: ${h.text}`).join('\n');
             await callAI("请基于这段对话记录，整理并重构出一篇深刻的、具有文学色彩的自省文章。要求提炼其中的精神内核，使其逻辑严密、情感真挚：\n\n" + context);
         };
 
         window.copyMsg = function(text) {
-            navigator.clipboard.writeText(text).then(() => window.showMsg("COPIED"));
+            navigator.clipboard.writeText(text).then(() => window.showMsg("已复制到剪贴板"));
         };
 
         window.downloadMsg = function(text) {
-            const blob = new Blob([text], { type: 'text/plain' });
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `Alter_Article_${Date.now()}.txt`;
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = `Alter_文章导出_${Date.now()}.txt`;
+            document.body.appendChild(a);
             a.click();
-            window.showMsg("SAVED");
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+            window.showMsg("已保存为文本文件");
         };
 
         function buildChatCandidates(rawUrl) {
@@ -1536,12 +1473,10 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const wp = document.getElementById('webdav-pass'); if(wp) wp.value = localStorage.getItem('alt_webdav_pass') || "";
             const wa = document.getElementById('webdav-auto'); if(wa) wa.checked = localStorage.getItem('alt_webdav_auto') === 'true';
 
-            // 恢复人生倒计时
             const lb = document.getElementById('life-birth-in');
             const le = document.getElementById('life-expect-in');
             if (lb) lb.value = localStorage.getItem('alt_life_birth') || "1984-01-01";
             if (le) le.value = localStorage.getItem('alt_life_expect') || "80";
-            renderLifeCountdown();
 
             const savedHomeWall = localStorage.getItem('alt_home_wallpaper');
             if (savedHomeWall) window.setHomeWallpaper(savedHomeWall);
@@ -1585,7 +1520,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             
             if (sec.n && !name) { 
                 const pin = prompt("验证 PIN："); 
-                if (pin !== sec.n) { window.showMsg("PIN ERROR"); return; } 
+                if (pin !== sec.n) { window.showMsg("PIN 错误"); return; } 
             }
             
             user = n; 
@@ -1613,7 +1548,6 @@ AlterAPI.showMsg("SYNCING...");</pre>
             document.querySelectorAll('#app-sidebar .nav-link').forEach(l => l.classList.remove('active')); 
             if (el) el.classList.add('active');
 
-            // 隐藏所有内容工作区
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
             
             const vt2 = document.getElementById('view-title'); 
@@ -1686,7 +1620,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
         };
 
         window.handleVaultAccess = function(el) { 
-            if(sec.v) { const p = prompt("验证灵感碎片密码："); if (p !== sec.v) { window.showMsg("DENIED"); return; } }
+            if(sec.v) { const p = prompt("验证灵感碎片密码："); if (p !== sec.v) { window.showMsg("验证未通过"); return; } }
             window.switchView('vault', el); 
         };
 
@@ -1696,7 +1630,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             if (vp && np) {
                 sec.v = vp.value; sec.n = np.value;
                 localStorage.setItem('alt_v52_sec', JSON.stringify(sec));
-                window.showMsg("SECURITY SAVED");
+                window.showMsg("安全密码已更新");
             }
         };
 
@@ -1711,7 +1645,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
 
         window.synthesize = async function() {
             const soulNotes = notes.filter(n => n.isVault);
-            if(soulNotes.length < 2) return window.showMsg("碎片不足");
+            if(soulNotes.length < 2) return window.showMsg("碎片样本不足");
             const context = soulNotes.slice(0, 10).map(n => n.content).join("\n---\n");
             await callAI("请基于这些碎片重构一段深刻的自省独白：\n" + context);
         };
@@ -1747,14 +1681,30 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const ni = document.getElementById('rename-user-in');
             if (ni) {
                 const n = ni.value.trim();
-                if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("IDENTITY UPDATED"); }
+                if(n) { user = n; localStorage.setItem('alter_v52_user', user); renderAll(); window.showMsg("登录名已修改"); }
             }
         };
 
+        /* 导出备份修复：安全触发原生下载 */
         window.dlData = function() {
-            const b = new Blob([JSON.stringify(notes, null, 2)],{type:'application/json'});
-            const a = document.createElement('a'); a.href=URL.createObjectURL(b);
-            a.download=`alter_backup_${Date.now()}.json`; a.click();
+            try {
+                const backupJson = JSON.stringify(notes, null, 2);
+                const blob = new Blob([backupJson], { type: 'application/json;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `他我笔记_全量备份_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 200);
+                window.showMsg("已成功导出备份文件");
+            } catch (err) {
+                window.showMsg("导出失败: " + err.message);
+            }
         };
 
         window.editNote = function(e, id) {
@@ -1793,7 +1743,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     notes[idx].persona = activeP.n; notes[idx].i = activeP.i;
                     notes[idx].updatedAt = now;
                     await dbAction("put", notes[idx]);
-                    window.showMsg("ECHO UPDATED");
+                    window.showMsg("回响已修缮");
                 }
             } else {
                 const newNote = { 
@@ -1803,7 +1753,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     tmpl: b64s.length ? 'none' : ['quote','dark','serif'][Math.floor(Math.random()*3)] 
                 };
                 await dbAction("put", newNote); notes.unshift(newNote);
-                window.showMsg("ECHO SEALED");
+                window.showMsg("回响已封存");
             }
             window.resetEditor(); 
             await renderAll(); 
@@ -1816,7 +1766,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
 
         async function renderGrid(q = "") {
             const grid = document.getElementById('note-grid'); if(!grid) return;
-            grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.25; border:1px dashed var(--accent); height:80px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">+ NEW FRAGMENT</div>` : "";
+            grid.innerHTML = (viewMode !== 'vault') ? `<div class="card" onclick="window.openNewEditor()" style="opacity:0.25; border:1px dashed var(--accent); height:80px; display:flex; align-items:center; justify-content:center; font-size:8px; letter-spacing:2px;">+ 新建碎语</div>` : "";
             const fe = document.getElementById('persona-filter');
             const pf = fe ? fe.value : 'all';
             let list = notes.filter(n => { if(viewMode === 'timeline') return !n.isVault && (pf === 'all' || n.persona === pf); if(viewMode === 'vault') return n.isVault && (vaultSubMode === 'soul' ? !n.deleteAt : !!n.deleteAt); return true; });
@@ -1825,7 +1775,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 const div = document.createElement('div'); div.className = `card tmpl-${n.tmpl || 'none'}`; div.onclick = () => showNote(n);
                 const mainImg = (n.images && n.images.length) ? n.images[0] : null;
                 div.innerHTML = `${mainImg ? `<img src="${mainImg}" class="card-img">` : ''}
-                    <div class="card-meta"><span>${n.author || 'GUEST'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
+                    <div class="card-meta"><span>${n.author || '访客'} · ${n.i||'👤'} ${n.persona}</span><span>${n.time}</span></div>
                     <div class="card-content">${escQuick(n.content)}</div>
                     <div class="card-footer">
                         <div class="footer-tools">
@@ -1855,13 +1805,13 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 <div class="content-body" style="font-size:18px; line-height:2.2; text-align:justify; margin-bottom:30px;">${escQuick(n.content)}</div>
                 <div style="margin-bottom:40px;">${filesHtml}</div>
                 <div style="border-top:1px solid var(--border); padding-top:40px;">
-                    <h4 style="font-size:9px; letter-spacing:2px; margin-bottom:20px; opacity:0.4;">ECHOES / 回声</h4>
+                    <h4 style="font-size:9px; letter-spacing:2px; margin-bottom:20px; opacity:0.4;">回声交互</h4>
                     <div id="replies-container">${rList || '<p style="opacity:0.2; font-size:10px;">静候回声。</p>'}</div>
                     <div style="margin-top:40px; background:rgba(0,0,0,0.01); padding:20px; border-radius:4px;">
                         <div id="r-ind" style="font-size:8px; color:var(--text-dim); margin-bottom:10px; display:none;">回复 @<span id="r-name"></span>...</div>
                         <div class="p-picker">${pChips}</div>
                         <input type="text" id="comIn" class="input-line" style="margin-bottom:10px;" placeholder="写下回响...">
-                        <button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">SYNC ECHO</button>
+                        <button class="btn-black" style="width:100%;" onclick="window.sendR(${n.id})">同步回响</button>
                     </div>
                 </div>`;
             if (window.lucide) window.lucide.createIcons();
@@ -1879,11 +1829,11 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const n = notes.find(x=>x.id===id); if(n){
                 if(!n.replies) n.replies = []; n.replies.push({ txt: rTo ? `@${rTo} ${txt}` : txt, who: commP.n });
                 n.updatedAt = Date.now();
-                await dbAction("put", n); showNote(n); rTo = null; window.showMsg("SYNCED");
+                await dbAction("put", n); showNote(n); rTo = null; window.showMsg("已同步");
             }
         };
 
-        window.camOn = async function() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'block'; } catch (e) { window.showMsg("CAMERA ERROR"); } };
+        window.camOn = async function() { try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('v-stream').srcObject = stream; document.getElementById('cam-overlay').style.display = 'block'; } catch (e) { window.showMsg("无法打开相机"); } };
         window.camOff = function() { if(stream) stream.getTracks().forEach(t=>t.stop()); document.getElementById('cam-overlay').style.display='none'; };
         window.snap = function() { const v = document.getElementById('v-stream'), c = document.getElementById('v-canvas'), f = document.getElementById('flash-effect'); if (v.videoWidth === 0) return; f.style.opacity = '1'; c.width = v.videoWidth; c.height = v.videoHeight; c.getContext('2d').drawImage(v, 0, 0); const originalB64 = c.toDataURL('image/jpeg'); if(b64s.length < 3) compressImage(originalB64).then(compressed => { b64s.push(compressed); window.renderPrev(); }); setTimeout(() => { f.style.opacity = '0'; window.camOff(); }, 150); };
         async function compressImage(base64) { return new Promise((resolve) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); let width = img.width, height = img.height, maxSide = 1080; if (width > maxSide || height > maxSide) { if (width > height) { height = (height / width) * maxSide; width = maxSide; } else { width = (width / height) * maxSide; height = maxSide; } } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; img.src = base64; }); }
@@ -1894,7 +1844,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const r = new FileReader(); 
             r.onload = ev => { 
                 files.push({ name: f.name, data: ev.target.result }); 
-                window.showMsg("ATTACHED: " + f.name); 
+                window.showMsg("已附加文件: " + f.name); 
             }; 
             r.readAsDataURL(f); 
         };
@@ -1924,13 +1874,13 @@ AlterAPI.showMsg("SYNCING...");</pre>
         function renderDailyReview() {
             const box = document.getElementById('review-box'); if(!box) return;
             const eligible = notes.filter(n => !n.isVault && !n.deleteAt).sort((a,b) => a.id - b.id);
-            if(!eligible.length) { box.innerHTML = '<div class="quick-empty">VOID</div>'; return; }
+            if(!eligible.length) { box.innerHTML = '<div class="quick-empty">此刻虚无</div>'; return; }
             const r = eligible[dailySeedPick(eligible.length)];
             box.innerHTML = `<div class="recall-item" onclick="window.showNoteById(${r.id})"><div class="recall-meta">${r.i||'👤'} ${escQuick(r.persona||'')} · ${r.time}</div><div class="recall-text">${escQuick(r.content)}</div></div>`;
         }
         window.renderSwitcher = function() { const allP = [...FIXED_P, {n: user, i: "👤"}]; const box = document.getElementById('p-sel-box'); if (box) { box.innerHTML = allP.map(p => `<div style="font-size:9px; cursor:pointer; opacity:${activeP.n===p.n?'1':'0.4'}" onclick="activeP={n:'${p.n}', i:'${p.i}'}; window.renderSwitcher();">${p.i} ${p.n}</div>`).join(''); } }
-        function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">ALL PERSONAS</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
-        function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:12px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 10px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:7px;">LOCKED</span></div>`).join(''); } }
+        function renderPersonaFilter() { const sel = document.getElementById('persona-filter'); if(!sel) return; sel.innerHTML = '<option value="all">所有身份</option>'; [...FIXED_P, {n: user, i: "👤"}].forEach(p => { const opt = document.createElement('option'); opt.value = p.n; opt.innerText = `${p.i} ${p.n}`; sel.appendChild(opt); }); }
+        function renderFixedList() { const list = document.getElementById('persona-list-fixed'); if (list) { list.innerHTML = FIXED_P.map(p => `<div style="padding:12px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;"><span style="font-size: 10px;">${p.i} ${p.n}</span><span style="opacity:0.3; font-size:7px;">已锁定</span></div>`).join(''); } }
         
         function updateStats() { 
             const countEl = document.getElementById('count-today');
@@ -1943,14 +1893,14 @@ AlterAPI.showMsg("SYNCING...");</pre>
         window.drawMap = async function() { 
             const box = document.getElementById('map-box'); 
             if (!box) return;
-            box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">RESONATING...</div>';
+            box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">正在感应意识关键词...</div>';
 
             const rawUrl = localStorage.getItem('alt_api_url') || "";
             const apiKey = localStorage.getItem('alt_api_key') || "";
             const apiModel = localStorage.getItem('alt_api_model') || "";
             
             if (!apiKey || !rawUrl) {
-                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">⚠️ API CONFIG REQUIRED</div>';
+                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">⚠️ 需要先配置 API Key</div>';
                 return;
             }
 
@@ -1984,7 +1934,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
 
                 box.innerHTML = '';
                 const core = document.createElement('div');
-                core.innerText = "CORE";
+                core.innerText = "核心";
                 core.style.cssText = "position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;letter-spacing:2px;color:var(--accent);z-index:5;background:var(--bg);padding:5px 12px;border:1px solid var(--accent);border-radius:20px;";
                 box.appendChild(core);
 
@@ -2003,9 +1953,9 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     line.style.cssText = `position:absolute;left:50%;top:50%;width:1px;height:${dist}px;background:var(--border);transform:rotate(${angle + Math.PI/2}rad);transform-origin:0 0;z-index:1;opacity:0.25;`;
                     box.appendChild(line);
                 });
-                window.showMsg("MAP REMAPPED");
+                window.showMsg("意识地图重绘完成");
             } catch (e) {
-                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">❌ ERR: ' + e.message + '</div>';
+                box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">❌ 错误: ' + e.message + '</div>';
             }
         };
 
@@ -2014,11 +1964,11 @@ AlterAPI.showMsg("SYNCING...");</pre>
             const box = document.getElementById('lab-day-list');
             if (!pick || !box) return;
             const v = pick.value;
-            if (!v) { box.innerHTML = '<div class="quick-empty">SELECT A DATE</div>'; return; }
+            if (!v) { box.innerHTML = '<div class="quick-empty">请先选择日期</div>'; return; }
             const start = new Date(v + 'T00:00:00').getTime();
             const end = start + 86400000;
             const list = notes.filter(n => !n.deleteAt && !n.isVault && n.id >= start && n.id < end).sort((a, b) => a.id - b.id);
-            if (!list.length) { box.innerHTML = '<div class="quick-empty">NO ENTRIES</div>'; return; }
+            if (!list.length) { box.innerHTML = '<div class="quick-empty">该日无记录</div>'; return; }
             box.innerHTML = list.map(n => {
                 const hm = new Date(n.id).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
                 return `<div class="day-item" onclick="window.showNoteById(${n.id})"><div class="day-meta">${n.i || '👤'} ${escQuick(n.persona || '')} · ${hm}</div><div class="day-text">${escQuick(n.content)}</div></div>`;
@@ -2033,7 +1983,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 localStorage.removeItem('alt_ai_history');
                 const chatBox = document.getElementById('ai-chat-box');
                 if (chatBox) chatBox.innerHTML = '<div class="ai-msg bot">在此刻寻找推演的回声...</div>';
-                window.showMsg("HISTORY ERASED");
+                window.showMsg("推演历史已清空");
             }
         };
 
@@ -2049,8 +1999,8 @@ AlterAPI.showMsg("SYNCING...");</pre>
                 const tools = document.createElement('div');
                 tools.className = 'ai-msg-tools';
                 tools.innerHTML = `
-                    <span class="ai-tool-btn" onclick="window.copyMsg(this.parentElement.parentElement.firstChild.innerText)">COPY</span>
-                    <span class="ai-tool-btn" onclick="window.downloadMsg(this.parentElement.parentElement.firstChild.innerText)">SAVE</span>
+                    <span class="ai-tool-btn" onclick="window.copyMsg(this.parentElement.parentElement.firstChild.innerText)">复制</span>
+                    <span class="ai-tool-btn" onclick="window.downloadMsg(this.parentElement.parentElement.firstChild.innerText)">保存</span>
                 `;
                 msg.appendChild(tools);
             }
@@ -2083,11 +2033,12 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     localStorage.setItem('alt_api_url', urlIn.value.trim());
                     localStorage.setItem('alt_api_key', keyIn.value.trim());
                     localStorage.setItem('alt_api_model', modelIn.value.trim());
-                    labPanel && (labPanel.style.display='none'); window.showMsg("LAB SYNCED");
+                    labPanel && (labPanel.style.display='none'); window.showMsg("实验配置已保存");
                 }
             };
         })();
 
+        /* 增量导入备份修复 */
         window.importData = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -2095,7 +2046,7 @@ AlterAPI.showMsg("SYNCING...");</pre>
             reader.onload = async (ev) => {
                 try {
                     const importedNotes = JSON.parse(ev.target.result);
-                    if (!Array.isArray(importedNotes)) throw new Error("INVALID_FORMAT");
+                    if (!Array.isArray(importedNotes)) throw new Error("文件格式不正确");
                     
                     const localNotes = await dbAction("getAll");
                     const merged = mergeNotesById(localNotes, importedNotes);
@@ -2103,8 +2054,8 @@ AlterAPI.showMsg("SYNCING...");</pre>
                     for (const n of merged) { await dbAction("put", n); }
                     notes = merged.sort((a,b) => b.id - a.id);
                     await renderAll();
-                    window.showMsg(`IMPORTED ${notes.length} ITEMS`);
-                } catch (err) { window.showMsg("IMPORT ERROR: " + err.message); }
+                    window.showMsg(`成功导入 ${notes.length} 条回响`);
+                } catch (err) { window.showMsg("导入错误: " + err.message); }
             };
             reader.readAsText(file);
         };
