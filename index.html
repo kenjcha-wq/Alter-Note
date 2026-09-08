@@ -741,13 +741,15 @@ AlterAPI.showMsg("同步中...");</pre>
                 <p style="font-size:9px; color:var(--text-dim); margin-bottom:12px; line-height:1.6;" data-page-node-id="Zr23O2iB9SFzFpjHqm9VnG">
                     数据同时备份到 Gitee 私有仓库（版本历史）和 Supabase 数据库（双重保险）。<br data-page-node-id="wbjcpTOimkq764n06exE2l">
                     <strong data-page-node-id="nOVmsf9mAT83E1ofXKNTsz">增量合并模式</strong>：多设备各自新增的内容互不覆盖，删除也会同步。<br data-page-node-id="cpkAqOiEJB0xQTcWNYDjEA">
-                    <strong data-page-node-id="wjEo0PVSJ0QbJhrsYLpFVQ">设备码</strong>：多台设备必须填<strong data-page-node-id="ApA03n60CYmw6v8wnsRjz9">同一个</strong>，否则各存各的、互不相通。改下面「本设备名」即可切换。
+                    <strong data-page-node-id="wjEo0PVSJ0QbJhrsYLpFVQ">同步码</strong>：多台设备必须填<strong data-page-node-id="ApA03n60CYmw6v8wnsRjz9">同一个</strong>，它决定数据存在哪一处，改了就等于换了一个空间。<br>
+                    <strong>本设备名</strong>：只是给这台机器起个名字方便自己认，两台可以不一样，填什么都不会影响同步。
                 </p>
                 <div class="ctrl-row" data-page-node-id="ls2rRdA0D77pFgWfQsyIjV"><span class="ctrl-label" data-page-node-id="dcXpLN2mD0n4AGPmjGjO3I">Gitee 用户名</span><div class="ctrl-input-wrap" data-page-node-id="pYs1DRBPaEBDKo9VvQPDnc"><input type="text" id="sync-owner" class="input-line" style="margin:0; text-align:right;" placeholder="你的 Gitee 用户名" data-page-node-id="PXzHEoWggOHibDIZ71sNBK"></div></div>
                 <div class="ctrl-row" data-page-node-id="l3EXktwLrAvRQ6qLHTiKc2"><span class="ctrl-label" data-page-node-id="UzIs2HCxIJgc7FsjbDd50s">仓库名</span><div class="ctrl-input-wrap" data-page-node-id="a6ju6E4ERWP2kUXQWDb868"><input type="text" id="sync-repo" class="input-line" style="margin:0; text-align:right;" placeholder="如 alter-notes" data-page-node-id="X0jf8wnwIDBJdEc28Qwsy9"></div></div>
                 <div class="ctrl-row" data-page-node-id="V7FDtLCLmQIKx6JajaajcB"><span class="ctrl-label" data-page-node-id="5aFvQlCTUDppV7ATGhmsTE">私人令牌</span><div class="ctrl-input-wrap" data-page-node-id="ygoW61vpyNZtPiogkcChAE"><input type="password" id="sync-token" class="input-line" style="margin:0; text-align:right;" placeholder="Gitee 私人令牌 (projects 权限)" data-page-node-id="xIHoXDPzi9R41jWTegXa9S"></div></div>
                 <div class="ctrl-row" data-page-node-id="VWmyzfZTRexSCQ8ULr28Fg"><span class="ctrl-label" data-page-node-id="NVUZDWs5yZQ672CFlY1RGx">分支</span><div class="ctrl-input-wrap" data-page-node-id="ZDq8sVO6NZfqaj1R5aWFL3"><input type="text" id="sync-branch" class="input-line" style="margin:0; text-align:right;" placeholder="master" value="master" data-page-node-id="E5NIy4FrLAgYEKECi6vvhD"></div></div>
-                <div class="ctrl-row" data-page-node-id="S7RGUppogUu9Qr5LWsfnKp"><span class="ctrl-label" data-page-node-id="iwA2VMvc1g35xbXJ5ABVMd">本设备名（=设备码）</span><div class="ctrl-input-wrap" data-page-node-id="w2aAwXeNWb3HKOYXVGnIOR"><input type="text" id="sync-device" class="input-line" style="margin:0; text-align:right;" placeholder="多设备填同一个" data-page-node-id="EW9GRlWul9Dxeu6ZP6qnx8"></div></div>
+                <div class="ctrl-row" data-page-node-id="S7RGUppogUu9Qr5LWsfnKp"><span class="ctrl-label" data-page-node-id="iwA2VMvc1g35xbXJ5ABVMd">同步码（两台必须一样）</span><div class="ctrl-input-wrap" data-page-node-id="w2aAwXeNWb3HKOYXVGnIOR"><input type="text" id="sync-device" class="input-line" style="margin:0; text-align:right;" placeholder="如 kaikai，两台填同一个" data-page-node-id="EW9GRlWul9Dxeu6ZP6qnx8"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">本设备名（仅标记，随便填）</span><div class="ctrl-input-wrap"><input type="text" id="sync-devicename" class="input-line" style="margin:0; text-align:right;" placeholder="如 iphone / 红米"></div></div>
                 <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;" data-page-node-id="iAUATMLLZy2YonJEtTr3gG">
                     <button class="btn-black" style="flex:1; min-width:100px;" onclick="window.saveGiteeConfig()" data-page-node-id="TFZUQ87z0O8mLMqNKzFWP0">保存并同步</button>
                     <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main); flex:1; min-width:100px;" onclick="window.pullFromCloud()" data-page-node-id="AxIJqaT3yf4mZbS6UOFyg0">从云端恢复</button>
@@ -2215,16 +2217,28 @@ AlterAPI.showMsg("同步中...");</pre>
         }
 
         // 云端已存在哪些图（一次请求拉回全部 key，避免逐张探测）
+        // 拉不到时退回上次缓存，否则会把已有的图整批重传一遍
         async function cloudImgKeys() {
-            const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data?data_key=like.' +
-                encodeURIComponent(IMG_KEY_PREFIX) + '*&select=data_key&limit=5000', {
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
-            });
-            if (!resp.ok) return null;
-            const arr = await resp.json();
-            const s = new Set();
-            for (const r of arr) s.add(String(r.data_key).slice(IMG_KEY_PREFIX.length));
-            return s;
+            try {
+                const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data?data_key=like.' +
+                    encodeURIComponent(IMG_KEY_PREFIX) + '*&select=data_key&limit=5000', {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const arr = await resp.json();
+                const s = new Set();
+                for (const r of arr) s.add(String(r.data_key).slice(IMG_KEY_PREFIX.length));
+                try { localStorage.setItem('alter_cloud_imgs', JSON.stringify(Array.from(s))); }
+                catch (e) { /* 存不下就算了 */ }
+                return s;
+            } catch (e) {
+                console.warn('拉取云端图片清单失败，改用上次缓存:', e.message);
+                try {
+                    const cached = JSON.parse(localStorage.getItem('alter_cloud_imgs') || '[]');
+                    if (cached.length) return new Set(cached);
+                } catch (e2) { /* 没有缓存 */ }
+                return null;
+            }
         }
 
         function localUploadedImgs() {
@@ -2285,11 +2299,13 @@ AlterAPI.showMsg("同步中...");</pre>
             const elToken = document.getElementById('sync-token');
             const elBranch = document.getElementById('sync-branch');
             const elDevice = document.getElementById('sync-device');
+            const elName = document.getElementById('sync-devicename');
             if (elOwner) elOwner.value = cfg.owner || '';
             if (elRepo) elRepo.value = cfg.repo || '';
             if (elToken) elToken.value = cfg.token || '';
             if (elBranch) elBranch.value = cfg.branch || 'master';
             if (elDevice) elDevice.value = cfg.device || '';
+            if (elName) elName.value = cfg.devicename || '';
         }
 
         function getGiteeConfig() {
@@ -2298,12 +2314,15 @@ AlterAPI.showMsg("同步中...");</pre>
             const elToken = document.getElementById('sync-token');
             const elBranch = document.getElementById('sync-branch');
             const elDevice = document.getElementById('sync-device');
+            const elName = document.getElementById('sync-devicename');
             return {
                 owner: elOwner ? elOwner.value.trim() : '',
                 repo: elRepo ? elRepo.value.trim() : '',
                 token: elToken ? elToken.value.trim() : '',
                 branch: elBranch ? elBranch.value.trim() || 'master' : 'master',
-                device: elDevice ? elDevice.value.trim() || getDeviceId() : getDeviceId()
+                // 同步码决定数据存在哪，设备名只是标记，两者不再混为一谈
+                device: elDevice ? elDevice.value.trim() || getDeviceId() : getDeviceId(),
+                devicename: elName ? elName.value.trim() : ''
             };
         }
 
@@ -2567,6 +2586,23 @@ AlterAPI.showMsg("同步中...");</pre>
                 console.warn('自动恢复失败:', e);
             }
         }
+
+        // 同步期间加锁：手动点击、编辑笔记都会触发同步，
+        // 多个同步任务并发会把同一批图重复传一遍，白白拖慢速度
+        window.syncToCloud = (function(orig) {
+            return async function() {
+                if (window._syncRunning) {
+                    window.showMsg('⏳ 上一次同步还在跑，等它结束再点');
+                    return;
+                }
+                window._syncRunning = true;
+                try {
+                    await orig.apply(this, arguments);
+                } finally {
+                    window._syncRunning = false;
+                }
+            };
+        })(window.syncToCloud);
 
         // ===== 手动同步按钮 =====
         window.manualSync = function() {
