@@ -2129,6 +2129,154 @@ AlterAPI.showMsg("同步中...");</pre>
             return true;
         }
 
+        // ===== 图片外置：同步时把 base64 图片摘出来，一张一张单独传 =====
+        // 61MB 的备份里 99% 是内嵌图片（笔记正文其实只有几十 KB）。
+        // 整包上传必然超出云端单次请求上限而中断（表现为 load failed）。
+        // 拆开后正文几十 KB 一次传完，图片每张 ~250KB 各自走一次，都落在安全区间内；
+        // 且图片内容不变就不必重传，之后每次同步只传文字。
+        const IMG_PREFIX = 'alterimg://';
+        const IMG_KEY_PREFIX = 'alter_img_';
+        const DATAURL_RE = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
+
+        function imgTokenRe() { return /alterimg:\/\/([a-f0-9]+)/g; }
+
+        async function imgHash(dataUrl) {
+            try {
+                const buf = new TextEncoder().encode(dataUrl);
+                const d = await crypto.subtle.digest('SHA-256', buf);
+                return Array.from(new Uint8Array(d)).map(function(b) {
+                    return b.toString(16).padStart(2, '0');
+                }).join('').slice(0, 32);
+            } catch (e) {
+                let h = 0x811c9dc5;
+                const step = Math.max(1, Math.floor(dataUrl.length / 4096));
+                for (let i = 0; i < dataUrl.length; i += step) {
+                    h = (h ^ dataUrl.charCodeAt(i)) >>> 0;
+                    h = Math.imul(h, 16777619) >>> 0;
+                }
+                return 'f' + dataUrl.length.toString(16) + h.toString(16);
+            }
+        }
+
+        // 把笔记里的 dataURL 换成占位符，返回瘦身笔记 + 图片清单
+        async function deflateNotes(list) {
+            const found = new Set();
+            for (const n of list) {
+                const s = JSON.stringify(n);
+                const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
+                let m;
+                while ((m = re.exec(s)) !== null) found.add(m[0]);
+            }
+            const hashOf = new Map();
+            await Promise.all(Array.from(found).map(async function(d) {
+                hashOf.set(d, await imgHash(d));
+            }));
+            const slim = list.map(function(n) {
+                const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
+                const s = JSON.stringify(n).replace(re, function(d) {
+                    return IMG_PREFIX + (hashOf.get(d) || d);
+                });
+                try { return JSON.parse(s); } catch (e) { return n; }
+            });
+            const imgs = [];
+            hashOf.forEach(function(h, d) { imgs.push({ hash: h, data: d }); });
+            return { slim: slim, imgs: imgs };
+        }
+
+        // 把占位符还原成真正的 dataURL（缺的图去云端取）
+        async function inflateNotes(list, onProgress) {
+            const need = new Set();
+            for (const n of list) {
+                const s = JSON.stringify(n);
+                const re = imgTokenRe();
+                let m;
+                while ((m = re.exec(s)) !== null) need.add(m[1]);
+            }
+            if (!need.size) return { notes: list, missing: 0 };
+
+            const map = new Map();
+            let i = 0;
+            for (const h of need) {
+                i++;
+                if (onProgress) onProgress(i, need.size);
+                try {
+                    const v = await supabaseRead(IMG_KEY_PREFIX + h);
+                    if (v) map.set(h, v);
+                } catch (e) { /* 单张失败不致命，下次同步补 */ }
+            }
+            const notes = list.map(function(n) {
+                const re = imgTokenRe();
+                const s = JSON.stringify(n).replace(re, function(full, h) {
+                    return map.get(h) || full;
+                });
+                try { return JSON.parse(s); } catch (e) { return n; }
+            });
+            return { notes: notes, missing: need.size - map.size };
+        }
+
+        // 云端已存在哪些图（一次请求拉回全部 key，避免逐张探测）
+        async function cloudImgKeys() {
+            const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data?data_key=like.' +
+                encodeURIComponent(IMG_KEY_PREFIX) + '*&select=data_key&limit=5000', {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+            });
+            if (!resp.ok) return null;
+            const arr = await resp.json();
+            const s = new Set();
+            for (const r of arr) s.add(String(r.data_key).slice(IMG_KEY_PREFIX.length));
+            return s;
+        }
+
+        function localUploadedImgs() {
+            try { return new Set(JSON.parse(localStorage.getItem('alter_uploaded_imgs') || '[]')); }
+            catch (e) { return new Set(); }
+        }
+
+        function rememberImgUploaded(hash) {
+            const s = localUploadedImgs();
+            s.add(hash);
+            try { localStorage.setItem('alter_uploaded_imgs', JSON.stringify(Array.from(s).slice(-4000))); }
+            catch (e) { /* 空间不够就算了，最多少传一次 */ }
+        }
+
+        // 取回远端笔记（含图片还原），Supabase 优先，Gitee 兜底
+        async function loadRemoteNotes(deviceId, cfg, onProgress) {
+            let remoteNotes = null, from = '';
+            try {
+                const raw = await supabaseRead('alter_notes_' + deviceId);
+                if (raw) { remoteNotes = JSON.parse(raw); from = 'Supabase'; }
+            } catch (e) { /* 换 Gitee 兜底 */ }
+
+            if (!remoteNotes && cfg && cfg.owner && cfg.repo && cfg.token) {
+                try {
+                    const raw = await giteeGetRaw(cfg, 'data/alter-notes.json');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && parsed.data) { remoteNotes = parsed.data; from = 'Gitee'; }
+                    }
+                } catch (e) { /* 都没有 */ }
+            }
+            if (!remoteNotes || !remoteNotes.length) return { notes: null, from: from, missing: 0 };
+
+            const infl = await inflateNotes(remoteNotes, onProgress);
+            return { notes: infl.notes, from: from, missing: infl.missing };
+        }
+
+        // 并发跑，但限制同时进行的数量，免得一次打出几百个请求
+        async function mapLimit(items, limit, worker) {
+            let idx = 0;
+            const runners = [];
+            for (let k = 0; k < Math.min(limit, items.length); k++) {
+                runners.push((async function() {
+                    while (idx < items.length) {
+                        const cur = idx++;
+                        await worker(items[cur], cur);
+                    }
+                })());
+            }
+            await Promise.all(runners);
+        }
+
         // Gitee 配置管理
         function loadGiteeConfig() {
             const cfg = JSON.parse(localStorage.getItem('alter_gitee_cfg') || '{}');
@@ -2222,6 +2370,14 @@ AlterAPI.showMsg("同步中...");</pre>
             return res.json();
         }
 
+        function fmtSize(str) {
+            let b;
+            try { b = new TextEncoder().encode(str).length; } catch (e) { b = str.length * 2; }
+            if (b < 1024) return b + 'B';
+            if (b < 1048576) return (b / 1024).toFixed(1) + 'KB';
+            return (b / 1048576).toFixed(1) + 'MB';
+        }
+
         // ===== 云端同步核心（真实反馈：每一步的结果都算数） =====
         window.syncToCloud = async function() {
             const statusEl = document.getElementById('sync-status');
@@ -2245,13 +2401,30 @@ AlterAPI.showMsg("同步中...");</pre>
             const cfg = getGiteeConfig();
             const deviceId = getSyncDeviceId();
             const filePath = 'data/alter-notes.json';
+            setStatus('⏳ 正在整理数据...');
+
+            // --- 1. 先把内嵌图片摘出来：正文其实只有几十 KB，重的是图 ---
+            let slim = notesData, imgs = [];
+            try {
+                const d = await deflateNotes(notesData);
+                slim = d.slim;
+                imgs = d.imgs;
+            } catch (e) {
+                console.warn('图片抽取失败，退回整包上传:', e);
+            }
+
+            const notesJson = JSON.stringify(slim);
+            const sizeTxt = fmtSize(notesJson);
+            const imgBytes = imgs.reduce(function(a, b) { return a + b.data.length; }, 0);
+            setStatus('⏳ 正在同步 ' + notesData.length + ' 条 / 正文 ' + sizeTxt +
+                (imgs.length ? ' + 图片 ' + imgs.length + ' 张' : '') + ' ...');
             const done = [], fail = [];
 
-            // --- 1. 上传到 Gitee ---
+            // --- 2. 上传到 Gitee（只传正文，图片走 Supabase） ---
             if (cfg.owner && cfg.repo && cfg.token) {
                 const payload = {
-                    meta: { ts: Date.now(), device: deviceId, version: '2.0' },
-                    data: notesData
+                    meta: { ts: Date.now(), device: deviceId, version: '3.0-imgsplit' },
+                    data: slim
                 };
                 try {
                     const remote = await giteeGetMeta(cfg, filePath);
@@ -2265,23 +2438,54 @@ AlterAPI.showMsg("同步中...");</pre>
                 fail.push('Gitee 未配置');
             }
 
-            // --- 2. 备份到 Supabase（先查后写，不会 409） ---
+            // --- 3. 正文备份到 Supabase（先查后写，不会 409） ---
             try {
-                await supabaseUpsert('alter_notes_' + deviceId, JSON.stringify(notesData));
-                done.push('Supabase');
+                await supabaseUpsert('alter_notes_' + deviceId, notesJson);
+                done.push('正文');
             } catch (e) {
-                fail.push('Supabase(' + e.message + ')');
+                fail.push('正文(' + e.message + ')');
                 console.warn('Supabase 备份失败:', e);
             }
 
-            // --- 3. 按真实结果反馈，不再无条件报成功 ---
-            if (!done.length) {
-                setStatus('❌ 一处都没成功：' + fail.join('；'));
+            // --- 4. 图片一张一张传；云端或本机已传过的直接跳过 ---
+            let upOK = 0, upSkip = 0, upFail = 0;
+            if (imgs.length) {
+                let cloudSet = null;
+                try { cloudSet = await cloudImgKeys(); } catch (e) { /* 拿不到就只信本地记录 */ }
+                const localSet = localUploadedImgs();
+                const pending = imgs.filter(function(it) {
+                    if (cloudSet && cloudSet.has(it.hash)) return false;
+                    if (localSet.has(it.hash)) return false;
+                    return true;
+                });
+                upSkip = imgs.length - pending.length;
+                let finished = 0;
+                await mapLimit(pending, 3, async function(it) {
+                    finished++;
+                    setStatus('⏳ 上传图片 ' + finished + '/' + pending.length +
+                        '（共 ' + imgs.length + ' 张，跳过 ' + upSkip + '）...');
+                    try {
+                        await supabaseUpsert(IMG_KEY_PREFIX + it.hash, it.data);
+                        rememberImgUploaded(it.hash);
+                        upOK++;
+                    } catch (e) {
+                        upFail++;
+                        console.warn('图片上传失败 ' + it.hash + ':', e.message);
+                    }
+                });
+            }
+
+            // --- 5. 按真实结果反馈，不再无条件报成功 ---
+            const imgTxt = imgs.length
+                ? ' · 图片 ' + imgs.length + ' 张：新传 ' + upOK + '、跳过 ' + upSkip + (upFail ? '、失败 ' + upFail : '')
+                : '';
+            if (!done.length && !upOK) {
+                setStatus('❌ 一处都没成功：' + fail.join('；') + '（正文 ' + sizeTxt + ' / 图片 ' + fmtSize(imgBytes) + '）');
                 window.showMsg('❌ 同步失败：' + fail.join('；'));
                 return;
             }
-            const line = '✓ ' + done.join('、') + (fail.length ? ' · ✗ ' + fail.join('、') : '');
-            setStatus('✅ 已上传 ' + notesData.length + ' 条 → ' + line);
+            const line = '✓ ' + done.join('、') + (fail.length ? ' · ✗ ' + fail.join('、') : '') + imgTxt;
+            setStatus('✅ ' + notesData.length + ' 条 / 正文 ' + sizeTxt + ' → ' + line);
             window.showMsg('☁️ 已上传 ' + notesData.length + ' 条 → ' + line);
         };
 
@@ -2294,33 +2498,20 @@ AlterAPI.showMsg("同步中...");</pre>
             try {
                 const cfg = getGiteeConfig();
                 const deviceId = getSyncDeviceId();
-                let remoteNotes = null, from = '';
 
-                // --- 1. 优先从 Supabase 恢复 ---
-                try {
-                    const raw = await supabaseRead('alter_notes_' + deviceId);
-                    if (raw) { remoteNotes = JSON.parse(raw); from = 'Supabase'; }
-                } catch (e) {
-                    console.warn('Supabase 读取失败:', e);
-                }
-
-                // --- 2. Supabase 没有则从 Gitee 恢复 ---
-                if (!remoteNotes && cfg.owner && cfg.repo && cfg.token) {
-                    try {
-                        const raw = await giteeGetRaw(cfg, 'data/alter-notes.json');
-                        if (raw) {
-                            const parsed = JSON.parse(raw);
-                            if (parsed && parsed.data) { remoteNotes = parsed.data; from = 'Gitee'; }
-                        }
-                    } catch (e) {
-                        console.warn('Gitee 读取失败:', e);
-                    }
-                }
+                // --- 1. 取远端笔记（图片会从云端逐张取回并还原） ---
+                const got = await loadRemoteNotes(deviceId, cfg, function(i, total) {
+                    setStatus('⏳ 取回图片 ' + i + '/' + total + ' ...');
+                });
+                const remoteNotes = got.notes, from = got.from;
 
                 if (!remoteNotes || !remoteNotes.length) {
                     setStatus('⚠️ 云端暂无数据（设备码 ' + deviceId + '）');
                     window.showMsg('⚠️ 云端没找到数据。各设备要填同一个设备码，当前是：' + deviceId);
                     return;
+                }
+                if (got.missing) {
+                    console.warn('有 ' + got.missing + ' 张图片没取到，下次同步会补');
                 }
 
                 // --- 3. 合并（同 id 取 updatedAt 较新的） ---
@@ -2362,29 +2553,14 @@ AlterAPI.showMsg("同步中...");</pre>
         // ===== 自动恢复（页面启动时执行：总是合并，不再只限本机为空） =====
         async function autoRestoreFromCloud() {
             try {
-                const cfg = getGiteeConfig();
                 const deviceId = getSyncDeviceId();
-                let remoteNotes = null;
+                const cfg = getGiteeConfig();
+                const got = await loadRemoteNotes(deviceId, cfg);
 
-                try {
-                    const raw = await supabaseRead('alter_notes_' + deviceId);
-                    if (raw) remoteNotes = JSON.parse(raw);
-                } catch (e) { /* 忽略 */ }
-
-                if (!remoteNotes && cfg.owner && cfg.repo && cfg.token) {
-                    try {
-                        const raw = await giteeGetRaw(cfg, 'data/alter-notes.json');
-                        if (raw) {
-                            const parsed = JSON.parse(raw);
-                            if (parsed && parsed.data) remoteNotes = parsed.data;
-                        }
-                    } catch (e) { /* 忽略 */ }
-                }
-
-                if (!remoteNotes || !remoteNotes.length) return;
+                if (!got.notes || !got.notes.length) return;
 
                 const localNotes = await dbAction('getAll');
-                const merged = mergeNotesById(localNotes, remoteNotes);
+                const merged = mergeNotesById(localNotes, got.notes);
                 const written = await writeMergedNotes(merged);
                 if (written) console.log('✅ 启动时自动合并云端 ' + written + ' 条（共 ' + merged.length + ' 条）');
             } catch (e) {
