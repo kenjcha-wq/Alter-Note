@@ -40,7 +40,6 @@
             --ai-msg-bot: #222222;
         }
 
-        /* 稿纸纹理模式 */
         .paper-grid {
             background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px) !important;
             background-size: 24px 24px !important;
@@ -83,7 +82,6 @@
             color: var(--accent);
         }
 
-        /* --- AI 推演插件样式 --- */
         #alter-ai-plugin { position: fixed; inset: 0; z-index: 999999; font-family: var(--font-sans); pointer-events: none; }
         #ai-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 380px; max-width: calc(100vw - 56px); height: 100%; background: var(--ai-panel-bg); border-left: 1px solid var(--border); border-radius: 0; box-shadow: -12px 0 34px rgba(0,0,0,0.10); display: none; flex-direction: column; overflow: hidden; }
         #ai-panel.show { display: flex; pointer-events: auto; }
@@ -125,7 +123,6 @@
         #ai-lab-panel { position: absolute; top: 50px; left: 10px; right: 10px; bottom: 60px; background: var(--ai-panel-bg); z-index: 10; padding: 20px; display: none; flex-direction: column; border-radius: 6px; border: 1px solid var(--border); }
         .lab-input { width: 100%; border: none; border-bottom: 1px solid var(--border); background: transparent; padding: 10px 0; margin-bottom: 15px; font-size: 12px; outline: none; color: var(--text-main); }
 
-        /* --- 核心布局与稳定侧栏 --- */
         #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; text-align: center; }
         .auth-box { width: 280px; padding: 30px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .auth-logo { font-family: var(--font-sans); font-weight: 200; font-size: 32px; margin-bottom: 8px; letter-spacing: 6px; color: #fff; text-transform: uppercase; }
@@ -206,7 +203,6 @@
             flex-direction: column; 
         }
 
-        /* 首页固定：不上下滑动 */
         main.view-home { 
             overflow: hidden !important; 
             height: 100% !important;
@@ -236,7 +232,6 @@
             opacity: 0.8;
         }
 
-        /* 一体化时间与人生倒计时顶栏 */
         .home-epoch-bar {
             display: inline-flex;
             align-items: center;
@@ -401,7 +396,6 @@
             color: var(--text-main); font-weight: 600; text-transform: uppercase; 
         }
 
-        /* 首页三卡片高度充满视口，杜绝溢出滚动 */
         #view-home-container {
             display: flex;
             flex-direction: column;
@@ -493,7 +487,6 @@
 </head>
 <body class="theme-default">
 
-    <!-- 侧栏收回后悬浮小图标 -->
     <div id="sidebar-floating-toggle" onclick="window.toggleSidebar(true)" title="展开菜单">
         <i data-lucide="menu" size="13"></i>
     </div>
@@ -551,7 +544,6 @@
         </div>
     </div>
 
-    <!-- 全页面常驻且可收缩的侧边栏 -->
     <nav id="app-sidebar">
         <button class="sidebar-collapse-trigger" onclick="window.toggleSidebar(false)" title="收起侧栏"><i data-lucide="panel-left-close" size="13"></i></button>
         <div id="cur-login-name">NIK</div>
@@ -562,7 +554,7 @@
         <div class="nav-link" onclick="switchView('reflect', this)" title="心灵回想"><i data-lucide="scan-eye" size="14"></i></div>
         <div class="nav-link" onclick="switchView('lab', this)" title="实验室"><i data-lucide="beaker" size="14"></i></div>
         <div style="flex:1"></div>
-        <div class="nav-link" onclick="window.syncWebDAV()" title="云端同步"><i data-lucide="refresh-cw" size="13"></i></div>
+        <div class="nav-link" onclick="window.manualSync()" title="云端同步"><i data-lucide="refresh-cw" size="13"></i></div>
         <div class="nav-link" onclick="window.toggleAIPanel()" id="nav-ai" title="他我推演"><i data-lucide="flask-conical" size="13"></i></div>
         <div class="nav-link" onclick="window.toggleTheme()" id="nav-theme" title="明暗切换"><i data-lucide="moon" size="13"></i></div>
         <div class="nav-link" onclick="switchView('settings', this)" title="个人中心"><i data-lucide="settings" size="13"></i></div>
@@ -571,7 +563,6 @@
     <main id="main">
         <header>
             <div>
-                <!-- 首页日期时间与人生余量并入一行 -->
                 <div class="home-epoch-bar" id="epoch-bar" style="display:none;">
                     <span id="epoch-datetime">2026.08.30 19:51</span>
                     <span class="life-inline-badge">
@@ -600,7 +591,6 @@
             </div>
         </header>
 
-        <!-- 1. 首页卡片视图 (无外部滚动条，贴合屏幕) -->
         <div id="view-home-container" class="view-section active-view">
             <div class="home-grid">
                 <div class="quick-panel">
@@ -627,12 +617,10 @@
             </div>
         </div>
 
-        <!-- 2. 时间轴/灵感碎片列表视图 -->
         <div id="view-timeline-container" class="view-section">
             <div class="grid" id="note-grid"></div>
         </div>
 
-        <!-- 3. 心灵回想平铺视图 -->
         <div id="view-reflect-container" class="view-section">
             <div class="section-block">
                 <h3>模式感应</h3>
@@ -656,7 +644,6 @@
             <div id="reflect-report" style="font-size:15px; line-height:2.4; border-left:1px solid var(--accent); padding-left:24px; text-align:justify;">在此感应意识的频率。</div>
         </div>
 
-        <!-- 4. 实验室平铺视图 -->
         <div id="view-lab-container" class="view-section">
             <div class="tabs-nav">
                 <div class="tab-btn active" onclick="tabTo('lab-style', this)">外观调节</div>
@@ -709,7 +696,6 @@ AlterAPI.showMsg("同步中...");</pre>
             </div>
         </div>
 
-        <!-- 5. 个人设置平铺视图 -->
         <div id="view-settings-container" class="view-section">
             <div class="section-block">
                 <h3>人生倒计时配置</h3>
@@ -748,21 +734,27 @@ AlterAPI.showMsg("同步中...");</pre>
                     <div class="ctrl-input-wrap"><input type="text" id="rename-user-in" class="input-line" style="margin:0; text-align:right;" onchange="window.renameLogin()"></div>
                 </div>
             </div>
+            
+            <!-- ===== 云同步配置区：Gitee + Supabase（坚果云已移除） ===== -->
             <div class="section-block">
-                <h3>坚果云 / WebDAV 云端同步</h3>
+                <h3>☁️ 云同步 · Gitee + Supabase</h3>
                 <p style="font-size:9px; color:var(--text-dim); margin-bottom:12px; line-height:1.6;">
-                    坚果云配置路径：账号信息 ➔ 安全设置 ➔ 第三方应用管理 ➔ 添加应用密码。<br>
-                    服务器地址通常填：<code>https://dav.jianguoyun.com/dav/</code>
+                    数据同时备份到 Gitee 私有仓库（版本历史）和 Supabase 数据库（双重保险）。<br>
+                    <strong>增量合并模式</strong>：多设备各自新增的内容互不覆盖，删除也会同步。
                 </p>
-                <div class="ctrl-row"><span class="ctrl-label">服务器地址</span><div class="ctrl-input-wrap"><input type="text" id="webdav-url" class="input-line" style="margin:0; text-align:right;" placeholder="https://dav.jianguoyun.com/dav/"></div></div>
-                <div class="ctrl-row"><span class="ctrl-label">账户 (邮箱)</span><div class="ctrl-input-wrap"><input type="text" id="webdav-user" class="input-line" style="margin:0; text-align:right;" placeholder="user@example.com"></div></div>
-                <div class="ctrl-row"><span class="ctrl-label">应用授权密码</span><div class="ctrl-input-wrap"><input type="password" id="webdav-pass" class="input-line" style="margin:0; text-align:right;" placeholder="专属应用密码"></div></div>
-                <div class="ctrl-row"><span class="ctrl-label">自动增量同步</span><div class="ctrl-input-wrap"><input type="checkbox" id="webdav-auto" onchange="window.saveWebDAVConfig()"></div></div>
-                <div style="display:flex; gap:8px; margin-top:12px;">
-                    <button class="btn-black" style="flex:1;" onclick="window.saveWebDAVConfig(true)">保存并立即同步</button>
-                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.syncWebDAV()">手动同步</button>
+                <div class="ctrl-row"><span class="ctrl-label">Gitee 用户名</span><div class="ctrl-input-wrap"><input type="text" id="sync-owner" class="input-line" style="margin:0; text-align:right;" placeholder="你的 Gitee 用户名"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">仓库名</span><div class="ctrl-input-wrap"><input type="text" id="sync-repo" class="input-line" style="margin:0; text-align:right;" placeholder="如 alter-notes"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">私人令牌</span><div class="ctrl-input-wrap"><input type="password" id="sync-token" class="input-line" style="margin:0; text-align:right;" placeholder="Gitee 私人令牌 (projects 权限)"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">分支</span><div class="ctrl-input-wrap"><input type="text" id="sync-branch" class="input-line" style="margin:0; text-align:right;" placeholder="master" value="master"></div></div>
+                <div class="ctrl-row"><span class="ctrl-label">本设备名</span><div class="ctrl-input-wrap"><input type="text" id="sync-device" class="input-line" style="margin:0; text-align:right;" placeholder="如 macbook"></div></div>
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button class="btn-black" style="flex:1; min-width:100px;" onclick="window.saveGiteeConfig()">保存并同步</button>
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main); flex:1; min-width:100px;" onclick="window.pullFromCloud()">从云端恢复</button>
+                    <button class="btn-black" style="background:transparent; border:1px solid var(--border); color:var(--text-main); flex:1; min-width:100px;" onclick="window.manualSync()">手动同步</button>
                 </div>
+                <div id="sync-status" style="font-size:9px; color:var(--text-dim); margin-top:8px; min-height:16px;">就绪</div>
             </div>
+            
             <div class="section-block">
                 <h3>分身状态 (固定)</h3>
                 <div id="persona-list-fixed"></div>
@@ -775,10 +767,9 @@ AlterAPI.showMsg("同步中...");</pre>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()">导出全量备份 (.JSON)</button>
             <button class="btn-black" style="width:100%; margin-top:8px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()">增量导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)">
-            <p class="version-mark" id="version-mark">ALTER · 他我笔记 v2.6</p>
+            <p class="version-mark" id="version-mark">ALTER · 他我笔记 v2.6 · 云同步增强版</p>
         </div>
 
-        <!-- 6. 笔记创作平铺视图 -->
         <div id="view-editor-container" class="view-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div id="p-sel-box" style="display:flex; gap:10px;"></div>
@@ -814,7 +805,6 @@ AlterAPI.showMsg("同步中...");</pre>
             </div>
         </div>
 
-        <!-- 7. 阅读详情平铺视图 -->
         <div id="view-reader-container" class="view-section">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
                 <button class="btn-black" style="padding:5px 12px; font-size:7px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="window.switchView('timeline')">← 返回</button>
@@ -851,7 +841,6 @@ AlterAPI.showMsg("同步中...");</pre>
             renderLifeCountdown();
         }
 
-        /* --- 人生倒计时计算核心 (单行集成) --- */
         function renderLifeCountdown() {
             const birthStr = localStorage.getItem('alt_life_birth') || "1984-01-01";
             const expectYears = parseInt(localStorage.getItem('alt_life_expect') || "80", 10);
@@ -948,126 +937,7 @@ AlterAPI.showMsg("同步中...");</pre>
             window._toastTimer = setTimeout(() => t.style.display = 'none', 2000); 
         };
 
-        /* --- 1. WebDAV 坚果云增量同步引擎 --- */
-        const WebDAVSync = {
-            getConfig() {
-                return {
-                    url: (localStorage.getItem('alt_webdav_url') || '').trim().replace(/\/+$/, ''),
-                    user: (localStorage.getItem('alt_webdav_user') || '').trim(),
-                    pass: (localStorage.getItem('alt_webdav_pass') || '').trim(),
-                    auto: localStorage.getItem('alt_webdav_auto') === 'true'
-                };
-            },
-            getAuthHeader(cfg) {
-                return 'Basic ' + btoa(unescape(encodeURIComponent(cfg.user + ':' + cfg.pass)));
-            },
-            getRemotePath(cfg) {
-                return `${cfg.url}/alter_notes_sync.json`;
-            },
-            async pull() {
-                const cfg = this.getConfig();
-                if (!cfg.url || !cfg.user || !cfg.pass) return null;
-                try {
-                    const res = await fetch(this.getRemotePath(cfg), {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': this.getAuthHeader(cfg),
-                            'Cache-Control': 'no-cache'
-                        }
-                    });
-                    if (res.status === 404) return []; 
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const data = await res.json();
-                    return Array.isArray(data) ? data : null;
-                } catch (e) {
-                    console.warn("WebDAV Pull Failed:", e);
-                    throw e;
-                }
-            },
-            async push(allNotes) {
-                const cfg = this.getConfig();
-                if (!cfg.url || !cfg.user || !cfg.pass) return false;
-                try {
-                    const res = await fetch(this.getRemotePath(cfg), {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': this.getAuthHeader(cfg),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(allNotes)
-                    });
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return true;
-                } catch (e) {
-                    console.warn("WebDAV Push Failed:", e);
-                    throw e;
-                }
-            },
-            async sync() {
-                const cfg = this.getConfig();
-                if (!cfg.url || !cfg.user || !cfg.pass) {
-                    window.showMsg("请先在个人中心配置 WebDAV 信息");
-                    return;
-                }
-                window.showMsg("正在与云端对齐...");
-                try {
-                    const remoteNotes = await this.pull();
-                    if (remoteNotes === null) throw new Error("获取失败");
-                    
-                    const localNotes = await dbAction("getAll");
-                    const merged = mergeNotesById(localNotes, remoteNotes);
-                    
-                    for (const n of merged) {
-                        await dbAction("put", n);
-                    }
-                    notes = merged.sort((a,b) => b.id - a.id);
-                    await this.push(notes);
-                    
-                    await renderAll();
-                    window.showMsg("云端同步完成");
-                } catch (e) {
-                    window.showMsg(`同步失败: ${e.message}`);
-                }
-            }
-        };
-
-        function mergeNotesById(listA, listB) {
-            const map = new Map();
-            (listA || []).forEach(item => { if (item && item.id) map.set(item.id, item); });
-            (listB || []).forEach(item => {
-                if (!item || !item.id) return;
-                if (!map.has(item.id)) {
-                    map.set(item.id, item);
-                } else {
-                    const exist = map.get(item.id);
-                    const existTime = exist.updatedAt || exist.id;
-                    const itemTime = item.updatedAt || item.id;
-                    if (itemTime > existTime) {
-                        map.set(item.id, item);
-                    }
-                }
-            });
-            return Array.from(map.values());
-        }
-
-        window.saveWebDAVConfig = function(triggerSync = false) {
-            const u = document.getElementById('webdav-url');
-            const usr = document.getElementById('webdav-user');
-            const p = document.getElementById('webdav-pass');
-            const a = document.getElementById('webdav-auto');
-            if (u && usr && p) {
-                localStorage.setItem('alt_webdav_url', u.value.trim());
-                localStorage.setItem('alt_webdav_user', usr.value.trim());
-                localStorage.setItem('alt_webdav_pass', p.value.trim());
-                if (a) localStorage.setItem('alt_webdav_auto', a.checked ? 'true' : 'false');
-                window.showMsg("配置已保存");
-                if (triggerSync) WebDAVSync.sync();
-            }
-        };
-
-        window.syncWebDAV = () => WebDAVSync.sync();
-
-        /* --- 2. 首页速记：日程与便签 --- */
+        /* --- 1. 日程与便签 --- */
         let schedule = JSON.parse(localStorage.getItem('alter_schedule') || '[]');
         let stickies = JSON.parse(localStorage.getItem('alter_sticky') || '[]');
 
@@ -1080,8 +950,8 @@ AlterAPI.showMsg("同步中...");</pre>
 
         function saveQuick() {
             try {
-                saveLS('alter_schedule', JSON.stringify(schedule));
-                saveLS('alter_sticky', JSON.stringify(stickies));
+                localStorage.setItem('alter_schedule', JSON.stringify(schedule));
+                localStorage.setItem('alter_sticky', JSON.stringify(stickies));
                 return true;
             } catch (e) {
                 window.showMsg('存储空间超限');
@@ -1216,19 +1086,6 @@ AlterAPI.showMsg("同步中...");</pre>
             showMsg: (text) => window.showMsg(text)
         };
 
-        /* --- 云同步桥：供 sync.js 导出/导入 IndexedDB 笔记 --- */
-        window.AlterSyncIO = {
-            exportAll: () => dbAction('getAll'),
-            importAll: (arr) => dbAction('getAll').then(function (local) {
-                const ops = [];
-                const localIds = (local || []).map(n => n.id);
-                const cloudIds = (arr || []).map(n => n.id);
-                localIds.forEach(id => { if (cloudIds.indexOf(id) === -1) ops.push(dbAction('delete', id)); });
-                (arr || []).forEach(n => ops.push(dbAction('put', n)));
-                return Promise.all(ops);
-            })
-        };
-
         window.AlterPlugins = {
             registry: [],
             register(plugin) {
@@ -1307,7 +1164,7 @@ AlterAPI.showMsg("同步中...");</pre>
             }
         };
 
-        /* --- 3. 核心数据与状态 --- */
+        /* --- 2. 核心数据与状态 --- */
         const DB_NAME = "AlterNoteDB", STORE_NAME = "Notes";
         let db = null, notes = [], user = localStorage.getItem('alter_v52_user') || "NIK", sec = JSON.parse(localStorage.getItem('alt_v52_sec') || localStorage.getItem('alter_v52_sec') || '{"v":"","n":""}') || { v: "", n: "" };
         const FIXED_P = [{n:"他我",i:"🎭"},{n:"乌鸦",i:"🐦"},{n:"影子",i:"🐍"}];
@@ -1339,7 +1196,17 @@ AlterAPI.showMsg("同步中...");</pre>
                 else if (type === "get") request = store.get(data);
                 else if (type === "getAll") request = store.getAll();
                 else if (type === "delete") request = store.delete(data);
-                request.onsuccess = () => { if ((type === "put" || type === "delete") && window.NikSync) window.NikSync.schedulePush(); resolve(request.result); };
+                request.onsuccess = () => { 
+                    resolve(request.result); 
+                    // 保存后自动触发云同步
+                    if ((type === "put" || type === "delete") && !window._syncing) {
+                        window._syncing = true;
+                        setTimeout(() => { 
+                            window._syncing = false; 
+                            window.syncToCloud(); 
+                        }, 500);
+                    }
+                };
                 request.onerror = () => reject(request.error);
             });
         }
@@ -1350,15 +1217,14 @@ AlterAPI.showMsg("同步中...");</pre>
             requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
         };
 
-window.toggleAIPanel = function() {
-const panel = document.getElementById('ai-panel');
-if (!panel) return;
-const opening = !panel.classList.contains('show');
-panel.classList.toggle('show', opening);
-if (opening) window.scrollChatToBottom();
-/* AI 面板右侧全高浮层：打开时临时隐藏云同步悬浮球，避免浮在面板上挡操作 */
-if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
-};
+        window.toggleAIPanel = function() {
+            const panel = document.getElementById('ai-panel');
+            if (!panel) return;
+            const opening = !panel.classList.contains('show');
+            panel.classList.toggle('show', opening);
+            if (opening) window.scrollChatToBottom();
+            if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
+        };
 
         window.toggleAIPersona = function() {
             const btn = document.getElementById('persona-toggle-btn');
@@ -1483,11 +1349,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             const lk = document.getElementById('lab-key-in'); if(lk) lk.value = localStorage.getItem('alt_api_key') || "";
             const lm = document.getElementById('lab-model-in'); if(lm) lm.value = localStorage.getItem('alt_api_model') || "";
 
-            const wu = document.getElementById('webdav-url'); if(wu) wu.value = localStorage.getItem('alt_webdav_url') || "";
-            const wusr = document.getElementById('webdav-user'); if(wusr) wusr.value = localStorage.getItem('alt_webdav_user') || "";
-            const wp = document.getElementById('webdav-pass'); if(wp) wp.value = localStorage.getItem('alt_webdav_pass') || "";
-            const wa = document.getElementById('webdav-auto'); if(wa) wa.checked = localStorage.getItem('alt_webdav_auto') === 'true';
-
             const lb = document.getElementById('life-birth-in');
             const le = document.getElementById('life-expect-in');
             if (lb) lb.value = localStorage.getItem('alt_life_birth') || "1984-01-01";
@@ -1523,9 +1384,13 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             updateEpochClock();
             setInterval(updateEpochClock, 10000);
 
-            if (localStorage.getItem('alt_webdav_auto') === 'true') {
-                setTimeout(() => WebDAVSync.sync(), 2000);
-            }
+            // 加载 Gitee 配置
+            loadGiteeConfig();
+            
+            // 启动时自动从云端恢复（Supabase 优先，Gitee 次之）
+            setTimeout(() => {
+                autoRestoreFromCloud();
+            }, 1000);
         }
 
         window.enterApp = function(name) {
@@ -1547,7 +1412,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             renderAll();
         };
 
-        /* 统一平铺视图切换调度 */
         window.switchView = function(m, el) {
             viewMode = m; 
             const mainEl = document.getElementById('main'); 
@@ -1700,7 +1564,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             }
         };
 
-        /* 导出备份修复：安全触发原生下载 */
         window.dlData = function() {
             try {
                 const backupJson = JSON.stringify(notes, null, 2);
@@ -1744,6 +1607,7 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             window.switchView('editor');
         };
 
+        /* --- 核心保存函数：已集成 Gitee + Supabase 云同步 --- */
         window.save = async function() { 
             const ni = document.getElementById('note-in');
             if (!ni) return;
@@ -1773,10 +1637,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             window.resetEditor(); 
             await renderAll(); 
             window.switchView('timeline'); 
-
-            if (localStorage.getItem('alt_webdav_auto') === 'true') {
-                WebDAVSync.push(notes);
-            }
         };
 
         async function renderGrid(q = "") {
@@ -1878,7 +1738,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
         window.renderPrev = function() { const box = document.getElementById('prevBox'); if (box) { box.style.display=b64s.length?'grid':'none'; box.innerHTML=b64s.map((src, i) => `<div class="prev-item"><img src="${src}"><div class="prev-kill" onclick="window.killImg(${i})">×</div></div>`).join(''); } };
         async function renderAll() { await renderGrid(); renderSwitcher(); renderFixedList(); renderPersonaFilter(); updateStats(); renderDailyReview(); renderQuick(); renderStreak(); renderLifeCountdown(); }
 
-        /* 云同步拉取后静默刷新：重载 IndexedDB 数据 + 重绘当前视图，不整页刷新、不跳回首页 */
         window.AlterRefresh = async function() {
             try {
                 const fresh = await dbAction("getAll");
@@ -1890,7 +1749,7 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
                     renderAll();
                     window.showMsg && window.showMsg("已同步云端数据");
                 }
-            } catch (e) { /* 同步尚未就绪则忽略，等待下次 */ }
+            } catch (e) { /* 忽略 */ }
         };
 
         function dailySeedPick(len) {
@@ -2068,7 +1927,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             };
         })();
 
-        /* 增量导入备份修复 */
         window.importData = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -2090,6 +1948,25 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             reader.readAsText(file);
         };
 
+        function mergeNotesById(listA, listB) {
+            const map = new Map();
+            (listA || []).forEach(item => { if (item && item.id) map.set(item.id, item); });
+            (listB || []).forEach(item => {
+                if (!item || !item.id) return;
+                if (!map.has(item.id)) {
+                    map.set(item.id, item);
+                } else {
+                    const exist = map.get(item.id);
+                    const existTime = exist.updatedAt || exist.id;
+                    const itemTime = item.updatedAt || item.id;
+                    if (itemTime > existTime) {
+                        map.set(item.id, item);
+                    }
+                }
+            });
+            return Array.from(map.values());
+        }
+
         window.setVibe = function(mode, icon) {
             const widget = document.getElementById('observer-vibe-widget'), label = document.getElementById('vibe-text'), iconEl = document.getElementById('vibe-icon'), container = document.getElementById('vibe-container');
             let config = { 
@@ -2103,7 +1980,6 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             }
         };
 
-        /* --- 4. 统一文本分析调度中心 --- */
         const TextAnalyzer = {
             timer: null,
             init() {
@@ -2183,42 +2059,314 @@ if (window.NikSync && NikSync.setFabVisible) NikSync.setFabVisible(!opening);
             if (type === 'line') document.documentElement.style.setProperty('--line-height', val);
         };
 
+        /* ============================================================
+         * 云同步模块：Gitee + Supabase（增量合并，不覆盖）
+         * ============================================================ */
+        
+        // Supabase 配置（固定，不用改）
+        const SUPABASE_URL = 'https://wxftncusytrdkrogqgjw.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Qy8NgPrDETVbTJJuRh-ZYg_rHRlqZTD';
+        
+        // 设备码管理
+        function getDeviceId() {
+            let id = localStorage.getItem('alter_device_id');
+            if (!id) {
+                const input = prompt('🔑 请输入你的设备码（用于识别你的数据）：\n\n• 自己用：随便输一个，如 "mypc"\n• 多设备共享：所有设备输入同一个码\n• 设置后不可修改！', 'user-' + Math.random().toString(36).slice(2, 6));
+                if (input === null) {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    let result = '';
+                    for (let i = 0; i < 8; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+                    id = result;
+                } else {
+                    id = input.trim() || 'user-' + Math.random().toString(36).slice(2, 6);
+                }
+                localStorage.setItem('alter_device_id', id);
+                alert('✅ 设备码已设置为：' + id);
+            }
+            return id;
+        }
+
+        // Gitee 配置管理
+        function loadGiteeConfig() {
+            const cfg = JSON.parse(localStorage.getItem('alter_gitee_cfg') || '{}');
+            const elOwner = document.getElementById('sync-owner');
+            const elRepo = document.getElementById('sync-repo');
+            const elToken = document.getElementById('sync-token');
+            const elBranch = document.getElementById('sync-branch');
+            const elDevice = document.getElementById('sync-device');
+            if (elOwner) elOwner.value = cfg.owner || '';
+            if (elRepo) elRepo.value = cfg.repo || '';
+            if (elToken) elToken.value = cfg.token || '';
+            if (elBranch) elBranch.value = cfg.branch || 'master';
+            if (elDevice) elDevice.value = cfg.device || '';
+        }
+
+        function getGiteeConfig() {
+            const elOwner = document.getElementById('sync-owner');
+            const elRepo = document.getElementById('sync-repo');
+            const elToken = document.getElementById('sync-token');
+            const elBranch = document.getElementById('sync-branch');
+            const elDevice = document.getElementById('sync-device');
+            return {
+                owner: elOwner ? elOwner.value.trim() : '',
+                repo: elRepo ? elRepo.value.trim() : '',
+                token: elToken ? elToken.value.trim() : '',
+                branch: elBranch ? elBranch.value.trim() || 'master' : 'master',
+                device: elDevice ? elDevice.value.trim() || getDeviceId() : getDeviceId()
+            };
+        }
+
+        window.saveGiteeConfig = function() {
+            const cfg = getGiteeConfig();
+            if (!cfg.owner || !cfg.repo || !cfg.token) {
+                window.showMsg('请完整填写 Gitee 用户名、仓库名和私人令牌');
+                return;
+            }
+            localStorage.setItem('alter_gitee_cfg', JSON.stringify(cfg));
+            window.showMsg('✅ Gitee 配置已保存，开始同步...');
+            syncToCloud();
+        };
+
+        // ===== Gitee API 工具 =====
+        function giteeApiUrl(cfg, path, qs) {
+            const url = 'https://gitee.com/api/v5/repos/' + encodeURIComponent(cfg.owner) + '/' +
+                encodeURIComponent(cfg.repo) + '/contents/' + path;
+            return qs ? (url + '?' + qs) : url;
+        }
+
+        function giteeB64e(s) { return btoa(unescape(encodeURIComponent(s))); }
+        function giteeB64d(s) {
+            if (!s) return '';
+            s = String(s).replace(/\s+/g, '');
+            try { return decodeURIComponent(escape(atob(s))); }
+            catch (e) { try { return atob(s); } catch (e2) { return ''; } }
+        }
+
+        async function giteeGetRaw(cfg, path) {
+            const seg = String(path).split('/').map(function(s) { return encodeURIComponent(s); }).join('/');
+            const url = 'https://gitee.com/api/v5/repos/' + encodeURIComponent(cfg.owner) + '/' +
+                encodeURIComponent(cfg.repo) + '/raw/' + seg;
+            const qs = 'access_token=' + encodeURIComponent(cfg.token) +
+                '&ref=' + encodeURIComponent(cfg.branch || 'master');
+            const res = await fetch(url + '?' + qs);
+            if (res.status === 404) return null;
+            if (!res.ok) throw new Error('Gitee 读取失败: ' + res.status);
+            return res.text();
+        }
+
+        async function giteeGetMeta(cfg, path) {
+            const url = giteeApiUrl(cfg, path, 'access_token=' + encodeURIComponent(cfg.token));
+            const res = await fetch(url);
+            if (res.status === 404) return null;
+            if (!res.ok) throw new Error('Gitee 元信息获取失败: ' + res.status);
+            return res.json();
+        }
+
+        async function giteeWrite(cfg, path, content, sha) {
+            const url = giteeApiUrl(cfg, path);
+            const body = {
+                access_token: cfg.token,
+                content: giteeB64e(content),
+                message: 'sync alter-notes ' + new Date().toISOString()
+            };
+            if (sha) body.sha = sha;
+            const res = await fetch(url, {
+                method: sha ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error('Gitee 写入失败: ' + res.status);
+            return res.json();
+        }
+
+        // ===== 云端同步核心（增量合并） =====
+        window.syncToCloud = async function() {
+            const statusEl = document.getElementById('sync-status');
+            if (statusEl) statusEl.innerText = '⏳ 正在同步...';
+
+            try {
+                const cfg = getGiteeConfig();
+                const notesData = await dbAction('getAll');
+                const deviceId = getDeviceId();
+                const filePath = 'data/alter-notes.json';
+                const payload = {
+                    meta: { ts: Date.now(), device: deviceId, version: '2.0' },
+                    data: notesData
+                };
+                const content = JSON.stringify(payload, null, 2);
+
+                // --- 1. 上传到 Gitee（增量合并） ---
+                if (cfg.owner && cfg.repo && cfg.token) {
+                    try {
+                        const remote = await giteeGetMeta(cfg, filePath);
+                        const sha = remote ? remote.sha : undefined;
+                        await giteeWrite(cfg, filePath, content, sha);
+                        if (statusEl) statusEl.innerText = '✅ Gitee 同步成功';
+                    } catch (e) {
+                        if (statusEl) statusEl.innerText = '⚠️ Gitee 同步失败: ' + e.message;
+                        console.warn('Gitee 同步失败:', e);
+                    }
+                }
+
+                // --- 2. 备份到 Supabase ---
+                try {
+                    const backupKey = 'alter_notes_' + deviceId;
+                    const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data', {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'resolution=merge-duplicates'
+                        },
+                        body: JSON.stringify({
+                            data_key: backupKey,
+                            data_value: JSON.stringify(notesData),
+                            updated_at: new Date().toISOString()
+                        })
+                    });
+                    if (resp.ok) {
+                        if (statusEl) statusEl.innerText = '✅ Gitee + Supabase 双云同步完成';
+                    } else {
+                        if (statusEl) statusEl.innerText = '⚠️ Supabase 备份失败: ' + resp.status;
+                    }
+                } catch (e) {
+                    if (statusEl) statusEl.innerText = '⚠️ Supabase 备份异常: ' + e.message;
+                    console.warn('Supabase 备份失败:', e);
+                }
+
+                window.showMsg('☁️ 云同步完成');
+
+            } catch (e) {
+                if (statusEl) statusEl.innerText = '❌ 同步失败: ' + e.message;
+                window.showMsg('❌ 同步失败: ' + e.message);
+            }
+        };
+
+        // ===== 从云端恢复（增量合并，不覆盖） =====
+        window.pullFromCloud = async function() {
+            const statusEl = document.getElementById('sync-status');
+            if (statusEl) statusEl.innerText = '⏳ 正在从云端恢复...';
+
+            try {
+                const cfg = getGiteeConfig();
+                const deviceId = getDeviceId();
+                let remoteNotes = null;
+
+                // --- 1. 优先从 Supabase 恢复 ---
+                try {
+                    const backupKey = 'alter_notes_' + deviceId;
+                    const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data?data_key=eq.' + backupKey + '&select=data_value', {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                        }
+                    });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && data[0] && data[0].data_value) {
+                            remoteNotes = JSON.parse(data[0].data_value);
+                            if (statusEl) statusEl.innerText = '✅ 从 Supabase 读取成功';
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Supabase 读取失败:', e);
+                }
+
+                // --- 2. 如果 Supabase 没有，从 Gitee 恢复 ---
+                if (!remoteNotes && cfg.owner && cfg.repo && cfg.token) {
+                    try {
+                        const filePath = 'data/alter-notes.json';
+                        const raw = await giteeGetRaw(cfg, filePath);
+                        if (raw) {
+                            const parsed = JSON.parse(raw);
+                            if (parsed && parsed.data) {
+                                remoteNotes = parsed.data;
+                                if (statusEl) statusEl.innerText = '✅ 从 Gitee 读取成功';
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Gitee 读取失败:', e);
+                    }
+                }
+
+                if (!remoteNotes || !remoteNotes.length) {
+                    if (statusEl) statusEl.innerText = '⚠️ 云端暂无数据';
+                    window.showMsg('⚠️ 云端暂无数据');
+                    return;
+                }
+
+                // --- 3. 增量合并（不覆盖本地新增） ---
+                const localNotes = await dbAction('getAll');
+                const merged = mergeNotesById(localNotes, remoteNotes);
+
+                for (const n of merged) {
+                    await dbAction('put', n);
+                }
+                notes = await dbAction('getAll');
+                await renderAll();
+
+                if (statusEl) statusEl.innerText = '✅ 已合并云端数据（共 ' + merged.length + ' 条）';
+                window.showMsg('✅ 已从云端恢复 ' + merged.length + ' 条记录');
+
+            } catch (e) {
+                if (statusEl) statusEl.innerText = '❌ 恢复失败: ' + e.message;
+                window.showMsg('❌ 恢复失败: ' + e.message);
+            }
+        };
+
+        // ===== 自动恢复（页面启动时执行） =====
+        async function autoRestoreFromCloud() {
+            try {
+                const cfg = getGiteeConfig();
+                const deviceId = getDeviceId();
+                let remoteNotes = null;
+
+                // 从 Supabase 读取
+                try {
+                    const backupKey = 'alter_notes_' + deviceId;
+                    const resp = await fetch(SUPABASE_URL + '/rest/v1/user_data?data_key=eq.' + backupKey + '&select=data_value', {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+                        }
+                    });
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && data[0] && data[0].data_value) {
+                            remoteNotes = JSON.parse(data[0].data_value);
+                        }
+                    }
+                } catch (e) { /* 忽略 */ }
+
+                if (remoteNotes && remoteNotes.length) {
+                    const localNotes = await dbAction('getAll');
+                    if (localNotes.length === 0) {
+                        // 本地为空，直接恢复
+                        for (const n of remoteNotes) {
+                            await dbAction('put', n);
+                        }
+                        notes = await dbAction('getAll');
+                        await renderAll();
+                        console.log('✅ 自动从 Supabase 恢复 ' + notes.length + ' 条记录');
+                    }
+                }
+            } catch (e) {
+                console.warn('自动恢复失败:', e);
+            }
+        };
+
+        // ===== 手动同步按钮 =====
+        window.manualSync = function() {
+            syncToCloud();
+        };
+
+        /* --- 页面加载 --- */
         window.addEventListener('load', () => { 
             init(); 
             const m0 = document.getElementById('main'); 
             if (m0) m0.classList.add('view-home'); 
         });
     </script>
-<script src="sync.js"></script>
-<script>
-function saveLS(k, v) { localStorage.setItem(k, v); if (window.NikSync) NikSync.schedulePush(); }
-function alterExport() {
-  return (window.AlterSyncIO ? window.AlterSyncIO.exportAll() : Promise.resolve([]))
-    .then(function (list) { return { __alter_notes: JSON.stringify(list || []) }; });
-}
-function alterImport(data) {
-  if (!data || data.__alter_notes === undefined || !window.AlterSyncIO) return Promise.resolve(false);
-  var arr; try { arr = JSON.parse(data.__alter_notes); } catch (e) { return Promise.resolve(false); }
-  if (!Array.isArray(arr)) return Promise.resolve(false);
-  return window.AlterSyncIO.importAll(arr).then(function () { return true; });
-}
-try {
-  NikSync.setAdapter({ exportExtra: alterExport, importExtra: alterImport });
-  var _sc = NikSync.cfg();
-  NikSync.init({ app: 'alter-note', owner: _sc.owner || '', repo: _sc.repo || '', token: _sc.token || '', branch: _sc.branch || 'master', device: _sc.device || '', file: 'data/alter-note.json', keys: ['alter_schedule', 'alter_sticky'], fab: { m: 'bottom:110px;right:12px', d: 'bottom:110px;right:14px' } });
-  /* 拉取远端后：不整页刷新（会跳回首页），等界面就绪后静默重载数据并重绘当前视图 */
-  NikSync.autoPull().then(function (changed) {
-    if (!changed) return;
-    var _t = 0;
-    function tryRefresh() {
-      if (window.AlterRefresh) { window.AlterRefresh(); return; }
-      if (++_t > 40) return; /* 最多等 ~8s，仍未就绪则放弃本次静默刷新 */
-      setTimeout(tryRefresh, 200);
-    }
-    setTimeout(tryRefresh, 600);
-  });
-  NikSync.ensureFAB();
-} catch (e) {}
-</script>
 </body>
 </html>
