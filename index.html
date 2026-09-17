@@ -1086,7 +1086,68 @@ AlterAPI.showMsg("同步中...");</pre>
 
         window.AlterAPI = {
             getNotes: () => JSON.parse(JSON.stringify(notes)),
-            showMsg: (text) => window.showMsg(text)
+            showMsg: (text) => window.showMsg(text),
+            // ↓ 本轮新增：只给能力桥用。写操作必须走 dbAction，保持"一写就触发云同步"
+            bridge: {
+                ready: () => !!db,
+                personas: () => JSON.parse(JSON.stringify([...FIXED_P, { n: user, i: '👤' }])),
+                viewer: () => user,
+                counts: () => {
+                    const today = new Date().toLocaleDateString();
+                    return {
+                        timeline: notes.filter(n => !n.isVault && !n.deleteAt).length,
+                        fragmentActive: notes.filter(n => n.isVault && !n.deleteAt).length,
+                        fragmentRecycled: notes.filter(n => !!n.deleteAt).length,
+                        today: notes.filter(n => n.time === today && !n.isVault).length
+                    };
+                },
+                streakDays: () => currentStreak(),
+                createNote: async (o) => {
+                    o = o || {};
+                    const content = String(o.content || '').trim();
+                    if (!content) throw new Error('内容不能为空');
+                    if (content.length > 4000) throw new Error('内容过长（' + content.length + ' 字），上限 4000 字');
+                    const all = [...FIXED_P, { n: user, i: '👤' }];
+                    const persona = String(o.persona == null || o.persona === '' ? '他我' : o.persona);
+                    const hit = all.find(p => p.n === persona);
+                    if (!hit) throw new Error('非法视角「' + persona + '」，可选：' + all.map(p => p.n).join('、'));
+                    const clientId = o.clientId ? String(o.clientId) : '';
+                    if (clientId) {
+                        const dup = notes.find(n => n.clientId === clientId);
+                        if (dup) return { id: dup.id, persona: dup.persona, isVault: !!dup.isVault, time: dup.time, chars: (dup.content || '').length, verified: true, duplicate: true };
+                    }
+                    const note = makeNote(content, hit.n, !!o.isVault, { emoji: hit.i, clientId: clientId });
+                    await dbAction('put', note);
+                    const back = await dbAction('get', note.id);
+                    if (!back || back.content !== content) throw new Error('他我笔记还没加载完，请稍后再试');
+                    notes.unshift(note);
+                    await renderAll();
+                    return { id: note.id, persona: note.persona, isVault: !!note.isVault, time: note.time, chars: content.length, verified: true };
+                },
+                addReply: async (o) => {
+                    o = o || {};
+                    const noteId = Number(o.noteId);
+                    const content = String(o.content || '').trim();
+                    if (!Number.isFinite(noteId)) throw new Error('noteId 必须是数字，先调用 query_notes 查一下');
+                    if (!content) throw new Error('回复内容不能为空');
+                    if (content.length > 1000) throw new Error('回复过长（' + content.length + ' 字），上限 1000 字');
+                    const all = [...FIXED_P, { n: user, i: '👤' }];
+                    const persona = String(o.persona == null || o.persona === '' ? '他我' : o.persona);
+                    const hit = all.find(p => p.n === persona);
+                    if (!hit) throw new Error('非法视角「' + persona + '」，可选：' + all.map(p => p.n).join('、'));
+                    const n = notes.find(x => x.id === noteId);
+                    if (!n) throw new Error('没找到 id=' + noteId + ' 的笔记，请先调用 query_notes 查一下');
+                    if (!n.replies) n.replies = [];
+                    n.replies.push({ txt: content, who: hit.n });
+                    n.updatedAt = Date.now();
+                    await dbAction('put', n);
+                    const back = await dbAction('get', noteId);
+                    const last = back && back.replies && back.replies[back.replies.length - 1];
+                    if (!back || !last || last.txt !== content) throw new Error('他我笔记还没加载完，请稍后再试');
+                    await renderAll();
+                    return { noteId: noteId, replies: n.replies.length, persona: hit.n, verified: true, note: '回复项无 id/时间戳，同内容重复回复无法区分' };
+                }
+            }
         };
 
         window.AlterPlugins = {
@@ -1610,6 +1671,21 @@ AlterAPI.showMsg("同步中...");</pre>
             window.switchView('editor');
         };
 
+        /* 共享的笔记对象工厂：window.save() 新建分支与能力桥 bridge.createNote 都走这里（不允许复制第二份形状） */
+        function makeNote(content, persona, isVault, opts) {
+            opts = opts || {};
+            const images = opts.images || [];
+            const files = opts.files || [];
+            const note = {
+                id: uniqueId(notes), content: String(content || ''), author: user, images: [...images], files: [...files],
+                isVault: !!isVault, persona: persona, i: opts.emoji || '👤', time: new Date().toLocaleDateString(), replies: [], zs: 0,
+                updatedAt: opts.updatedAt || Date.now(),
+                tmpl: images.length ? 'none' : ['quote','dark','serif'][Math.floor(Math.random()*3)]
+            };
+            if (opts.clientId) note.clientId = opts.clientId;
+            return note;
+        }
+
         /* --- 核心保存函数：已集成 Gitee + Supabase 云同步 --- */
         window.save = async function() { 
             const ni = document.getElementById('note-in');
@@ -1628,12 +1704,7 @@ AlterAPI.showMsg("同步中...");</pre>
                     window.showMsg("回响已修缮");
                 }
             } else {
-                const newNote = { 
-                    id: uniqueId(notes), content: t, author: user, images: [...b64s], files: [...files], 
-                    isVault: inV, persona: activeP.n, i: activeP.i, time: new Date().toLocaleDateString(), replies: [], zs: 0, 
-                    updatedAt: now,
-                    tmpl: b64s.length ? 'none' : ['quote','dark','serif'][Math.floor(Math.random()*3)] 
-                };
+                const newNote = makeNote(t, activeP.n, inV, { emoji: activeP.i, images: b64s, files: files, updatedAt: now });
                 await dbAction("put", newNote); notes.unshift(newNote);
                 window.showMsg("回响已封存");
             }
@@ -2616,5 +2687,193 @@ AlterAPI.showMsg("同步中...");</pre>
             if (m0) m0.classList.add('view-home'); 
         });
     </script>
+<script>
+/* ────────────────────────────────────────────────────────────
+   象览能力桥（他我笔记 / Alter-Note）
+   第五段：仅在有宿主注入 window.xianglan 时注册；无宿主单独打开时这一段不执行、不泄漏。
+   写操作一律复用应用自身的写入通道（dbAction / window.addSchedule），
+   不另开 IndexedDB 连接、不经 window.save()、不写任何 key。
+   ──────────────────────────────────────────────────────────── */
+if (window.xianglan && typeof window.xianglan.register === 'function') {
+  window.xianglan.register({
+    description: '他我笔记（Alter-Note）：本地优先的碎片笔记/日程应用。可检索笔记（只读）、读现状与视角枚举、以指定视角写笔记、给笔记加回声回复、往首页加日程。所有日期/时间戳/id 由应用生成，模型不要传。',
+    actions: {
+      // ── 读 1：检索笔记 ──
+      query_notes: {
+        description: '检索他我笔记（只读）。scope 必填：timeline=主时间轴（未标记碎片、未删除，默认）、fragment=灵感碎片、memory=碎片回收站、all=全部。persona 不传时不过滤（等于界面上的「全部」）；传了必须是 get_overview 返回里的合法视角名。只返回摘要；要正文显式传 withContent:true（每条正文最多 500 字，且最多只带 10 条正文）。按 id 降序（最新在前）。绝不返回图片和附件。',
+        params: {
+          scope: { type: 'string', description: '查询范围，必填：timeline / fragment / memory / all', required: true },
+          persona: { type: 'string', description: '视角名（他我/乌鸦/影子/当前登录名），不传不过滤，可选', required: false },
+          keyword: { type: 'string', description: '关键词，匹配正文，可选', required: false },
+          limit: { type: 'number', description: '最多返回条数，默认 20，上限 50，可选', required: false },
+          withContent: { type: 'boolean', description: '是否带正文，默认 false；true 时每条正文最多 500 字、最多 10 条，可选', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          const scope = String((args && args.scope) || 'timeline').trim();
+          const SCOPES = ['timeline', 'fragment', 'memory', 'all'];
+          if (!SCOPES.includes(scope)) throw new Error('scope 只能是 timeline/fragment/memory/all，收到「' + scope + '」');
+          const notes = window.AlterAPI.getNotes();
+          let list = notes;
+          if (scope === 'timeline') list = list.filter(n => !n.isVault && !n.deleteAt);
+          else if (scope === 'fragment') list = list.filter(n => n.isVault && !n.deleteAt);
+          else if (scope === 'memory') list = list.filter(n => n.isVault && !!n.deleteAt);
+          const persona = args && args.persona ? String(args.persona).trim() : '';
+          if (persona) {
+            const allP = window.AlterAPI.bridge.personas().map(p => p.n);
+            if (!allP.includes(persona)) throw new Error('非法视角「' + persona + '」，可用：' + allP.join('、'));
+            list = list.filter(n => n.persona === persona);
+          }
+          const kw = String((args && args.keyword) || '').trim();
+          if (kw) list = list.filter(n => String(n.content || '').includes(kw));
+          const sorted = [...list].sort((a, b) => (b.id || 0) - (a.id || 0));
+          const total = sorted.length;
+          const withContent = !!(args && args.withContent);
+          const limit = Math.min(50, Math.max(1, parseInt((args && args.limit !== undefined && args.limit !== null) ? args.limit : 20, 10) || 20));
+          const effective = withContent ? Math.min(limit, 10) : limit;
+          const part = sorted.slice(0, effective);
+          const items = part.map(n => {
+            const it = {
+              id: n.id,
+              persona: n.persona,
+              i: n.i,
+              author: n.author,
+              time: n.time,
+              isVault: !!n.isVault,
+              fragmentRecycled: !!n.deleteAt,
+              zs: n.zs || 0,
+              replies: Array.isArray(n.replies) ? n.replies.length : 0,
+              chars: String(n.content || '').length,
+              excerpt: String(n.content || '').slice(0, 80)
+            };
+            if (withContent) {
+              const c = String(n.content || '');
+              it.content = c.slice(0, 500);
+              it.contentTruncated = c.length > 500;
+            }
+            return it;
+          });
+          return { total, returned: items.length, truncated: items.length < total, scope, withContent, items };
+        }
+      },
+      // ── 读 2：现状与视角枚举 ──
+      get_overview: {
+        description: '读他我笔记现状与运行时真实枚举（只读，不含正文、不含 key）。做写动作之前先调它拿合法的 persona 取值。返回视角清单、各库条数、今天写了几条、连续天数、AI 是否配好（只回布尔，不回 key）。',
+        params: {},
+        run: async () => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          const bridge = window.AlterAPI.bridge;
+          const counts = bridge.counts();
+          const scheduledCount = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]').length; } catch (e) { return 0; } })();
+          const stickyCount = (() => { try { return JSON.parse(localStorage.getItem('alter_sticky') || '[]').length; } catch (e) { return 0; } })();
+          const activeView = (document.querySelector('.view-section.active-view') || {}).id || 'timeline';
+          return {
+            viewer: bridge.viewer(),
+            personas: bridge.personas().map(p => ({ name: p.n, icon: p.i })).slice(0, 10),
+            counts: {
+              timeline: counts.timeline,
+              fragmentActive: counts.fragmentActive,
+              fragmentRecycled: counts.fragmentRecycled,
+              today: counts.today
+            },
+            streakDays: bridge.streakDays(),
+            scheduledCount: scheduledCount,
+            stickyCount: stickyCount,
+            aiConfigured: !!(localStorage.getItem('alt_api_key') || ''),
+            currentView: activeView
+          };
+        }
+      },
+      // ── 写 1：以指定视角写笔记 ──
+      add_note: {
+        description: '以指定视角写一条新笔记（写）。日期/时间/id 全部由应用生成，你不要也不能提供。persona 不传默认「他我」，传了必须是 get_overview 返回里的合法视角名。isVault=true 时进灵感碎片。clientId 由宿主注入用于幂等，模型不要填——同一 clientId 重复调用不会重复写入，而是返回已写的那条。',
+        params: {
+          content: { type: 'string', description: '笔记正文，纯文本，必填，上限 4000 字', required: true },
+          persona: { type: 'string', description: '视角名，默认 他我；取值见 get_overview，可选', required: false },
+          isVault: { type: 'boolean', description: '是否进灵感碎片，默认 false，可选', required: false },
+          clientId: { type: 'string', description: '宿主注入的幂等标识，模型不要填', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || !String(args.content || '').trim()) throw new Error('add_note 缺少必填参数 content（内容不能为空）');
+          const content = String(args.content).trim();
+          const persona = args.persona === undefined || args.persona === null || String(args.persona).trim() === '' ? '他我' : String(args.persona).trim();
+          const r = await window.AlterAPI.bridge.createNote({
+            content: content,
+            persona: persona,
+            isVault: !!(args.isVault),
+            clientId: args.clientId ? String(args.clientId) : ''
+          });
+          return { id: r.id, persona: r.persona, isVault: !!r.isVault, time: r.time, chars: r.chars, verified: !!r.verified };
+        }
+      },
+      // ── 写 2：给笔记加回声回复 ──
+      add_reply: {
+        description: '给已有笔记加一条「回声」回复（写）。noteId 必填，来自 query_notes 的返回，且必须是数字。persona 同 add_note。注意：应用里回复项没有 id 也没有时间戳，幂等只能比对内容，同内容重复回复无法区分（返回值里会说明）。clientId 由宿主注入，模型不要填。',
+        params: {
+          noteId: { type: 'number', description: '目标笔记 id，必填，来自 query_notes 返回', required: true },
+          content: { type: 'string', description: '回复内容，必填，上限 1000 字', required: true },
+          persona: { type: 'string', description: '视角名，默认 他我，可选', required: false },
+          clientId: { type: 'string', description: '宿主注入的幂等标识，模型不要填', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || args.noteId === undefined || args.noteId === null || !String(args.noteId).trim()) throw new Error('add_reply 缺少必填参数 noteId');
+          if (!String(args.content || '').trim()) throw new Error('add_reply 缺少必填参数 content（回复不能为空）');
+          const r = await window.AlterAPI.bridge.addReply({
+            noteId: Number(args.noteId),
+            content: String(args.content).trim(),
+            persona: args.persona === undefined || args.persona === null || String(args.persona).trim() === '' ? '他我' : String(args.persona).trim()
+          });
+          return { noteId: r.noteId, replies: r.replies, persona: r.persona, verified: !!r.verified, note: r.note };
+        }
+      },
+      // ── 写 3：往首页加日程 ──
+      add_schedule: {
+        description: '往首页「日程」加一条带日期的待办（写）。这是这个应用里真正意义的「任务」。date 是业务数据，必填，格式必须是 YYYY-MM-DD（应用自己只判非空，不校验格式；桥这边会严格校验，传「明天」这类值会报错）。日历/日程数据只在浏览器本地，不在云同步里，同一 clientId 的幂等只在本机有效。',
+        params: {
+          content: { type: 'string', description: '待办内容，必填', required: true },
+          date: { type: 'string', description: '日期，必填，格式 YYYY-MM-DD', required: true },
+          clientId: { type: 'string', description: '宿主注入的幂等标识（仅本机生效），模型不要填', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          const content = String((args && args.content) || '').trim();
+          if (!content) throw new Error('add_schedule 缺少必填参数 content（待办内容不能为空）');
+          const date = String((args && args.date) || '').trim();
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('add_schedule 的 date 必须满足格式 YYYY-MM-DD，收到「' + date + '」');
+          const clientId = args && args.clientId ? String(args.clientId) : '';
+          const beforeSched = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]'); } catch (e) { return []; } })();
+          const beforeSticky = (() => { try { return JSON.parse(localStorage.getItem('alter_sticky') || '[]'); } catch (e) { return []; } })();
+          if (clientId && beforeSched.some(x => x.clientId === clientId)) {
+            const dup = beforeSched.find(x => x.clientId === clientId);
+            return { id: dup.id, date: dup.date, scheduled: beforeSched.length, verified: true, note: 'clientId 命中已有日程（仅本机幂等）' };
+          }
+          const ti = document.getElementById('schedule-text');
+          const di = document.getElementById('schedule-date');
+          if (!ti || !di || typeof window.addSchedule !== 'function') throw new Error('add_schedule 失败：首页日程输入框未就绪');
+          ti.value = content;
+          di.value = date;
+          window.addSchedule();
+          const afterSched = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]'); } catch (e) { return []; } })();
+          const afterSticky = (() => { try { return JSON.parse(localStorage.getItem('alter_sticky') || '[]'); } catch (e) { return []; } })();
+          if (afterSched.length !== beforeSched.length + 1) throw new Error('add_schedule 失败：回读校验未通过（日程条数未增加）');
+          if (afterSticky.length !== beforeSticky.length) throw new Error('add_schedule 失败：回读校验未通过（便签条数被意外改动）');
+          const added = afterSched[afterSched.length - 1];
+          if (!added || String(added.text || '') !== content || String(added.date || '') !== date) throw new Error('add_schedule 失败：回读校验未通过（新增项内容不一致）');
+          if (clientId) { added.clientId = clientId; try { localStorage.setItem('alter_schedule', JSON.stringify(afterSched)); } catch (e) { } }
+          return { id: added.id, date: added.date, scheduled: afterSched.length, verified: true, note: '日程存在浏览器本机，不在云同步内；clientId 幂等仅本机有效' };
+        }
+      }
+    }
+  });
+}
+</script>
+
 </body>
 </html>
