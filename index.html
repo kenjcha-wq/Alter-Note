@@ -770,7 +770,7 @@ AlterAPI.showMsg("同步中...");</pre>
             <button class="btn-black" style="width:100%;" onclick="window.dlData()" data-page-node-id="jbEW24Z1CWKbAnGOuFyWVT">导出全量备份 (.JSON)</button>
             <button class="btn-black" style="width:100%; margin-top:8px; background:transparent; border:1px solid var(--border); color:var(--text-main);" onclick="document.getElementById('import-selector').click()" data-page-node-id="o5XPZGSl1QR9hK4oBVf321">增量导入备份 (.JSON)</button>
             <input type="file" id="import-selector" hidden accept=".json" onchange="window.importData(event)" data-page-node-id="ATaO1neJHQejwRxTdVwcTr">
-            <p class="version-mark" id="version-mark" data-page-node-id="OqICKSWG9ekt0kuuntkef5">ALTER · 他我笔记 v2.6 · 云同步增强版</p>
+            <p class="version-mark" id="version-mark" data-page-node-id="OqICKSWG9ekt0kuuntkef5">ALTER · 他我笔记 v2.7 · 能力桥读日程</p>
         </div>
 
         <div id="view-editor-container" class="view-section" data-page-node-id="SmPAaEwNkTFzMJgahx2boR">
@@ -2696,7 +2696,7 @@ AlterAPI.showMsg("同步中...");</pre>
    ──────────────────────────────────────────────────────────── */
 if (window.xianglan && typeof window.xianglan.register === 'function') {
   window.xianglan.register({
-    description: '他我笔记（Alter-Note）：本地优先的碎片笔记/日程应用。可检索笔记（只读）、读现状与视角枚举、以指定视角写笔记、给笔记加回声回复、往首页加日程。所有日期/时间戳/id 由应用生成，模型不要传。',
+    description: '他我笔记（Alter-Note）：本地优先的碎片笔记/日程应用。可检索笔记（只读）、读现状与视角枚举、读取首页日程列表（只读）、以指定视角写笔记、给笔记加回声回复、往首页加日程。所有日期/时间戳/id 由应用生成，模型不要传。',
     actions: {
       // ── 读 1：检索笔记 ──
       query_notes: {
@@ -2784,6 +2784,49 @@ if (window.xianglan && typeof window.xianglan.register === 'function') {
             aiConfigured: !!(localStorage.getItem('alt_api_key') || ''),
             currentView: activeView
           };
+        }
+      },
+      // ── 读 3：读日程（只读） ──
+      list_schedule: {
+        description: '读取他我笔记首页「日程」列表（只读：不写、不改、不触发同步）。复用应用自身的 alter_schedule 数据源与字段。支持按日期区间 from/to（YYYY-MM-DD，含端点）过滤、limit 条数（默认 50，上限 200）。返回 { total, returned, items }，每条含 id、date(YYYY-MM-DD)、time(本应用无时间字段，恒为空串)、content(日程内容，映射自存储的 text 字段)、done(是否完成)。按 date 升序、同日按 time 升序、无时间的排在有时间的后面。',
+        params: {
+          from: { type: 'string', description: '起始日期 YYYY-MM-DD（含），不传=不限制，可选', required: false },
+          to: { type: 'string', description: '结束日期 YYYY-MM-DD（含），不传=不限制，可选', required: false },
+          limit: { type: 'number', description: '最多返回条数，默认 50，上限 200，可选', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          const raw = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]'); } catch (e) { return []; } })();
+          const from = args && args.from ? String(args.from).trim() : '';
+          const to = args && args.to ? String(args.to).trim() : '';
+          if (from && !/^\d{4}-\d{2}-\d{2}$/.test(from)) throw new Error('list_schedule 的 from 必须满足格式 YYYY-MM-DD，收到「' + from + '」');
+          if (to && !/^\d{4}-\d{2}-\d{2}$/.test(to)) throw new Error('list_schedule 的 to 必须满足格式 YYYY-MM-DD，收到「' + to + '」');
+          let list = raw.filter(x => x && typeof x === 'object');
+          if (from) list = list.filter(x => String(x.date || '') >= from);
+          if (to) list = list.filter(x => String(x.date || '') <= to);
+          const limit = Math.min(200, Math.max(1, parseInt((args && args.limit !== undefined && args.limit !== null) ? args.limit : 50, 10) || 50));
+          const cmp = (a, b) => {
+            const da = String(a.date || ''), db = String(b.date || '');
+            if (da !== db) return da < db ? -1 : 1;
+            const ta = (a.time !== undefined && a.time !== null) ? String(a.time) : '';
+            const tb = (b.time !== undefined && b.time !== null) ? String(b.time) : '';
+            if (ta && tb) return ta < tb ? -1 : (ta > tb ? 1 : 0);
+            if (ta && !tb) return -1;
+            if (!ta && tb) return 1;
+            return 0;
+          };
+          const sorted = [...list].sort(cmp);
+          const total = sorted.length;
+          const part = sorted.slice(0, limit);
+          const items = part.map(x => ({
+            id: x.id,
+            date: String(x.date || ''),
+            time: (x.time !== undefined && x.time !== null) ? String(x.time) : '',
+            content: String(x.text || ''),
+            done: !!x.done
+          }));
+          return { total, returned: items.length, items };
         }
       },
       // ── 写 1：以指定视角写笔记 ──
