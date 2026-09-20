@@ -1146,6 +1146,95 @@ AlterAPI.showMsg("同步中...");</pre>
                     if (!back || !last || last.txt !== content) throw new Error('他我笔记还没加载完，请稍后再试');
                     await renderAll();
                     return { noteId: noteId, replies: n.replies.length, persona: hit.n, verified: true, note: '回复项无 id/时间戳，同内容重复回复无法区分' };
+                },
+                // ── 能力桥新增：编辑笔记 ──
+                editNote: async (o) => {
+                    o = o || {};
+                    const noteId = Number(o.noteId);
+                    if (!Number.isFinite(noteId)) throw new Error('noteId 必须是数字，先调用 query_notes 查一下');
+                    const idx = notes.findIndex(x => x.id === noteId);
+                    if (idx === -1) throw new Error('没找到 id=' + noteId + ' 的笔记，请先调用 query_notes 查一下');
+                    const n = notes[idx];
+                    if (o.content !== undefined && o.content !== null) {
+                        const c = String(o.content).trim();
+                        if (!c) throw new Error('笔记内容不能为空');
+                        if (c.length > 4000) throw new Error('内容过长（' + c.length + ' 字），上限 4000 字');
+                        n.content = c;
+                    }
+                    if (o.persona !== undefined && o.persona !== null && String(o.persona).trim() !== '') {
+                        const persona = String(o.persona).trim();
+                        const all = [...FIXED_P, { n: user, i: '👤' }];
+                        const hit = all.find(p => p.n === persona);
+                        if (!hit) throw new Error('非法视角「' + persona + '」，可选：' + all.map(p => p.n).join('、'));
+                        n.persona = hit.n; n.i = hit.i;
+                    }
+                    n.updatedAt = Date.now();
+                    await dbAction('put', n);
+                    const back = await dbAction('get', noteId);
+                    if (!back) throw new Error('他我笔记还没加载完，请稍后再试');
+                    await renderAll();
+                    return { id: n.id, persona: n.persona, isVault: !!n.isVault, chars: (n.content || '').length, verified: true, note: '已编辑' };
+                },
+                // ── 能力桥新增：删除笔记 ──
+                deleteNote: async (o) => {
+                    o = o || {};
+                    const noteId = Number(o.noteId);
+                    if (!Number.isFinite(noteId)) throw new Error('noteId 必须是数字，先调用 query_notes 查一下');
+                    const idx = notes.findIndex(x => x.id === noteId);
+                    if (idx === -1) throw new Error('没找到 id=' + noteId + ' 的笔记，请先调用 query_notes 查一下');
+                    const n = notes[idx];
+                    if (o.permanent) {
+                        // 永久删除：从数组移除 + IndexedDB 删除
+                        notes.splice(idx, 1);
+                        await dbAction('delete', noteId);
+                        await renderAll();
+                        return { id: noteId, permanent: true, verified: true, note: '已永久删除' };
+                    }
+                    // 软删除：移入碎片回收站（3天后过期）
+                    n.isVault = true;
+                    n.deleteAt = Date.now() + 259200000;
+                    n.updatedAt = Date.now();
+                    await dbAction('put', n);
+                    await renderAll();
+                    return { id: noteId, permanent: false, verified: true, note: '已移入碎片回收站（3天后过期）' };
+                },
+                // ── 能力桥新增：编辑日程 ──
+                editSchedule: async (o) => {
+                    o = o || {};
+                    const schedId = Number(o.scheduleId);
+                    if (!Number.isFinite(schedId)) throw new Error('scheduleId 必须是数字，先调用 list_schedule 查一下');
+                    const arr = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]'); } catch (e) { return []; } })();
+                    const idx = arr.findIndex(x => x.id === schedId);
+                    if (idx === -1) throw new Error('没找到 id=' + schedId + ' 的日程，请先调用 list_schedule 查一下');
+                    if (o.content !== undefined && o.content !== null) {
+                        const c = String(o.content).trim();
+                        if (!c) throw new Error('日程内容不能为空');
+                        arr[idx].text = c;
+                    }
+                    if (o.date !== undefined && o.date !== null) {
+                        const d = String(o.date).trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error('date 格式必须是 YYYY-MM-DD，收到「' + d + '」');
+                        arr[idx].date = d;
+                    }
+                    if (o.done !== undefined && o.done !== null) {
+                        arr[idx].done = !!o.done;
+                    }
+                    localStorage.setItem('alter_schedule', JSON.stringify(arr));
+                    if (typeof window.renderQuick === 'function') window.renderQuick();
+                    return { id: schedId, text: arr[idx].text, date: arr[idx].date, done: !!arr[idx].done, verified: true, note: '日程已编辑' };
+                },
+                // ── 能力桥新增：删除日程 ──
+                deleteSchedule: async (o) => {
+                    o = o || {};
+                    const schedId = Number(o.scheduleId);
+                    if (!Number.isFinite(schedId)) throw new Error('scheduleId 必须是数字，先调用 list_schedule 查一下');
+                    let arr = (() => { try { return JSON.parse(localStorage.getItem('alter_schedule') || '[]'); } catch (e) { return []; } })();
+                    const idx = arr.findIndex(x => x.id === schedId);
+                    if (idx === -1) throw new Error('没找到 id=' + schedId + ' 的日程，请先调用 list_schedule 查一下');
+                    arr = arr.filter(x => x.id !== schedId);
+                    localStorage.setItem('alter_schedule', JSON.stringify(arr));
+                    if (typeof window.renderQuick === 'function') window.renderQuick();
+                    return { id: schedId, verified: true, note: '日程已删除' };
                 }
             }
         };
@@ -1350,9 +1439,10 @@ AlterAPI.showMsg("同步中...");</pre>
         }
 
         async function callAI(prompt, images = [], systemOverride = null) {
-            const rawUrl = localStorage.getItem('alt_api_url') || "";
-            const apiKey = localStorage.getItem('alt_api_key') || "";
-            const apiModel = localStorage.getItem('alt_api_model') || "";
+            const _X = XLcfg();                       // 系统内的统一配置（没有则为空）
+            const rawUrl = _X.url || localStorage.getItem('alt_api_url') || "";
+            const apiKey = _X.key || localStorage.getItem('alt_api_key') || "";
+            const apiModel = _X.model || localStorage.getItem('alt_api_model') || "";
             const chatBox = document.getElementById('ai-chat-box');
             if (!apiKey || !rawUrl) { appendMsg('bot', '⚠️ 配置缺失。点右上角 ⚙️ 填写 API 地址、Key 与模型名。'); return; }
 
@@ -1858,9 +1948,10 @@ AlterAPI.showMsg("同步中...");</pre>
             if (!box) return;
             box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">正在感应意识关键词...</div>';
 
-            const rawUrl = localStorage.getItem('alt_api_url') || "";
-            const apiKey = localStorage.getItem('alt_api_key') || "";
-            const apiModel = localStorage.getItem('alt_api_model') || "";
+            const _X = XLcfg();                       // 系统内的统一配置（没有则为空）
+            const rawUrl = _X.url || localStorage.getItem('alt_api_url') || "";
+            const apiKey = _X.key || localStorage.getItem('alt_api_key') || "";
+            const apiModel = _X.model || localStorage.getItem('alt_api_model') || "";
             
             if (!apiKey || !rawUrl) {
                 box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;opacity:0.5;">⚠️ 需要先配置 API Key</div>';
@@ -2688,6 +2779,31 @@ AlterAPI.showMsg("同步中...");</pre>
         });
     </script>
 <script>
+/* ── 象元Go 系统统一配置（宿主 document-start 注入）────────────────────────
+   系统内打开：用系统里那一份 AI 配置，用户不用在本应用里再填一遍；
+   单独打开（普通浏览器）：没有 XLCloud / XLSet，下面的取值自动回退到本应用自己的设置。
+   ⚠️ 这几行不改任何存储、不写日志、不同步 —— key 只在内存里用。 */
+function XLcfg(){
+  var out = { url:'', key:'', model:'' };
+  try {
+    if (window.XLCloud) { var c = JSON.parse(window.XLCloud); out.url = c.base || ''; out.key = c.key || ''; out.model = c.model || ''; }
+  } catch(e){}
+  try {
+    if (!out.url && window.__elemCloudBase) out.url = window.__elemCloudBase;
+    if (!out.key && window.__elemCloudKey) out.key = window.__elemCloudKey;
+    if (!out.model && window.__elemCloudModel) out.model = window.__elemCloudModel;
+  } catch(e){}
+  try {
+    if (window.XLSet) {
+      var v = JSON.parse(window.XLSet);
+      if (v.apiBase) out.url = v.apiBase;
+      if (v.apiKey) out.key = v.apiKey;
+      if (v.apiModel) out.model = v.apiModel;
+    }
+  } catch(e){}
+  return out;
+}
+
 /* ────────────────────────────────────────────────────────────
    象览能力桥（他我笔记 / Alter-Note）
    第五段：仅在有宿主注入 window.xianglan 时注册；无宿主单独打开时这一段不执行、不泄漏。
@@ -2696,7 +2812,13 @@ AlterAPI.showMsg("同步中...");</pre>
    ──────────────────────────────────────────────────────────── */
 if (window.xianglan && typeof window.xianglan.register === 'function') {
   window.xianglan.register({
-    description: '他我笔记（Alter-Note）：本地优先的碎片笔记/日程应用。可检索笔记（只读）、读现状与视角枚举、读取首页日程列表（只读）、以指定视角写笔记、给笔记加回声回复、往首页加日程。所有日期/时间戳/id 由应用生成，模型不要传。',
+  // ── 统一设置中心（宿主的「⚙️ 统一设置」会把它渲染成表单）──
+  settings: [
+    { key:'apiBase',  label:'接口地址', type:'text',   def:'https://api.deepseek.com/v1', hint:'留空则用系统统一配置' },
+    { key:'apiKey',   label:'接口 Key', type:'secret', hint:'留空则用系统统一配置（只存宿主，不给 AI 看）' },
+    { key:'apiModel', label:'模型',     type:'text',   def:'deepseek-chat' }
+  ],
+    description: '他我笔记（Alter-Note）：本地优先的碎片笔记/日程应用。可检索笔记（只读）、读现状与视角枚举、读取首页日程列表（只读）、以指定视角写笔记、给笔记加回声回复、往首页加日程、编辑/删除笔记（软删/永久）、编辑/删除日程。所有日期/时间戳/id 由应用生成，模型不要传。',
     actions: {
       // ── 读 1：检索笔记 ──
       query_notes: {
@@ -2911,6 +3033,84 @@ if (window.xianglan && typeof window.xianglan.register === 'function') {
           if (!added || String(added.text || '') !== content || String(added.date || '') !== date) throw new Error('add_schedule 失败：回读校验未通过（新增项内容不一致）');
           if (clientId) { added.clientId = clientId; try { localStorage.setItem('alter_schedule', JSON.stringify(afterSched)); } catch (e) { } }
           return { id: added.id, date: added.date, scheduled: afterSched.length, verified: true, note: '日程存在浏览器本机，不在云同步内；clientId 幂等仅本机有效' };
+        }
+      },
+      // ── 写 4：编辑笔记（内容/视角） ──
+      edit_note: {
+        description: '编辑已有笔记的内容和/或视角（写）。noteId 必填，来自 query_notes。content 和 persona 至少传一个；不传的字段不改。编辑后 updatedAt 自动更新。',
+        params: {
+          noteId: { type: 'number', description: '目标笔记 id，必填，来自 query_notes 返回', required: true },
+          content: { type: 'string', description: '新的笔记正文，可选，上限 4000 字；不传则不改内容', required: false },
+          persona: { type: 'string', description: '新的视角名，可选；不传则不改视角；取值见 get_overview', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || args.noteId === undefined || args.noteId === null) throw new Error('edit_note 缺少必填参数 noteId');
+          if ((args.content === undefined || args.content === null) && (args.persona === undefined || args.persona === null)) throw new Error('edit_note 至少需要 content 或 persona 之一');
+          const r = await window.AlterAPI.bridge.editNote({
+            noteId: Number(args.noteId),
+            content: args.content !== undefined && args.content !== null ? String(args.content) : undefined,
+            persona: args.persona !== undefined && args.persona !== null ? String(args.persona) : undefined
+          });
+          return { id: r.id, persona: r.persona, isVault: !!r.isVault, chars: r.chars, verified: !!r.verified, note: r.note };
+        }
+      },
+      // ── 写 5：删除笔记 ──
+      delete_note: {
+        description: '删除一条笔记（写）。noteId 必填，来自 query_notes。默认软删除（移入碎片回收站，3天后过期）；传 permanent:true 则永久删除（不可恢复）。注意：回收站里的笔记用 query_notes scope=memory 可以查到。',
+        params: {
+          noteId: { type: 'number', description: '目标笔记 id，必填，来自 query_notes 返回', required: true },
+          permanent: { type: 'boolean', description: '是否永久删除，默认 false（软删除→回收站）；true=永久删除不可恢复，可选', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || args.noteId === undefined || args.noteId === null) throw new Error('delete_note 缺少必填参数 noteId');
+          const r = await window.AlterAPI.bridge.deleteNote({
+            noteId: Number(args.noteId),
+            permanent: !!(args.permanent)
+          });
+          return { id: r.id, permanent: !!r.permanent, verified: !!r.verified, note: r.note };
+        }
+      },
+      // ── 写 6：编辑日程 ──
+      edit_schedule: {
+        description: '编辑已有日程的内容、日期或完成状态（写）。scheduleId 必填，来自 list_schedule。content/date/done 至少传一个；不传的字段不改。日程数据只在浏览器本地，不在云同步内。',
+        params: {
+          scheduleId: { type: 'number', description: '目标日程 id，必填，来自 list_schedule 返回', required: true },
+          content: { type: 'string', description: '新的日程内容，可选；不传则不改', required: false },
+          date: { type: 'string', description: '新的日期，格式 YYYY-MM-DD，可选；不传则不改', required: false },
+          done: { type: 'boolean', description: '是否已完成，可选；不传则不改', required: false }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || args.scheduleId === undefined || args.scheduleId === null) throw new Error('edit_schedule 缺少必填参数 scheduleId');
+          if ((args.content === undefined || args.content === null) && (args.date === undefined || args.date === null) && (args.done === undefined || args.done === null)) throw new Error('edit_schedule 至少需要 content、date 或 done 之一');
+          const r = await window.AlterAPI.bridge.editSchedule({
+            scheduleId: Number(args.scheduleId),
+            content: args.content !== undefined && args.content !== null ? String(args.content) : undefined,
+            date: args.date !== undefined && args.date !== null ? String(args.date) : undefined,
+            done: args.done !== undefined && args.done !== null ? !!args.done : undefined
+          });
+          return { id: r.id, text: r.text, date: r.date, done: !!r.done, verified: !!r.verified, note: r.note };
+        }
+      },
+      // ── 写 7：删除日程 ──
+      delete_schedule: {
+        description: '删除一条日程（写）。scheduleId 必填，来自 list_schedule。日程数据只在浏览器本地，删除后不可恢复。',
+        params: {
+          scheduleId: { type: 'number', description: '目标日程 id，必填，来自 list_schedule 返回', required: true }
+        },
+        run: async (args) => {
+          const guard = () => { if (!window.AlterAPI || !window.AlterAPI.bridge || !window.AlterAPI.bridge.ready()) throw new Error('他我笔记还没加载完，请稍后再试'); };
+          guard();
+          if (!args || args.scheduleId === undefined || args.scheduleId === null) throw new Error('delete_schedule 缺少必填参数 scheduleId');
+          const r = await window.AlterAPI.bridge.deleteSchedule({
+            scheduleId: Number(args.scheduleId)
+          });
+          return { id: r.id, verified: !!r.verified, note: r.note };
         }
       }
     }
